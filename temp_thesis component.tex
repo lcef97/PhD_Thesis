@@ -1,0 +1,398 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amssymb}  % For mathematical symbols
+\usepackage{amsmath}  % For, say, math operators I guess
+\usepackage[authoryear]{natbib} % For bibliography
+\usepackage{xcolor}   % For colouring text
+
+
+\title{Thesis draft}
+%\author{Leonardo Cefalo}
+%\date{December 2024}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Conditionally independent Gaussian fields}
+
+
+
+\subsection{The intrinsic CAR model}
+
+Consider a $p$-variate random variable $y_i = (y_{i,1}   \, \ldots \, y_{i,p})'$ taking values over the $n$ nodes of a graph $\mathcal{G}$, which is described by:
+\begin{itemize}
+\item The neighbourhood matrix $W$, whose generic element $w_{ij}$ is $1$ if nodes $i$ and $j$ are neighbours, $0$ if nodes $i$ and $j$ are not neighbours, and $0$ on the diagonal
+\item The diagonal degree matrix $D$, whose elements correspond to the number of edges of each node, hence $d_i = \sum_{j=1}^{n} w_{ij}$
+\item The Laplacian matrix $R = D - W$, whose rank deficiency equals the number of connected components in $\mathcal{G}$
+\end{itemize}
+
+Following \cite{Mardia}, see also chapter 10 of \cite{Banerjee}, we suppose that $y_i$ follows this distribution, conditioned on all other observations. 
+$$
+y_i | y_{-i}, \Lambda \sim N \left(\sum_{j=1}^{n} \frac{w_{ij}}{d_i}y_{j}, \frac{1}{d_i} \Lambda^{-1}\right)
+$$
+Where $\Lambda$ is a matrix-valued precision parameter. Please notice this formulation corresponds to a special case of the CAR model described by \cite{Mardia}, who proposed the more general form $y_i | y_{-i}, \Lambda \sim N \left(\sum_{j=1}^{n} B_{i,j} y_{i}, \frac{1}{d_i} \Lambda^{-1}\right)$ and presented $B_{ij} = \frac{w_ij}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
+
+
+
+To compute the joint distribution $\pi(y|\sigma^2)$ we rely on the Brook's Lemma:
+ \begin{equation}
+ \pi(y) = \prod_{i=1}^n \frac{
+ \pi \left(y_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace y_k \rbrace_{k>i}  \right)
+ }{
+ \pi \left(x_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace y_k \rbrace_{k>i}  \right)
+ } \, \pi(x)
+ \label{eq:brookslemma}
+ \end{equation}
+Where $x$ is a set of known variables satisfying the positivity condition. Also, notice  $\pi(x)$ is a constant term we can treat a a normalising constant. Then, consider:
+$$
+\ln \left(y_i | \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace y_k \rbrace_{k>i}, \Lambda  \right) =
+C_0 - \frac{d_i}{2} \left( 
+y_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_i}y_k
+\right)' \Lambda \left( 
+y_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_i}y_k
+\right)
+$$ Where $C_0$ is an additive constant. Now, with no loss of generality, let us assume $x_i = 0 \,   \forall \, i \in [1,n]$, so that numerator elements in \ref{eq:brookslemma}
+ 
+\begin{align}
+ \ln \pi \left(y_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace y_k \rbrace_{k>i}, \Lambda  \right) =
+ C_0 - \frac{d_i}{2 } \left(y_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}y_k  \right) '
+ \Lambda  \left(y_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}y_k  \right)=  \\
+ = C_0- \frac{d_i}{2 } \left[ y'_i \Lambda y_i - 
+ 2 \left(\sum_{k=i+1}^n    \frac{w_{ik}}{d_i}y_k\right) ' \Lambda y_i \right] 
+ - \frac{d_i}{2}  \left( 
+ \sum_{k=i+1}^n \frac{w_{ik}}{d_i} y_k
+ \right) ' \Lambda \left( 
+ \sum_{k=i+1}^n \frac{w_{ik}}{d_i} y_k
+ \right)
+ \label{eq:numerator}
+ \end{align}
+And denominator elements take the form:
+\begin{equation}
+ \ln \pi \left(x_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace y_k \rbrace_{k>i}, \Lambda  \right)\mid_{x_i=0} = C_0 - \frac{d_i}{2}  \left( 
+ \sum_{k=i+1}^n \frac{w_{ik}}{d_i} y_k
+ \right) ' \Lambda \left( 
+ \sum_{k=i+1}^n \frac{w_{ik}}{d_i} y_k
+ \right)
+\label{eq:denominator}
+\end{equation}
+Then, with a little bit of standard algebra we get:
+\begin{equation}
+\ln \pi(y \mid \Lambda) = C_1 + \sum_{i=1}^n d_i y_i ' \Lambda y_i -
+\sum_{i=1}^n \sum_{k=1}^n w_{ik} y_i' \Lambda y_k
+\end{equation}
+Where $C_1$ is an additive constant independent on $y$. Now, let us introduce the rowwise vectorising operator $\mathrm{vec}_r$, which stacks rowwise the elements of a $n \times p$ matrix into a $np \times 1$ vector. First consider:
+$$
+ \sum_{i=1}^n d_i y'_i \Lambda y_i = 
+\begin{pmatrix}
+y_{11} \\ \vdots \\ y_{1p} \\ y_{21} \\ \vdots \\ y_{2p} \\ \vdots \\y_{n1} \\ \vdots \\ y_{np}
+\end{pmatrix}'
+\begin{pmatrix}
+d_1 \Lambda & 0 & \ldots & 0 \\
+0 & d_2 \Lambda & \ldots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \ldots & d_n \Lambda
+\end{pmatrix}
+\begin{pmatrix}
+y_{11} \\ \vdots \\ y_{1p} \\ y_{21} \\ \vdots \\ y_{2p} \\ \vdots \\y_{n1} \\ \vdots \\ y_{np}
+\end{pmatrix}  = 
+\mathrm{vec}_r(y) ' (W \otimes \Lambda) \mathrm{vec}_r(y)
+$$
+Then, consider:
+$$
+ \sum_{i=1}^n \sum_{k=1}^n w_{ik} y'_i \Lambda y_k = 
+\begin{pmatrix}
+y_{11} \\ \vdots \\ y_{1p} \\ y_{21} \\ \vdots \\ y_{2p} \\ \vdots \\y_{n1} \\ \vdots \\ y_{np}
+\end{pmatrix}'
+\begin{pmatrix}
+0 & w_{12} \Lambda & \ldots & w_{1n} \Lambda\\
+w_{21} \Lambda & 0 & \ldots & w_{2n} \Lambda\\
+\vdots & \vdots & \ddots & \vdots \\
+w_{n1} \Lambda & w_{n2} \Lambda & \ldots & 0
+\end{pmatrix}
+\begin{pmatrix}
+y_{11} \\ \vdots \\ y_{1p} \\ y_{21} \\ \vdots \\ y_{2p} \\ \vdots \\y_{n1} \\ \vdots \\ y_{np}
+\end{pmatrix}  = 
+\mathrm{vec}_r(y) ' (D \otimes \Lambda) \mathrm{vec}_r(y)
+$$
+
+This proves the joint distribution of $y$ is \citep[][this latter case regarding the PCAR]{Mardia, Banerjee, Gelfand}:
+\begin{equation}
+p(y  | \Lambda) \propto -\frac{1}{2} \mathrm{vec}_r(y) ' R \otimes \Lambda \mathrm{vec}_r(y)
+\label{eq:rowwise}
+\end{equation}
+For practical reasons, if we want to fit such a model in \texttt{R-INLA}, it is convenient to rearrange $y$ columnwise through the $\mathrm{vec}_c$ operator \cite{INLAMSM}, such that $\mathrm{vec}_c(y) = (y_{11},\, \ldots, \,y_{n1},\, y_{12},\, \ldots,\, y_{n2},\, \ldots ,\, y_{1p}, \,\ldots, \,y_{np} )'$. To do so, we are actually using an orthogonal permutation matrix $\mathcal{P}$, such that 
+$$\mathrm{vec}_c(y) = \mathcal{P} \times \mathrm{vec}_r(y)$$
+Here we give a definition of $\mathcal{P}$. To do so, consider the $i$-th basis vector of $\mathbb{R}^p$, $e_i$, the $i$-th row of $I_n$, whose $i$-th element is $1$ and all other elements are zero, $\forall i \in [1,n]$. We then have:
+$$
+\mathcal{P}  := \begin{pmatrix} 
+I_n \otimes e_1' \\ I_n \otimes e_2' \\ \vdots \\ I_n \otimes e_p'
+\end{pmatrix}
+$$
+Considering that$
+{VAR}[\mathrm{vec}_c(y)] = \mathcal{P} \times {VAR}[\mathrm{vec}_r(y)] \times \mathcal{P}'$, hence ${Prec}[\mathrm{vec}_c(y)] = \mathcal{P} \times {Prec}[\mathrm{vec}_r(y)] \times \mathcal{P}$, it holds that:
+$$
+\mathcal{P} \left( R \otimes \Lambda \right) \mathcal{P}'= \Lambda \otimes R
+$$
+Which can also be proved with some algebra. Hence, in total equivalence with equation \ref{eq:rowwise}, we know that the joint distribution of a multivariate ICAR process is
+\begin{equation}
+y|\Lambda \sim N \left( 0, (\Lambda \otimes R)^{+}\right)
+\end{equation}
+The pseudoinverse is implied by the rank deficiency of $R$, which equals the number of connected components in the underlying graph. $\pi(y | \Lambda)$ is therefore an improper distribution.
+
+
+
+As it can be seen in the previous equations, the ICAR precision is the product of two terms, a global parameter and a structure matrix. This hinders parameter interpretation at the global level; to start discussing it, we first consider the case of a connected graph. Denoting with $\mathbf{S}$ the pseudo-inverse of the structure matrix $\mathbf{R} $, the marginal variance of a generic $i$-th realisation of the latent effect for the $h$-th variable is: $$VAR[z_{ih} \mid T] = \sigma_{h}^2 s_{ii}$$
+Where $\sigma_h^2$ is the global precision of the $h$-th variable, corresponding to the $h$-th element of the diagonal of $T^{-1}$; in other words, $s_{ii}$ would be the marginal variance of $z_i$ if the relevant global precision was equal to 1. Hence, by definition, ICAR variance incorporates a factor determined by the neighbourhood structure. Taking this consideration to the global level, it implies that process variability is not described by the scale parameter (or by its reciprocal, the precision) alone, as a deterministic scale factor concurs as well. The intuitive solution to this issue is to scale the ICAR model, as shown by \cite{Sorbye}. Following their operational proposal, we take the geometric mean of the diagonal of $\mathbf{S}$ as scaling factor - or, in other words, the geometric mean of marginal variances if all global precision parameters (diagonal entries of $T$) were equal to 1, namely
+$$
+\bar{\sigma}^{2} = \prod_{i=1}^{n} s_{ii}^{1/n}
+$$
+this scaling factor is sometimes referred to as reference variance (or generalised variance, 
+%\textcolor{red}{(though this phrase generally denotes a determinant, hence taking into account also off-diagonal elements)}, 
+or typical marginal variance). We are thus able to separate the parameter $T$ from the effect on precision induced by the graph structure. To do so, the scaled model does not employ $\mathbf{R}$ as the structure matrix, but the scaled matrix $\mathbf{R}_{scaled} = \bar{\sigma}^2 \mathbf{R} $. On the other hand, the precision parameter becomes $ \displaystyle{\frac{1}{\bar{\sigma}^2}} T$, and this is what actually expresses the precision of the process independently of how the graph is structured. \\
+When the graph has $G >1$ connected components, its Laplacian matrix is (a permutation of) the direct sum of the Laplacians of its components, as we have mentioned in the previous paragraph. The pseudo-inverses of these matrices may clearly have different typical marginal variances. In this case, it is necessary to scale the component-specific precisions separately, as shown in \cite{Freni}:
+$$
+\mathbf{R}_{scaled} = \mathcal{P} \left( \bar{\sigma}_1^2 \mathbf{R_1} \oplus \bar{\sigma}_2^2 \mathbf{R_2}
+\oplus ... \oplus \bar{\sigma}_G^2 \mathbf{R_G} \right) \mathcal{P'}
+$$
+Where $\mathcal{G}$ is an appropriate permutation matrix, $\mathbf{R_i}$ is the Laplacian of the $i$-th component of the graph, and $\bar{\sigma}_i^2$ is the relevant typical variance. \\
+In \texttt{R-INLA}, precision scaling is implemented automatically for intrinsic models, like the univariate ICAR, through the option \texttt{scale.model} within the \texttt{inla()} function call; otherwise the scaled structure matrix can be computed as a standalone object with \texttt{inla.scale.model()}. In the multivariate case, \texttt{INLAMSM} provides readily-defined models for which the user is required to provide the neighbourhood matrix $\mathbf{W}$ instead of the Laplacian matrix (as different models with the same neighbourhood matrix have different structure matrices). Hence, to scale a multivariate ICAR model we derive  $\mathbf{W}$ from the scaled Laplacian.% (function \texttt{ScaleQ()}  generalises \texttt{inla.scale.model()} when the graph is disconnected):
+
+%<<eval = FALSE>>= 
+%library(Matrix)
+%W.scaled <- Matrix(diag(diag(ScaleQ(W))) - 
+   % ScaleQ(W), sparse = TRUE)
+%@
+
+
+
+
+%\begin{equation}
+%\begin{eqnarray*}
+%\text{IMCAR:} \,
+%\mathbf{z} \sim N \left(
+% \mathbf{0},  T^{-1} \otimes (\mathbf{D} - \mathbf{W})^{-1} \right) \\
+%\text{PMCAR:} \,   \mathbf{z} \sim N \left(
+% \mathbf{0},  T^{-1} \otimes (\mathbf{D}- \alpha \mathbf{W})^{-1} \right) 
+%\end{eqnarray*}
+%\end{equation}
+
+\subsubsection{Spatial confounding}
+When a spatially structured latent random variable is included in a regression model, it may happen to be correlated with some covariates. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in almost two decades of literature (\cite{Urdangarin23}, \cite{DupontArXiv}), starting from the intuitive solution of constraining random effects to be linearly independent on covariates (\cite {RHZ}, \cite{Hodges}), which goes under the name of restricted spatial regression (RSR); this is done by projecting random effects to the orthogonal subspace the covariates matrix, i.e. setting $X(X'X)^{-1}X' \xi z = 0$.
+
+
+The baseline model is any Gaussian regression model including a Gaussian random effect of size $n$ with prior mean $0$ and non-negative defined structure matrix $Q$, which is typically assumed to be sparse (GMRF).
+\begin{equation}
+\begin{aligned}
+\quad y = X \beta + \xi z + \varepsilon \\
+z \sim N (0, \tau^{-1} Q^{-1}) \\
+\beta \sim N(0, M)\\
+\varepsilon \sim N(0, \sigma_{\varepsilon}^2 I)= N(0, \tau_{\varepsilon}^{-1}I_n)
+\end{aligned}
+\end{equation}
+The covariate matrix $X$ has size $n \times p$; $\xi$ denotes a generic model matrix for the random effects (e.g. in many applications it is the $n \times n$ identity matrix).\\ This model can be parametrised in a more general way (see e.g. Spiegelharter et al.):
+
+\begin{equation}
+\begin{aligned}
+y \sim N(A_1 \theta_1,\tau_{\varepsilon}^{-1} I_n ) \\
+\theta_1 \sim N(A_2  \theta_2,\tau_{\varepsilon}^{-1} C)
+\end{aligned}
+\end{equation}
+Where  $A_1 = (X \, \xi)$, and $\theta_1 = (\beta' z')'$ is the vector of parameters. The term $A_2 \theta_2$ has by construction both mean and variance zero.\\
+Here we defined
+$$ C^{-1} = \tfrac{\tau}{\tau_{\varepsilon}} \begin{pmatrix}
+ \frac{1}{\tau M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & Q
+\end{pmatrix}$$
+Since the error term $\varepsilon$ and the random effects $z$ have different precision parameters, the matrix $C^{-1}$ cannot be considered known \textcolor{blue}{Note: This notation is actually an artifact to proceed with further explanation}. To see this, consider the prior precision of the random effects defined as $\tau Q$; $\tau_{\varepsilon} C^{-1}$ must thus be structured as $\begin{pmatrix} \frac{1}{M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & \tau Q \end{pmatrix}$ where $M$ is the known variance parameter of $\beta$, but $\tau$ is unknown and isolating $\tau$ to express $\tau_{\varepsilon} C^{-1} = \tau \begin{pmatrix}
+ \frac{1}{\tau M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & Q
+\end{pmatrix}$ would leave it dependent on an unknown parameter. \\
+
+
+Now, it is possible to show (Lindley and Smith, 1972) that the posterior mean of $\theta_1$, conditioned on the model hyperparameters, is
+\begin{equation}
+E[\theta_1 | y, \tau, \tau_{\varepsilon}] =  \left( A_{1}'A_{1} + C^{-1} \right)^{-1}A_{1}'y
+\end{equation}
+
+For brevity, we refer to the matrix $A_1 \left( A_{1}'A_{1} + C^{-1} \right)^{-1}A_{1}$ as the hat matrix or $H$. Based on how we defined $A_1$ and $C$, notice that
+\begin{align*}
+\left( A_{1}'A_{1} + C^{-1} \right)^{-1} = 
+\begin{pmatrix}
+ X'X + r_{\varepsilon} I_p & X' \xi \\
+ \xi ' X & \xi' \xi + \bar{r} Q
+\end{pmatrix}^{-1} = \\ =
+\begin{pmatrix}
+G^{-1} + G^{-1} X' \xi(\xi ' \xi + \bar{r} Q - \xi ' X G^{-1} X' \xi)^{-1} \xi ' XG^{-1} & 
+-G^{-1} X' \xi(\xi ' \xi + \bar{r} Q - \xi ' X G^{-1} X' \xi)^{-1}\\
+-  (\xi ' \xi + \bar{r} Q - \xi ' X G^{-1} X' \xi)^{-1} \xi' X G^{-1} & 
+ (\xi ' \xi + \bar{r} Q - \xi ' X G^{-1} X' \xi)^{-1}
+\end{pmatrix}
+\end{align*}
+With $\bar{r} := \dfrac{\tau}{\tau_{\varepsilon}}$ and $G := (X'X + r_{\varepsilon}I_p)$, where $r_{\varepsilon} := \dfrac{1}{\tau_{\varepsilon}M} = \dfrac{\sigma_{\varepsilon}^{2}}{M}$.
+It can thus be shown that:
+\begin{equation}
+\begin{aligned}
+E[\beta | y, \tau_{\varepsilon}, \bar{r}] = G^{-1} \lbrace X' 
++ X' \xi \left[ \xi' \xi + \bar{r} Q - \xi ' X G^{-1} X' \xi \right]^{-1} \xi' X G^{-1} X' +\\
+- X' \xi \left[ \xi' \xi + \bar{r} Q - \xi ' X G^{-1} X' \xi \right]^{-1} \xi'
+\rbrace \, y
+\end{aligned}
+\end{equation}
+And
+\begin{equation}
+E[z | y, \tau_{\varepsilon}, \bar{r}] = \left[ \xi' \xi + \bar{r} Q - \xi ' X G^{-1} X' \xi \right]^{-1}
+(\xi' - \xi' X G^{-1} X') \, y
+\end{equation}
+
+Equivalently, if for brevity we define $\Gamma = \xi ' \xi + \bar{r} Q - \xi' X G^{-1} X' \xi$ this means that 
+\begin{equation}
+H_{\tau_{\varepsilon}, \bar{r}} = XG^{-1}X' + \xi \Gamma^{-1} \xi' -
+XG^{-1}X' \xi \Gamma^{-1} \xi' -  \xi \Gamma^{-1} \xi'XG^{-1}X'+XG^{-1}X' \xi \Gamma^{-1} \xi' XG^{-1}X'
+\end{equation}
+
+ If a flat prior is defined on $\beta$, we have $M \longrightarrow \infty$, with $G \longrightarrow X'X$. In this case, it is possible to show that the limits for equations (4) and (5) are the results stated by Reich, Hodges and Zadnik (2006) at page 1199; in that case, $\xi = I_n$. Moreover, the hat matrix does not depend on $\tau_{\varepsilon}$ but only on $\bar{r}$.\\
+
+
+We now consider the projection matrix of $y$ onto its least squares fitted values, and its orthongonal complement, respectively:
+$$
+P := X(X'X)^{-1}X' \quad \quad \text{and} \quad \quad P_{\bot} := I - X(X'X)X' = I - P
+$$
+
+The crucial step of all the forthcoming analysis is the eigendecomposition of $P_{\bot}$. Firstly, consider that its first $n-p$ eigenvalues are ones, and the latter $p$ are zeroes. \textcolor{blue}{To see that the eigenvalues of $P_{\bot}$ are either zeros or ones, first consider that $P_{\bot} = P_{\bot} P_{\bot}$. Then for a generic eigenvalue-eigenvector pair $\lambda, v$ it holds that $P_{\bot} v = \lambda v$. With no loss of generality it is also true that $P_{\bot} P_{\bot} v = \lambda P_{\bot} v$, which equals to the identity $P_{\bot} v = \lambda^2 $, hence $\lambda = \lambda^2$. The number of nonzero eigenvalues is the rank of $P_{\bot}$, which is in turn $n - rk(P)$, hence $n-p$.}\\
+We label the eigenvector matrix of $P_{\bot}$ as $(L K)$; $L$ is the matrix whose columns are the first $n-p$ nonzero eigenvectors, while $K$ belongs to the null space of $P_{\bot}$. Thus the decomposition of $P_{\bot}$ is:
+
+$$
+P_{\bot} =  \begin{pmatrix}L & K \end{pmatrix} 
+\begin{pmatrix} I_{n-p} & 0_{(n-p) \times p } \\ 0_{p \times (n-p)} & 0_{p \times p} \end{pmatrix}
+ \begin{pmatrix} L' \\ K' \end{pmatrix} = L L'
+$$
+
+We further notice that:
+$$
+\begin{pmatrix} L' \\ K'\end{pmatrix} (L \, K) = (L \, K) \begin{pmatrix} L' \\ K'\end{pmatrix} = I_n \, , \quad KK' = P, \, \quad K'L = 0 
+$$
+
+Without loss of generality, it holds that
+$$
+p(z | \tau) \propto exp \lbrace -\dfrac{\tau}{2} z' Q z \rbrace = 
+exp \lbrace -\dfrac{\tau}{2} z' (L \, K) \begin{pmatrix} L' \\ K'\end{pmatrix} 
+Q (L \, K) \begin{pmatrix} L' \\ K'\end{pmatrix} z \rbrace
+$$
+\textcolor{blue}{
+We now define
+$\zeta = \begin{pmatrix} L' \\ K' \end{pmatrix} z$ such that $z = (L \, K) \zeta$ and decompose the newly defined random effect $\zeta$ as
+$$
+\zeta = \begin{pmatrix} \zeta_1 \\ \zeta_0 \end{pmatrix} \quad \text{where} \quad  \zeta_1 := L'z \quad \text{and} \quad \zeta_0 := K'z
+$$ 
+The distribution of the new random effect is then:
+}
+$$
+\zeta = \begin{pmatrix} \zeta_1 \\ \zeta_0\end{pmatrix} \sim N \left(\begin{pmatrix} 0 \\ 0 \end{pmatrix}, \, \tau^{-1} \begin{pmatrix} L'QL & L'QK \\ K'QL & K'QK \end{pmatrix}^{-1} \right)
+$$
+
+Spatial confounding occurs when the random effect $z$ displays multicollinearity with the covariates $X$; when $p = 1$ this can be checked by comparing $X$ and the last eigenvector of $Q$ outside its null space. \\
+Deconfounding the spatial effect means to project it onto the subspace orthogonal to $X$, which implies to fit a different model:
+\begin{equation}
+RSR: \quad y = X \beta + P_{\bot}z + \varepsilon = X \beta + L \zeta + \varepsilon
+\end{equation}
+The rationale behind deconfounding $z$ is constraining it to be totally independent of $X$, which is the same as imposing that $z$ shall lie on the null space of $P$, hence the constraint is $$ \zeta_0 = K'z = 0$$. Under the unrestricted model, it holds that $prec[\zeta_1 | \tau] = (L'(Q)^{-1}L)^{-1}$; here, instead, we have $prec[\zeta_1 | \tau, K'z = 0] = L'QL$ (as in Reich Hodges and Zadnik, equations 16 and 17 at page 1201). To see this, recall:
+$$
+ln p(\zeta | \tau; K'z = 0) \propto 
+ -\dfrac{\tau}{2}  (\zeta_1' \, 0_{p}') \begin{pmatrix} L' \\ K'\end{pmatrix} 
+Q (L \, K)  \begin{pmatrix} \zeta_1 \\ 0_{p} \end{pmatrix} = -\dfrac{\tau}{2} \zeta_1' \, L'QL \, \zeta_1
+$$
+
+
+With respect to equation (4), if we consider $\xi = L$ and $\theta_1' = (\beta', (L'z)')$, it is straightforward to see that $E[\beta|y, \tau_{\varepsilon}, \bar{r}] = G^{-1} X'y$; if $p(\beta)$ is flat, its posterior expectation reduces to $X'(X'X)^{-1}y$, which is the ordinary least squares estimator.
+
+As a side effect of deconfounding $z$, it may be worthy to notice that the the size of the new precision matrix is $(n-p) \times (n-p)$ and its rank is equal or less than $min \lbrace rk(L), rk(Q) \rbrace =min \lbrace (n-p), rk(Q) \rbrace$. Hence, if the rank deficiency of $Q$ is less than $p$, the new random effect has a proper distribution even if $z$ is an ICAR process. If the underlying graph is disconnected and $p(z)$ can be factorised in a factor for each connected component (CC) then the rank deficiency of $Q$ is equal to the number of CCs, but it is necessary to impose a sum to zero constraint for each CC, hence the same number of intercepts would be required; thus, also in this case $n-p$ is smaller than $rk(Q)$ and $L'QL$ is still proper.
+However, there are still some possible situations in which this inconvenience can arise, e.g. in multilevel models; see further.
+
+
+%We consider that if $\beta$ is given a Gaussian prior with zero mean and known variance $M = \dfrac{\sigma_{\varepsilon}^{2}}{r_{\varepsilon}} $, the posterior distribution of $\beta$, conditioned on the random effects and the hyperparameters, takes the form
+%\begin{align*}
+%p(\beta| y, \tau_{\varepsilon}, z, \tau) = \frac{p(\beta) p (y|\beta, z, \tau_{\varepsilon}, \tau)}{p(y| \tau_{\varepsilon}, \tau)} \propto \\
+%\propto exp\lbrace-\tau_{\varepsilon} \left[\beta' (X'X + r_{\varepsilon}I_p) \beta - 2 (y - z)' X %\beta + (y-z)'(y-z)  \right] \rbrace
+%\end{align*}
+%\textcolor{blue}{Which in turn is proportional to (terms not depending on $\beta$ are considered constants)}
+%\begin{align*}
+%exp\lbrace-\tau_{\varepsilon} \left[\beta' (X'X + r_{\varepsilon}I_p)  \beta 
+%- 2 (y - z)' X (X'X + r_{\varepsilon}I_p) rI_p)(X'X + r_{\varepsilon}I_p)^{-1} \beta  \right] + \\
+%- \tau_{\varepsilon} \left[+(y-z)' X(X'X + r_{\varepsilon} I_p)^{-1} X'(y-z)  \right] 
+%\end{align*}
+%This implies that $E[\beta | y, z, \tau, \tau_{\varepsilon}] = (X'X + r_{\varepsilon}I_p)^{-1} X'(y-z)$. The limit case for $r \longrightarrow \infty$ being $E[\beta | y, z, \tau, \tau_{\varepsilon}] = \beta_{OLS} - (X'X)^{-1} X'z$, which derives indeed from the choice of a flat prior on $\beta$.
+
+%In the following, for brevity we will refer to the set of hyperparameters as $\psi = \lbrace \tau, \tau_{\varepsilon}, r \rbrace$.\\
+Referring to the flat $\beta$ case, consider that under the restricted model:
+
+$$
+E[\beta_{RSR} | y, z, \tau_{\varepsilon}, \bar{r}] = \beta_{OLS} - (X'X)^{-1} X'(I - X(X'X)^{-1}X')z = \beta_{OLS}
+$$
+Where $\beta_{RSR}$ denote the fixed effects under restricted spatial regression and $\beta_{OLS}$ are the fixed effects to be estimated via the ordinary least squares.
+This implies that the fixed effects are estimated independently of any random effect, and their expectation equals that of the nonspatial model.\\
+Here we keep assuming a flat prior on $\beta$; referring to equation (6), we see that under the  unrestricted model, with $\xi = I_n$, $\Gamma = \bar{r} Q + P_{\bot}$
+\begin{align*}
+H_{\tau_{\varepsilon}, \bar{r}} = P + (\bar{r} Q + P_{\bot})^{-1} - P (\bar{r} Q + P_{\bot})^{-1} - (\bar{r} Q + P_{\bot})^{-1} P + P (\bar{r} Q + P_{\bot})^{-1}P = \\
+= P + P_{\bot} (\bar{r} Q + P_{\bot})^{-1} P_{\bot}
+\end{align*}
+
+Under the restricted model, i.e. using the random effect $\zeta = L'z \sim N(0, L'QL)$ we have $\Gamma = \bar{r} L'QL + I_{n-p}$, hence 
+$$
+H_{\tau_{\varepsilon}, \bar{r}} 
+= P + L (\bar{r} L'QL + I_{n-p})^{-1} L'
+$$
+ 
+Roughly speaking, the idea behind restricted regression is to rule out the bias in fixed effects estimation implied by spatial confounding. RSR can be extended to the multilevel case \cite{Nobre}, in which e.g. random effects are defined at a higher scale than observations, as in the present framework. \\ Now, under RSR the posterior means of fixed effects will approximate those of a nonspatial model. In the particular case of a Gaussian prior likelihood and a flat prior on fixed effects, $\mathbb{E}[\beta |y]$ will be exactly equal. \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta |y]$ if confounding occurs (intuitively, the expectation would be approximately the same of a model which ignores the existence of the spatial component \textcolor{red}{, NDR}). In terms of interpretation, this would mean that adding a spatial effect to the model would not alter significantly the estimated regression coefficients. \\
+A different approach to deal with spatial confounding is based on adjusting the covariates rather than constraining random effects \cite{Dupont}, by representing the former as the sum of a spatial and a nonspatial component; it is known in the literature as Spatial+. We employ a multilevel version of the variant of Spatial+ developed by Urdangarin et al., \cite{Urdangarin24}, which has the advantage of not requiring an explicit spatial model on $X$. In our multilevel framework, the value of the $k$-th covariate $X_{\cdot; k}$ observed in municipality $j$ belonging to macro-area $i$ is firstly decomposed as
+$$
+x_{ij;k} = \bar{x}_{i;k} + \Delta x_{ij;k}
+$$
+Being $\bar{x}_{i;k}$ the average value of the covariate observed in the $i$-th macro-area, i.e. at the same level of aggregation of the spatial effect, and is the $(i, k)$-th element of the matrix $\bar{X}:=(\xi'\xi)^{-1}\xi'X$; $\Delta x_{ij;k}$ can be considered as the municipality-level noise. \\In matrix form, this decomposition would be: $X = \xi \bar{X} + \Delta X$. Now, let us consider the eigendecomposition of the Laplacian $\mathbf{R}$:
+$$
+\mathbf{R} := VLV'
+$$ where $V$ is the matrix of eigenvalues and $L$ is the diagonal matrix of eigenvectors. We know that $L$ has $n-G$ non-null entries, corresponding to the first $n-G$ columns of $V$, while the last $G$ columns of $E$ \textcolor{red}{are} the null space of $\mathbf{D} - \mathbf{W}$.  
+With no lack of generality, let us consider
+$$
+\bar{X} := Vb
+$$ where $b$ is a appropriately chosen $n \times p$ matrix. Once we express $\bar{X}$ as a linear combination of the eigenvectors of the structure matrix of the spatial random effect, we find that the spatial component of $\bar{X}$ is determined by the last columns of $V$ among those which do not correspond to null eigenvalues. We( can decompose $\bar{X}$ in
+$$
+\bar{X} = \bar{X}^{(NS)} + \bar{X}^{(S)} + \bar{X}^{(0)}
+$$
+Where $\bar{X}^{(NS)}$ is the nonspatial component given by the linear combination of the first $n-G-t$ eigenvectors \textcolor{red}{Come posso rappresentare un set di indici in forma intervallare?} (i.e. $\bar{X}^{(NS)} = (V)_{\cdot[1, n-G-t]}(b)_{[1, n-G-t]}$ ) and represents the nonspatial component of the covariates matrix, $\bar{X}^{(s)}$ is the linear combination of the eigenvectors associated with the last $t$ nonzero eigenvalues and represents the spatial component of the covariates matrix, and $\bar{X}^{(0)}$ is built with the $G$ eigenvectors in the null space of the structure matrix and is constant within connected components. To remove spatial confounding, in the regression model we only take $\xi \left(\bar{X}^{(NS)} + \bar{X}^{(0)}\right) + \Delta X$ as covariates matrix. By doing so, covariates should not be spatially structured anymore. In \cite{Urdangarin24} the term we label as $\bar{X}^{(0)}$ was actually removed; since in the cases covered therein $G$ was equal to one, the eigenvector associated with the null eigenvalue was proportional to a vector of ones and its inclusion in the deconfounded covariates matrix would only scale it by an additive constant.\\
+
+
+
+
+
+
+
+
+
+
+\begin{thebibliography}{99}
+
+ \bibitem[Banerjee et al (2014)]{Banerjee}
+  Banerjee, S., Carlin, B. P.,  Gelfand, A. E. (2003). Hierarchical modeling and analysis for spatial data. Chapman and Hall/CRC.
+ 
+ \bibitem[Gelfand and Vounatsu (2003)]{Gelfand}
+Gelfand A.E., Vounatsou P. (2003) Proper multivariate conditional autoregressive models for spatial data analysis. Biostatistics. 2003 Jan; 4(1):11-25. doi: 10.1093/biostatistics/4.1.11. PMID: 12925327.
+
+\bibitem[Johnson and Wichern (2007)]{JohnsonWichern}
+Johnson, R. A., \& Wichern, D. W. (2007). Applied multivariate statistical analysis, 6th ed., Pearson. %Prentice Hall: Upper Saddle River, NJ, 2007. 
+
+\bibitem[Mardia (1988)]{Mardia} 
+ Mardia, K. V. (1988). Multi-dimensional multivariate Gaussian Markov random fields with application to image processing. Journal of Multivariate Analysis, 24(2), 265-284.
+
+\bibitem[Palmí-Perales et al. (2021)]{INLAMSM}
+Palmí-Perales, F., Gómez-Rubio, V.,  Martinez-Beneito, M. A. (2021). Bayesian Multivariate Spatial Models for Lattice Data with INLA. Journal of Statistical Software, 98(2), 1–29. https://doi.org/10.18637/jss.v098.i02
+
+\bibitem[Rue and Held (2005)]{GMRFs}
+Rue, H., Held, L. (2005). Gaussian Markov random fields: theory and applications. Chapman and Hall CRC. %%DOI: \url{https://doi.org/10.1201/9780203492024}
+
+
+
+
+\end{thebibliography}
+
+
+\end{document}
