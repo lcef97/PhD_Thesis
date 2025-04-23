@@ -46,7 +46,7 @@ The most convenient area of application of INLA are the models for Gaussian Mark
 \section[GMRFs]{Why using INLA? Gaussian Markov Random Fields}\label{section:GMRFs}
 
 \subsection{Conditional Independence in Gaussian Random Fields}\label{par:GRFs}
-A fundamental property of the Normal distribution is that if an observation is independent conditioned to all the other ones, then their precision element is zero even though their marginal covariance is nonzero, and vice versa \cite{GMRFs}.
+A fundamental property of the Normal distribution is that if two observations are mutually independent conditioned on all the other ones, then their marginal precision element is zero even though their marginal covariance is nonzero \cite{GMRFs}.
 
 To see this, consider a generic $n$-dimensional Gaussian random field $\mathbf{X} = (X_1, X_2 .. . X_n) \sim N(\mathbf{\mu}, \mathbf{\Sigma})$. Then, a deductive prove is given for the property:
 \begin{equation}
