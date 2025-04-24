@@ -46,15 +46,15 @@ The most convenient area of application of INLA are the models for Gaussian Mark
 \section[GMRFs]{Why using INLA? Gaussian Markov Random Fields}\label{section:GMRFs}
 
 \subsection{Conditional Independence in Gaussian Random Fields}\label{par:GRFs}
-A fundamental property of the Normal distribution is that if two observations are mutually independent conditioned on all the other ones, then their marginal precision element is zero even though their marginal covariance is nonzero \cite{GMRFs}.
+An interesting property of the Normal distribution is that if two observations are mutually independent conditioned on all the other ones, then the marginal precision element corresponding to that couple is zero even though the marginal covariance is non-zero \cite{GMRFs}.
 
-To see this, consider a generic $n$-dimensional Gaussian random field $\mathbf{X} = (X_1, X_2 .. . X_n) \sim N(\mathbf{\mu}, \mathbf{\Sigma})$. Then, a deductive prove is given for the property:
+To see this, consider a generic $n$-dimensional Gaussian random field $\mathbf{X} = (X_1, X_2 .. . X_n) \sim N(\mathbf{\mu}, \mathbf{\Sigma})$. Then, a deductive prove is given for this property:
 \begin{equation}
 		X_i \bot X_j \mid \mathbf{X_{-ij}} \iff q_{ij} = 0
 		\label{eq:theorem1}
 \end{equation}
 
-For any $i \neq j,  \quad i \leq n, \quad j\leq n$; $q_{i,j}$ is the element in position $(i,j)$ in the precision matrix $\mathbf{Q}: = \mathbf{\Sigma^{-1}}$, assuming that $\mathbf{\Sigma}$ is nonsingular. Any set of indexes $A \subset \mathbb{N}^n$ can be chosen in order to partition $\mathbf{X}$ into $\mathbf{X_A}$ and $\mathbf{X_B}$, being $B = \mathbb{N}^n / A$ with $card(A) := m<n, \, card(B) = n-m$, namely:
+For any $i \neq j,  \quad i,j \in [1,n]$; $q_{i,j}$ is the element in position $(i,j)$ in the precision matrix $\mathbf{Q}: = \mathbf{\Sigma^{-1}}$, assuming that $\mathbf{\Sigma}$ is nonsingular. Any set of indices $A \subset \mathbb{N}^n$ can be chosen in order to partition $\mathbf{X}$ into $\mathbf{X_A}$ and $\mathbf{X_B}$, being $B = \mathbb{N}^n / A$ with $card(A) := m<n, \, card(B) = n-m$, namely:
 	$$
 	\mathbf{X} := \left( \begin{array}{l} \mathbf{X_A} \\ \mathbf{X_B}
 		\end{array}
@@ -69,17 +69,19 @@ For any $i \neq j,  \quad i \leq n, \quad j\leq n$; $q_{i,j}$ is the element in 
 	\right)
 	$$
     
-Clearly the $\mathbf{\Sigma_{AA}}$ has dimensions $m \times m$, $\mathbf{\Sigma_{BB}}$ is $(n-m) \times (n-m)$,	$\mathbf{\Sigma_{AB}}$ is $n \times (n-m)$ and $\mathbf{\Sigma_{BA}} = \mathbf{\Sigma'_{AB}}$. 
+Matrix $\mathbf{\Sigma_{AA}}$ has dimensions $m \times m$, $\mathbf{\Sigma_{BB}}$ is $(n-m) \times (n-m)$,	$\mathbf{\Sigma_{AB}}$ is $n \times (n-m)$ and $\mathbf{\Sigma_{BA}} = \mathbf{\Sigma'_{AB}}$. 
 Since $\mathbf{X}$ is Gaussian by definition, we know its density is
 
-$$ \pi(\mathbf{X}) = \frac{1}{(2 \pi)^{n/2} \mid \mathbf{\Sigma} \mid ^{-1}} \, \, e^{-\frac{d^2}{2}}, \quad \text{with} \quad  d^2 := (\mathbf{X} - \mathbf{\mu})' \mathbf{\Sigma}^{-1} (\mathbf{X} - \mathbf{\mu}) $$
+$$ 
+\pi(\mathbf{X}) = \frac{1}{(2 \pi)^{n/2} \mid \mathbf{\Sigma} \mid ^{-1}} \, \, e^{-\tfrac{d^2}{2}}, \quad \text{with} \quad  d^2 := (\mathbf{X} - \mathbf{\mu})' \mathbf{\Sigma}^{-1} (\mathbf{X} - \mathbf{\mu}) 
+$$
 
 Being $d^2$ the squared Mahalanobis distance. From the law of compound probability we also know that 
     
     $$\pi(\mathbf{X}) = \pi(\mathbf{X_A}|\mathbf{X_B}) \, \pi(\mathbf{X_B}) \quad \text{or equivalently} \quad \ln \pi(\mathbf{X}) = \ln \pi(\mathbf{X_A}|\mathbf{X_B}) + \ln \pi(\mathbf{X_B})$$ 
 
 
- Since $\pi(\mathbf{X}) \propto exp(-\tfrac{d^2}{2})$, this implies that $d = d^2_{A|B} + d^2_{B}$, being $d^2_{A|B}$ and $d^2_B$ the squared Mahalanobis distances of respectively the conditional distribution of $\mathbf{X_A}$ given $\mathbf{X_B}$ and the marginal distribution of $\mathbf{X_B}$.
+$\pi(\mathbf{X}) \propto exp(-\tfrac{d^2}{2})$ implies that $d = d^2_{A|B} + d^2_{B}$, being $d^2_{A|B}$ and $d^2_B$ the squared Mahalanobis distances of respectively the conditional distribution of $\mathbf{X_A}$ given $\mathbf{X_B}$ and the marginal distribution of $\mathbf{X_B}$.
   
  To compute the precision matrix $\mathbf{Q} := \mathbf{\Sigma^{-1}}$, we keep treating $\mathbf{\Sigma}$ as a block matrix and decompose it into three matrices of the same size whose inversion is somewhat easier. Specifically we want to factorise $\mathbf{\Sigma}$ as $\mathbf{T_U} \times \mathbf{C} \times \mathbf{T_L}$, where $\mathbf{T_L}$ and $\mathbf{T_U}$ are respectively a lower triangular and an upper triangular matrix; $\mathbf{C}$ instead must have zeroes as the upper right and lower left blocks. Let us start by defining:
  $$
@@ -89,7 +91,7 @@ Being $d^2$ the squared Mahalanobis distance. From the law of compound probabili
  \end{array}
  \right)
 $$ 
-which allows us to factorise $\mathbf{\Sigma}$ in this way:
+which allows to factorise $\mathbf{\Sigma}$ as:
 
 $$
 \mathbf{\Sigma} = \left( \begin{array}{ll} \mathbf{\Sigma_{AA}} & \mathbf{\Sigma_{AB}}
@@ -104,13 +106,13 @@ $$
 \end{array}
 \right)
 $$
-For the sake of simplicity, we set 
-$$\mathbf{S_{BB}} : =
+For the sake of simplicity, let us define the Schur complement of $\mathbf{\Sigma_{BB}}$ in $\mathbf{\Sigma}$
+\citep[][paragraph 0.7.3]{HornJohnson} as
+$
+\mathbf{S_{BB}} : =
 \mathbf{\Sigma_{AA}} - \mathbf{\Sigma_{AB}} \mathbf{\Sigma^{-1}_{BB}} \mathbf{\Sigma_{BA}}
-$$
-This term is referred to as the Schur's complement of $\mathbf{\Sigma_{BB}}$ in $\mathbf{\Sigma}$ \citep[][paragraph 0.7.3]{HornJohnson}. A crucial assumption is that this matrix is nonsingular.
-
-The left factor in the above formula is factorised as:
+$
+; non-singularity is assumed for the Schur complement. Now, the following factorisation holds:
 
 $$
  \left( \begin{array}{ll} \mathbf{S_{BB}}  & \mathbf{\Sigma_{AB}}
@@ -350,7 +352,7 @@ The \textcolor{red}{relationship} $X:\mathcal{S} \rightarrow \mathbb{R}^n$ is th
  $$
 i.e. the probability distribution of $X_i$ is uniquely specified by its neighbours, and $X_i$ is independent on any non neighbouring site.
 
-Putting together the Markov property (Equation \ref{eq:gMarkov}) with the precision structure of Gaussian random fields when conditional pairwise independence holds (Equation \ref{eq:theorem1}) it becomes clear that random processes satisfying both the conditions, namely the \textit{Gaussian Markov Random Fields} are characterised by a precision matrix, say $\mathbf{Q}$ which only has nonzero entries corresponding to neighbouring pairs, namely $\mathrm{card}(\mathcal{E})$. \textcolor{red}{For autoregressive time series and processes defined on regular lattices $\mathrm{card}(\mathcal{E})$ is a multiple of $n$; for irregular lattices there is no such an exact relationship, still the number of edges is typically in $\mathcal{\Theta}(n)$ in connected graphs.}
+Putting together the Markov property (Equation \ref{eq:gMarkov}) with the precision structure of Gaussian random fields when conditional pairwise independence holds (Equation \ref{eq:theorem1}) it becomes clear that random processes satisfying both the conditions, namely the \textit{Gaussian Markov Random Fields} are characterised by a precision matrix, say $\mathbf{Q}$ which only has nonzero entries corresponding to neighbouring pairs, namely $\mathrm{card}(\mathcal{E})$. \textcolor{red}{For autoregressive time series and processes defined on regular lattices $\mathrm{card}(\mathcal{E})$ is a multiple of $n$; for irregular lattices there is no such an exact relationship, still the number of edges is typically in ${\Theta}(n)$ in connected graphs.}
 %This property is fundamental in that marginal independence frequently occurs in the most simple statistical models. For instance, any autoregressive processes with a sufficiently small lag order satisfies this condition by definition. Consider an unidirected $AR(p)$ Gaussian process: $X_i = \varphi_1 X_{i-1} + \varphi_2 X_{i-2} + ... + \varphi_p X_{i-p} + \varepsilon_i$ with $\varepsilon_i \sim N(0,\sigma^2)$.
 
 %If we choose any index $j$ falling outside the interval $[i-p, \, i]$, $X_j$ is independent on $X_j$. As a consequence, the $i$-th row or column of the precision matrix will only have $k$ nonzero entries. If we generalise this consideration to all the realizations of the process, we see how the precision matrix only has $O(n)$ diagonal or off-diagonal nonzero values though it is an $n \times n$ matrix, so it is sparse. However, the covariance matrix does not include zeroes unless particular constraints are imposed.
@@ -476,7 +478,7 @@ These three approaches complete the original INLA framework. More details on how
 
 A recent paper introduced an additional alternative strategy based on a Variational Bayes correction to the posterior mean of $\vartheta$ \cite{VB}. This latter approach consists in correcting $\mu_0$ (as in eq. \ref{eq:apprG}) by an additive vector, say $\lambda$, whose entries are nonzero only for a subset $I$ drawn from the total set of indices of $\vartheta$, namely $I \subset \left\{ 1, 2, ... n\right \}$:
 $$
-f_{VB}(\vartheta | y, \Psi) \propto e^{\displaystyle{
+\pi_{VB}(\vartheta | y, \Psi) \propto e^{\displaystyle{
  - \frac{1}{2}(\vartheta - \mu_0 - \Sigma_I \lambda)'Q_0(\vartheta - \mu_0 - \Sigma_I \lambda)
 }}
 $$
@@ -516,16 +518,397 @@ The four approaches described in Section \ref{par:inla_theta} to approximate $\p
 %% ------------------------------------------------------------------------------ %%
 %% --------                  Second Chapter                 --------------------- %%
 %% ------------------------------------------------------------------------------ %%
-%
 \chapter{Elements of areal data modelling} \label{chapter:theory}
-\textcolor{red}{\textbf{TBD:} file separato, compila quello e poi incòllalo qua.}
-%% -------- Spatial confounding -------------------------- %%
+%% -------- Introduction --------------------------------- %%
+\section{Introduction}
+In this chapter, we provide an overview on the statistical methodology followed throughout the last two chapters. In particular, this chapter is intended as a minimal toolbox in areal data modelling, with specific application in the next chapters.
+
+%% -------- ICAR ----------------------------------------- %%
+\section{The intrinsic CAR model}
+
+Consider a $p$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ with $\mathcal{S} \subset \mathbb{N}^n$ which is described by:
+\begin{itemize}
+\item The neighbourhood matrix $W$, with $w_{ij} = 1 \Longleftrightarrow s_i \in \partial s_j$ and $w_{ij}$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs})
+\item The diagonal degree matrix $D$, whose elements correspond to the number of edges of each node, hence $d_i = \sum_{j=1}^{n} w_{ij} = \mathrm{card}(\partial s_i)$
+\item The Laplacian matrix $R = D - W$, whose rank deficiency equals the number of connected components in $\mathcal{G}$
+\end{itemize}
+
+Following \cite{Mardia}, see also chapter 10 of \cite{Banerjee}, we suppose that $z_i$ follows this prior conditional distribution:
+$$
+z_i | z_{-i}, \Lambda \sim N \left(\sum_{j=1}^{n} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \Lambda^{-1}\right)
+$$
+Where $\Lambda$ is a matrix-valued precision parameter. Please notice this formulation corresponds to a special case of the CAR model described by \cite{Mardia}, who proposed the more general form $z_i | z_{-i}, \Lambda \sim N \left(\sum_{j=1}^{n} B_{i,j} z_{i}, \frac{1}{d_i} \Lambda^{-1}\right)$ and presented $B_{ij} = \frac{w_ij}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
+
+
+
+To compute the joint distribution $\pi(y|\sigma^2)$ we rely on the Brook's Lemma \citep{HammersleyClifford, CAR}:
+ \begin{equation}
+ \pi(z) = \prod_{i=1}^n \frac{
+ \pi \left(z_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
+ }{
+ \pi \left(x_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
+ } \, \pi(x)
+ \label{eq:brookslemma}
+ \end{equation}
+Where $x$ is a set of known variables satisfying the positivity condition. Also, notice  $\pi(x)$ is a constant term we can treat a a normalising constant. Then, consider:
+%
+\begin{align}
+\ln \left(z_i | \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Lambda  \right) = \\ =
+C_0 - \frac{d_i}{2} \left( 
+z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_i}z_k
+\right)^{\top} \Lambda \left( 
+z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_i}z_k
+\right)
+\end{align}
+%
+Where $C_0$ is an additive constant. Now, with no loss of generality, let us assume $x_i = 0 \,   \forall \, i \in [1,n]$, so that numerator elements in \ref{eq:brookslemma}
+%
+\begin{align}
+ \ln \pi \left(z_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Lambda  \right) =
+ C_0 - \frac{d_i}{2 } \left(z_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}z_k  \right) ^{\top}
+ \Lambda  \left(z_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}z_k  \right)=  \\
+ = C_0- \frac{d_i}{2 } \left[ z^{\top}_i \Lambda z_i - 
+ 2 \left(\sum_{k=i+1}^n    \frac{w_{ik}}{d_i}z_k\right) ^{\top} \Lambda z_i \right] 
+ - \frac{d_i}{2}  \left( 
+ \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
+ \right) ^{\top} \Lambda \left( 
+ \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
+ \right)
+ \label{eq:numerator}
+ \end{align}
+%
+And denominator elements take the form:
+\begin{equation}
+ \ln \pi \left(x_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Lambda  \right)\mid_{x_i=0} = C_0 - \frac{d_i}{2}  \left( 
+ \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
+ \right) ^{\top} \Lambda \left( 
+ \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
+ \right)
+\label{eq:denominator}
+\end{equation}
+Then, with a little bit of standard algebra we get:
+\begin{equation}
+\ln \pi(z \mid \Lambda) = C_1 + \sum_{i=1}^n d_i z_i ^{\top} \Lambda z_i -
+\sum_{i=1}^n \sum_{k=1}^n w_{ik} z_i^{\top} \Lambda z_k
+\end{equation}
+Where $C_1$ is an additive constant independent on $z$. Now, let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks rowwise the elements of a $n \times p$ matrix into a $np \times 1$ vector. First consider:
+$$
+ \sum_{i=1}^n d_i z^{\top}_i \Lambda z_i = 
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
+\end{pmatrix}^{\top}
+\begin{pmatrix}
+d_1 \Lambda & 0 & \ldots & 0 \\
+0 & d_2 \Lambda & \ldots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \ldots & d_n \Lambda
+\end{pmatrix}
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
+\end{pmatrix}  = 
+\mathrm{vec}_r(z) ^{\top} (W \otimes \Lambda) \mathrm{vec}_r(z)
+$$
+Then, consider:
+$$
+ \sum_{i=1}^n \sum_{k=1}^n w_{ik} z^{\top}_i \Lambda z_k = 
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
+\end{pmatrix}^{\top}
+\begin{pmatrix}
+0 & w_{12} \Lambda & \ldots & w_{1n} \Lambda\\
+w_{21} \Lambda & 0 & \ldots & w_{2n} \Lambda\\
+\vdots & \vdots & \ddots & \vdots \\
+w_{n1} \Lambda & w_{n2} \Lambda & \ldots & 0
+\end{pmatrix}
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
+\end{pmatrix}  = 
+\mathrm{vec}_r(z) ^{\top} (D \otimes \Lambda) \mathrm{vec}_r(z)
+$$
+
+This proves the joint distribution of $z$ is \citep[][this latter case regarding the PCAR]{Mardia, Banerjee, Gelfand}:
+\begin{equation}
+\pi(z  | \Lambda) \propto -\frac{1}{2} \mathrm{vec}_r(z) ^{\top} R \otimes \Lambda \mathrm{vec}_r(z)
+\label{eq:rowwise}
+\end{equation}
+For practical reasons, if we want to fit such a model in \texttt{R-INLA}, it is convenient to rearrange $z$ columnwise through the $\mathrm{vec}_c$ operator \cite{INLAMSM}, such that $\mathrm{vec}(z) = (z_{11},\, \ldots, \,z_{n1},\, z_{12},\, \ldots,\, z_{n2},\, \ldots ,\, z_{1p}, \,\ldots, \,z_{np} )^{\top}$. To do so, we are actually using an orthogonal permutation matrix $\mathcal{P}$, such that 
+$$\mathrm{vec}_c(z) = \mathcal{P} \times \mathrm{vec}_r(z)$$
+Here we give a definition of $\mathcal{P}$. To do so, consider the $i$-th basis vector of $\mathbb{R}^p$, $e_i$, the $i$-th row of $I_n$, whose $i$-th element is $1$ and all other elements are zero, $\forall i \in [1,n]$. We then have:
+$$
+\mathcal{P}  := \begin{pmatrix} 
+I_n \otimes e_1^{\top} \\ I_n \otimes e_2^{\top} \\ \vdots \\ I_n \otimes e_p^{\top}
+\end{pmatrix}
+$$
+%
+Considering that$
+\mathrm{VAR}[\mathrm{vec}_c(z)] = \mathcal{P} \times \mathrm{VAR}[\mathrm{vec}_r(z)] \times \mathcal{P}^{\top}$, hence ${Prec}[\mathrm{vec}_c(z)] = \mathcal{P} \times {Prec}[\mathrm{vec}_r(z)] \times \mathcal{P}$, it holds that:
+$$
+\mathcal{P} \left( R \otimes \Lambda \right) \mathcal{P}^{\top}= \Lambda \otimes R
+$$
+Which can be proved with some algebra. Hence, in total equivalence with equation \ref{eq:rowwise}, we know that the joint distribution of a multivariate ICAR process is
+%
+\begin{equation}
+z|\Lambda \sim N \left( 0, (\Lambda \otimes R)^{+}\right)
+\end{equation}
+%
+The $^{+}$ superscript here denotes the Moore-Penrose pseudoinverse. This variance definition is implied by the rank deficiency of $R$, which equals the number of connected components in the underlying graph $\mathcal{G}$. $\pi(z | \Lambda)$ is therefore an improper distribution \citep[see e.g.][]{ICAR, Hodges2003}.
+
+\subsection{Precision scaling}
+As it can be seen in the previous equations, the ICAR precision is the product of two terms, a global parameter and a structure matrix. This hinders parameter interpretation at the global level; to start discussing it, we first consider the case of a connected graph. Denoting with $\mathbf{S} : = \mathbf{R}^{+}$, the marginal variance of a generic $i$-th realisation of the latent effect for the $h$-th variable is: 
+$$
+\mathrm{VAR}[z_{ih} \mid T] = \sigma_{h}^2 s_{ii}
+$$
+Where $\sigma_h^2$ is the marginal variance of the $h$-th variable, corresponding to the $h$-th diagonal element of of $\Lambda^{-1}$; in other words, $s_{ii}$ would be the marginal variance of $z_i$ if the relevant global precision was equal to 1.
+
+Hence, by definition, ICAR variance incorporates a factor determined by the neighbourhood structure. Taking this consideration to the global level, it implies that process variability is not described by the scale parameter (or by its reciprocal, the precision) alone, since a deterministic scale factor concurs as well. The intuitive solution to this issue is to scale the ICAR model, as shown by \cite{Sorbye}. Following their operational proposal, we take the geometric mean of the diagonal of $\mathbf{S}$ as scaling factor - or, in other words, the geometric mean of marginal variances if all global precision parameters (diagonal entries of $T$) were equal to 1, namely
+$$
+\bar{\sigma}^{2} = \prod_{i=1}^{n} s_{ii}^{1/n}
+$$
+this scaling factor is sometimes referred to as reference variance (or generalised variance, 
+%\textcolor{red}{(though this phrase generally denotes a determinant, hence taking into account also off-diagonal elements)}, 
+or typical marginal variance). We are thus able to separate the parameter $\Lambda$ from the effect on precision induced by the graph structure. To do so, the scaled model does not employ $\mathbf{R}$ as the structure matrix, but the scaled matrix $\mathbf{R}_{scaled} = \bar{\sigma}^2 \mathbf{R} $. On the other hand, the precision parameter becomes $ \displaystyle{\frac{1}{\bar{\sigma}^2}} T$, and this is what actually expresses the precision of the process independently of how the graph is structured. 
+
+
+When the graph has $G >1$ connected components, its Laplacian matrix is (a permutation of) the direct sum of the component Laplacians, as mentioned in the previous paragraph. The pseudo-inverses of these matrices may clearly have different typical marginal variances. In this case, it is necessary to scale the component-specific precisions separately, as shown in \cite{Freni}:
+$$
+\mathbf{R}_{scaled} = \mathcal{P} \left( \bar{\sigma}_1^2 \mathbf{R_1} \oplus \bar{\sigma}_2^2 \mathbf{R_2}
+\oplus ... \oplus \bar{\sigma}_G^2 \mathbf{R_G} \right) \mathcal{P^{\top}}
+$$
+Where $\mathcal{G}$ is an appropriate permutation matrix, $\mathbf{R_i}$ is the Laplacian of the $i$-th component of the graph, and $\bar{\sigma}_i^2$ is the relevant typical variance.
+
+
+In \texttt{R-INLA}, precision scaling is implemented automatically for intrinsic models, like the univariate ICAR, through the option \texttt{scale.model} within the \texttt{inla()} function call; otherwise the scaled structure matrix can be computed as a standalone object with \texttt{inla.scale.model()}.
+
+In the multivariate case, \texttt{INLAMSM} provides readily-defined models for which the user is required to provide the neighbourhood matrix $\mathbf{W}$ instead of the Laplacian matrix (as different models with the same neighbourhood matrix have different structure matrices). Hence, to scale a multivariate ICAR model we derive  $\mathbf{W}$ from the scaled Laplacian (function \texttt{ScaleQ()}  generalises \texttt{inla.scale.model()} when the graph is disconnected):
+
+%<<eval = FALSE>>= 
+%library(Matrix)
+%W.scaled <- Matrix(diag(diag(ScaleQ(W))) - 
+   % ScaleQ(W), sparse = TRUE)
+%@
+
+
+
+
+%\begin{equation}
+%\begin{eqnarray*}
+%\text{IMCAR:} \,
+%\mathbf{z} \sim N \left(
+% \mathbf{0},  T^{-1} \otimes (\mathbf{D} - \mathbf{W})^{-1} \right) \\
+%\text{PMCAR:} \,   \mathbf{z} \sim N \left(
+% \mathbf{0},  T^{-1} \otimes (\mathbf{D}- \alpha \mathbf{W})^{-1} \right) 
+%\end{eqnarray*}
+%\end{equation}
+
+%% -------- Confounding ---------------------------------- %%
 \section{Spatial confounding}
 
+%Spatial confounding can occur when a regression model includes a spatially structured latent random variable, say $z$, correlated with some explanatory variables, say $\mathbf{X}$. This issue implies a competition between $\mathbf{X}$ and $z$ in explaining $y$, introducing bias in the estimation of $\beta$. Several approaches have been developed in almost two decades of literature \citep{Urdangarin23, DupontArXiv}, starting from the intuitive solution of constraining spatial random effects to be linearly independent of covariates \citep{RHZ, Hodges}, which goes under the name of restricted spatial regression (RSR hereinafter). This is done by projecting random effects onto the subspace orthogonal to the design matrix $\mathbf{X_\mathrm{tot}} = (\xi\mathbf{C}, \mathbf{X})$, i.e. conditioning $z$ to the constraint $\mathbf{X_\mathrm{tot}}(\mathbf{X_\mathrm{tot}}^{\top}\mathbf{X_\mathrm{tot}})^{-1}\mathbf{X_\mathrm{tot}}^{\top} \, \xi z = \mathbf{0}$. The idea behind RSR is to rule out confounding bias when estimating the effects of covariates. RSR can be extended to the multilevel case \citep{Nobre}, where spatial effects are defined at a higher scale than observations, as we do in the present framework. Nevertheless, under RSR the posterior means of covariate effects tend to approximate those of the nonspatial model \citep{Khan}, which leads to biased estimates of $\beta$ by ignoring the presence of a latent spatial field and assuming independent errors \citep{DupontArXiv}.This suggests exploring further methodologies to deal with spatial confounding.
 
-Spatial confounding can occur when a regression model includes a spatially structured latent random variable, say $z$, correlated with some explanatory variables, say $\mathbf{X}$. This issue implies a competition between $\mathbf{X}$ and $z$ in explaining $y$, introducing bias in the estimation of $\beta$. Several approaches have been developed in almost two decades of literature \citep{Urdangarin23, DupontArXiv}, starting from the intuitive solution of constraining spatial random effects to be linearly independent of covariates \citep{RHZ, Hodges}, which goes under the name of restricted spatial regression (RSR hereinafter). This is done by projecting random effects onto the subspace orthogonal to the design matrix $\mathbf{X_\mathrm{tot}} = (\xi\mathbf{C}, \mathbf{X})$, i.e. conditioning $z$ to the constraint $\mathbf{X_\mathrm{tot}}(\mathbf{X_\mathrm{tot}}^{\top}\mathbf{X_\mathrm{tot}})^{-1}\mathbf{X_\mathrm{tot}}^{\top} \, \xi z = \mathbf{0}$. The idea behind RSR is to rule out confounding bias when estimating the effects of covariates. RSR can be extended to the multilevel case \citep{Nobre}, where spatial effects are defined at a higher scale than observations, as we do in the present framework. Nevertheless, under RSR the posterior means of covariate effects tend to approximate those of the nonspatial model \citep{Khan}, which leads to biased estimates of $\beta$ by ignoring the presence of a latent spatial field and assuming independent errors \citep{DupontArXiv}.This suggests exploring further methodologies to deal with spatial confounding.
+%The Spatial+ approach \citep{Dupont} involves the adjustment of covariates, instead of constraining spatial effects, by decomposing the former as the sum of a spatial and a nonspatial component. Here a variant of the Spatial+ method, developed by \cite{Urdangarin24}, is applied while working in a multilevel framework. This innovative methodology consists in extracting the spatial component of covariates without requiring an explicit spatial model on $\mathbf{X}$. Following \cite{Lamouroux}, we label this methodology as Spatial+ 2.0. 
 
-The Spatial+ approach \citep{Dupont} involves the adjustment of covariates, instead of constraining spatial effects, by decomposing the former as the sum of a spatial and a nonspatial component. Here a variant of the Spatial+ method, developed by \cite{Urdangarin24}, is applied while working in a multilevel framework. This innovative methodology consists in extracting the spatial component of covariates without requiring an explicit spatial model on $\mathbf{X}$. Following \cite{Lamouroux}, we label this methodology as Spatial+ 2.0. 
+
+
+When a spatially structured latent random variable is included in a regression model, it may happen to be correlated with some covariates. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in almost two decades of literature (\citep{Urdangarin23}, \citep{DupontArXiv}), starting from the intuitive solution of constraining random effects to be linearly independent on covariates (\citep{RHZ}, \cite{Hodges}), which goes under the name of restricted spatial regression (RSR); this is done by projecting random effects to the orthogonal subspace the covariates matrix, i.e. setting $X(X^{\top}X)^{-1}X^{\top} \xi z = 0$.
+
+To illustrate the issue, we recall the hierarchical regression model in Section \ref{par:LGM} and suppose $y$ is Gaussian. The linear predictor includes a Gaussian random effect of size $n$ with prior mean $0$ and non-negative defined structure matrix $Q$.
+%
+\begin{equation}
+\begin{aligned}
+\quad y = X \beta + \xi z + \varepsilon \\
+z \sim N (0, \tau^{-1} Q^{-1}) \\
+\beta \sim N(0, M)\\
+\varepsilon \sim N(0, \sigma_{\varepsilon}^2 I)= N(0, \tau_{\varepsilon}^{-1}I_n)
+\end{aligned}
+\end{equation}
+%
+The covariate matrix $X$ has size $n \times p$; $\xi$ is the model matrix for the random effects (e.g. in many applications it is the $n \times n$ identity matrix).
+
+This model can be parametrised in a more general way \citep[see e.g.][]{DIC}:
+%
+\begin{equation}
+\begin{aligned}
+y \sim N(A_1 \vartheta_1,\tau_{\varepsilon}^{-1} I_n ) \\
+\vartheta_1 \sim N(A_2  \vartheta_2,\tau_{\varepsilon}^{-1} C)
+\end{aligned}
+\end{equation}
+%
+Where  $A_1 = (X \, \xi)$, and $\vartheta_1 = (\beta^{\top} z^{\top})^{\top}$ is the vector of parameters. The term $A_2 \vartheta_2$ has by construction both mean and variance zero.\\
+Here we define
+$$ 
+C^{-1} = \tfrac{\tau}{\tau_{\varepsilon}} \begin{pmatrix}
+ \frac{1}{\tau M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & Q
+\end{pmatrix}
+$$
+
+Since the error term $\varepsilon$ and the random effects $z$ have different precision parameters, the matrix $C^{-1}$ cannot be considered known \textcolor{blue}{Note: This notation is actually an artifact to proceed with further explanation}. To see this, consider the prior precision of the random effects defined as $\tau Q$; $\tau_{\varepsilon} C^{-1}$ must thus be structured as $\begin{pmatrix} \frac{1}{M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & \tau Q \end{pmatrix}$ where $M$ is the known variance parameter of $\beta$, but $\tau$ is unknown and isolating $\tau$ to express $\tau_{\varepsilon} C^{-1} = \tau \begin{pmatrix}
+ \frac{1}{\tau M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & Q
+\end{pmatrix}$ would leave it dependent on an unknown parameter. \\
+
+
+Now, it is possible to show \citep{LindleySmith} that the posterior mean of $\vartheta_1$, conditioned on the model hyperparameters, is
+%
+\begin{equation}
+E[\vartheta_1 | y, \tau, \tau_{\varepsilon}] =  \left( A_{1}^{\top}A_{1} + C^{-1} \right)^{-1}A_{1}^{\top}y
+\end{equation}
+%
+For brevity, we refer to the matrix $A_1 \left( A_{1}^{\top}A_{1} + C^{-1} \right)^{-1}A_{1}$ as the hat matrix or $H$. Based on how we defined $A_1$ and $C$, notice that
+\begin{align*}
+\left( A_{1}^{\top}A_{1} + C^{-1} \right)^{-1} = 
+\begin{pmatrix}
+ X^{\top}X + r_{\varepsilon} I_p & X^{\top} \xi \\
+ \xi ^{\top} X & \xi^{\top} \xi + \bar{r} Q
+\end{pmatrix}^{-1} = \\ =
+\begin{pmatrix}
+G^{-1} + G^{-1} X^{\top} \xi(\xi ^{\top} \xi + \bar{r} Q - \xi ^{\top} X G^{-1} X^{\top} \xi)^{-1} \xi ^{\top} XG^{-1} & 
+-G^{-1} X^{\top} \xi(\xi ^{\top} \xi + \bar{r} Q - \xi ^{\top} X G^{-1} X^{\top} \xi)^{-1}\\
+-  (\xi ^{\top} \xi + \bar{r} Q - \xi ^{\top} X G^{-1} X^{\top} \xi)^{-1} \xi^{\top} X G^{-1} & 
+ (\xi ^{\top} \xi + \bar{r} Q - \xi ^{\top} X G^{-1} X^{\top} \xi)^{-1}
+\end{pmatrix}
+\end{align*}
+With $\bar{r} := \dfrac{\tau}{\tau_{\varepsilon}}$ and $G := (X^{\top}X + r_{\varepsilon}I_p)$, where $r_{\varepsilon} := \dfrac{1}{\tau_{\varepsilon}M} = \dfrac{\sigma_{\varepsilon}^{2}}{M}$.
+It can thus be shown that:
+\begin{equation}
+\begin{aligned}
+E[\beta | y, \tau_{\varepsilon}, \bar{r}] = G^{-1} \lbrace X^{\top} 
++ X^{\top} \xi \left[ \xi^{\top} \xi + \bar{r} Q - \xi ^{\top} X G^{-1} X^{\top} \xi \right]^{-1} \xi^{\top} X G^{-1} X^{\top} +\\
+- X^{\top} \xi \left[ \xi^{\top} \xi + \bar{r} Q - \xi ^{\top} X G^{-1} X^{\top} \xi \right]^{-1} \xi^{\top}
+\rbrace \, y
+\end{aligned}
+\end{equation}
+And
+\begin{equation}
+E[z | y, \tau_{\varepsilon}, \bar{r}] = \left[ \xi^{\top} \xi + \bar{r} Q - \xi ^{\top} X G^{-1} X^{\top} \xi \right]^{-1}
+(\xi^{\top} - \xi^{\top} X G^{-1} X^{\top}) \, y
+\end{equation}
+
+Equivalently, if for brevity we define $\Gamma = \xi ^{\top} \xi + \bar{r} Q - \xi^{\top} X G^{-1} X^{\top} \xi$ this means that 
+\begin{equation}
+H_{\tau_{\varepsilon}, \bar{r}} = XG^{-1}X^{\top} + \xi \Gamma^{-1} \xi^{\top} -
+XG^{-1}X^{\top} \xi \Gamma^{-1} \xi^{\top} -  \xi \Gamma^{-1} \xi^{\top}XG^{-1}X^{\top}+XG^{-1}X^{\top} \xi \Gamma^{-1} \xi^{\top} XG^{-1}X^{\top}
+\end{equation}
+
+ If a flat prior is defined on $\beta$, we have $M \longrightarrow \infty$, with $G \longrightarrow X^{\top}X$. In this case, it is possible to show that the limits for equations (4) and (5) are the results stated by \citep{RHZ} at page 1199; in that case, $\xi = I_n$. Moreover, the hat matrix does not depend on $\tau_{\varepsilon}$ but only on $\bar{r}$.
+
+
+We now consider the projection matrix of $y$ onto its least squares fitted values, and its orthongonal complement, respectively:
+$$
+P := X(X^{\top}X)^{-1}X^{\top} \quad \quad \text{and} \quad \quad P_{\bot} := I - X(X^{\top}X)X^{\top} = I - P
+$$
+
+The crucial step of all the forthcoming analysis is the eigendecomposition of $P_{\bot}$. Firstly, consider that its first $n-p$ eigenvalues are ones, and the latter $p$ are zeroes.
+
+To see that the eigenvalues of $P_{\bot}$ are either zeros or ones, first consider that $P_{\bot} = P_{\bot} P_{\bot}$. Then for a generic eigenvalue-eigenvector pair $\lambda, v$ it holds that $P_{\bot} v = \lambda v$. With no loss of generality it is also true that $P_{\bot} P_{\bot} v = \lambda P_{\bot} v$, which equals to the identity $P_{\bot} v = \lambda^2 $, hence $\lambda = \lambda^2$. The number of nonzero eigenvalues is the rank of $P_{\bot}$, which is in turn $n - rk(P)$, hence $n-p$. 
+
+We label the eigenvector matrix of $P_{\bot}$ as $(L K)$; $L$ is the matrix whose columns are the first $n-p$ nonzero eigenvectors, while $K$ belongs to the null space of $P_{\bot}$. Thus the decomposition of $P_{\bot}$ is:
+
+$$
+P_{\bot} =  \begin{pmatrix}L & K \end{pmatrix} 
+\begin{pmatrix} I_{n-p} & 0_{(n-p) \times p } \\ 0_{p \times (n-p)} & 0_{p \times p} \end{pmatrix}
+ \begin{pmatrix} L^{\top} \\ K^{\top} \end{pmatrix} = L L^{\top}
+$$
+
+We further notice that:
+$$
+\begin{pmatrix} L^{\top} \\ K^{\top}\end{pmatrix} (L \, K) = (L \, K) \begin{pmatrix} L^{\top} \\ K^{\top}\end{pmatrix} = I_n \, , \quad KK^{\top} = P, \, \quad K^{\top}L = 0 
+$$
+
+Without loss of generality, it holds that
+$$
+p(z | \tau) \propto exp \lbrace -\dfrac{\tau}{2} z^{\top} Q z \rbrace = 
+exp \lbrace -\dfrac{\tau}{2} z^{\top} (L \, K) \begin{pmatrix} L^{\top} \\ K^{\top}\end{pmatrix} 
+Q (L \, K) \begin{pmatrix} L^{\top} \\ K^{\top}\end{pmatrix} z \rbrace
+$$
+
+We now define $\zeta = \begin{pmatrix} L^{\top} \\ K^{\top} \end{pmatrix} z$ such that $z = (L \, K) \zeta$ and decompose the newly defined random effect $\zeta$ as
+$$
+\zeta = \begin{pmatrix} \zeta_1 \\ \zeta_0 \end{pmatrix} \quad \text{where} \quad  \zeta_1 := L^{\top}z \quad \text{and} \quad \zeta_0 := K^{\top}z
+$$ 
+The distribution of the new random effect is then:
+
+$$
+\zeta = \begin{pmatrix} \zeta_1 \\ \zeta_0\end{pmatrix} \sim N \left(\begin{pmatrix} 0 \\ 0 \end{pmatrix}, \, \tau^{-1} \begin{pmatrix} L^{\top}QL & L^{\top}QK \\ K^{\top}QL & K^{\top}QK \end{pmatrix}^{-1} \right)
+$$
+
+Spatial confounding occurs when the random effect $z$ displays multicollinearity with the covariates $X$; when $p = 1$ this can be checked by comparing $X$ and the last eigenvector of $Q$ outside its null space. 
+
+Restricted regression means to project $z$ onto the subspace orthogonal to $X$, which implies to fit a different model:
+\begin{equation} \label{eq:RSR}
+\text{RSR}: \quad y = X \beta + P_{\bot}z + \varepsilon = X \beta + L \zeta + \varepsilon
+\end{equation}
+The rationale behind deconfounding $z$ is constraining it to be totally independent of $X$, which is the same as imposing that $z$ shall lie on the null space of $P$, hence the constraint is $$ \zeta_0 = K^{\top}z = 0$$. Under the unrestricted model, it holds that $prec[\zeta_1 | \tau] = (L^{\top}(Q)^{-1}L)^{-1}$; here, instead, we have $prec[\zeta_1 | \tau, K^{\top}z = 0] = L^{\top}QL$, as in \citep[eq. 16-17 at p. 1201][]{RHZ}. To see this, recall:
+$$
+ln p(\zeta | \tau; K^{\top}z = 0) \propto 
+ -\dfrac{\tau}{2}  (\zeta_1^{\top} \, 0_{p}^{\top}) \begin{pmatrix} L^{\top} \\ K^{\top}\end{pmatrix} 
+Q (L \, K)  \begin{pmatrix} \zeta_1 \\ 0_{p} \end{pmatrix} = -\dfrac{\tau}{2} \zeta_1^{\top} \, L^{\top}QL \, \zeta_1
+$$
+
+
+With respect to equation \ref{eq:RSR}, if we consider $\xi = L$ and $\vartheta_1^{\top} = (\beta^{\top}, (L^{\top}z)^{\top})$, it is straightforward to see that $\mathbb{E}[\beta|y, \tau_{\varepsilon}, \bar{r}] = G^{-1} X^{\top}y$; if $p(\beta)$ is flat, its posterior expectation reduces to $X^{\top}(X^{\top}X)^{-1}y$, which is the ordinary least squares estimator.
+
+As a side effect of deconfounding $z$, it may be worthy noticing that the the size of the new precision matrix is $(n-p) \times (n-p)$ and its rank is $ \leq \mathrm{min} \lbrace rk(L), rk(Q) \rbrace = \mathrm{min} \lbrace (n-p), rk(Q) \rbrace$. 
+
+Hence, if the rank deficiency of $Q$ is less than $p$, the new random effect has a proper distribution even if $z$ is an ICAR process. If the underlying graph is disconnected and $p(z)$ can be factorised in a factor for each connected component (CC) then the rank deficiency of $Q$ is equal to the number of CCs, but it is necessary to impose a sum to zero constraint for each CC, hence the same number of intercepts would be required; thus, also in this case $n-p$ is smaller than $rk(Q)$ and $L^{\top}QL$ is still proper.
+However, there are still some possible situations in which this inconvenience can arise, e.g. in multilevel models; see further.
+
+
+%We consider that if $\beta$ is given a Gaussian prior with zero mean and known variance $M = \dfrac{\sigma_{\varepsilon}^{2}}{r_{\varepsilon}} $, the posterior distribution of $\beta$, conditioned on the random effects and the hyperparameters, takes the form
+%\begin{align*}
+%p(\beta| y, \tau_{\varepsilon}, z, \tau) = \frac{p(\beta) p (y|\beta, z, \tau_{\varepsilon}, \tau)}{p(y| \tau_{\varepsilon}, \tau)} \propto \\
+%\propto exp\lbrace-\tau_{\varepsilon} \left[\beta^{\top} (X^{\top}X + r_{\varepsilon}I_p) \beta - 2 (y - z)^{\top} X %\beta + (y-z)^{\top}(y-z)  \right] \rbrace
+%\end{align*}
+%\textcolor{blue}{Which in turn is proportional to (terms not depending on $\beta$ are considered constants)}
+%\begin{align*}
+%exp\lbrace-\tau_{\varepsilon} \left[\beta^{\top} (X^{\top}X + r_{\varepsilon}I_p)  \beta 
+%- 2 (y - z)^{\top} X (X^{\top}X + r_{\varepsilon}I_p) rI_p)(X^{\top}X + r_{\varepsilon}I_p)^{-1} \beta  \right] + \\
+%- \tau_{\varepsilon} \left[+(y-z)^{\top} X(X^{\top}X + r_{\varepsilon} I_p)^{-1} X^{\top}(y-z)  \right] 
+%\end{align*}
+%This implies that $E[\beta | y, z, \tau, \tau_{\varepsilon}] = (X^{\top}X + r_{\varepsilon}I_p)^{-1} X^{\top}(y-z)$. The limit case for $r \longrightarrow \infty$ being $E[\beta | y, z, \tau, \tau_{\varepsilon}] = \beta_{OLS} - (X^{\top}X)^{-1} X^{\top}z$, which derives indeed from the choice of a flat prior on $\beta$.
+
+%In the following, for brevity we will refer to the set of hyperparameters as $\psi = \lbrace \tau, \tau_{\varepsilon}, r \rbrace$.\\
+Referring to the flat $\beta$ case, consider that under the restricted model:
+
+$$
+\mathrm{E}[\beta_{RSR} | y, z, \tau_{\varepsilon}, \bar{r}] = \beta_{OLS} - (X^{\top}X)^{-1} X^{\top}(I - X(X^{\top}X)^{-1}X^{\top})z = \beta_{OLS}
+$$
+Where $\beta_{RSR}$ denotes the vector of covariate effects under restricted spatial regression and $\beta_{OLS}$ are covariate effects estimated via the ordinary least squares.
+This implies that the fixed effects are estimated independently of any random effect, and their expectation equals that of the nonspatial model.
+
+
+Here we keep assuming a flat prior on $\beta$; referring to equation (6), we see that under the  unrestricted model, with $\xi = I_n$, $\Gamma = \bar{r} Q + P_{\bot}$
+\begin{align*}
+H_{\tau_{\varepsilon}, \bar{r}} = P + (\bar{r} Q + P_{\bot})^{-1} - P (\bar{r} Q + P_{\bot})^{-1} - (\bar{r} Q + P_{\bot})^{-1} P + P (\bar{r} Q + P_{\bot})^{-1}P = \\
+= P + P_{\bot} (\bar{r} Q + P_{\bot})^{-1} P_{\bot}
+\end{align*}
+
+Under the restricted model, i.e. using the random effect $\zeta = L^{\top}z \sim N(0, L^{\top}QL)$ we have $\Gamma = \bar{r} L^{\top}QL + I_{n-p}$, hence 
+$$
+H_{\tau_{\varepsilon}, \bar{r}} 
+= P + L (\bar{r} L^{\top}QL + I_{n-p})^{-1} L^{\top}
+$$
+ 
+Roughly speaking, the idea behind restricted regression is to rule out the bias in fixed effects estimation implied by spatial confounding. RSR can be extended to the multilevel case \cite{Nobre}, in which e.g. random effects are defined at a higher scale than observations, as in Chapter \ref{chapter:theory}.
+
+Now, as it has been seen, under RSR the posterior means of covariate effects will approximate those of a nonspatial model. \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta |y]$ if confounding occurs (intuitively, the expectation would be approximately the same of a model which ignores the existence of the spatial component). In terms of interpretation, this would mean that adding a spatial effect to the model would not significantly alter the estimated regression coefficients.
+
+
+A different approach to deal with spatial confounding is based on adjusting the covariates rather than constraining random effects \cite{Dupont}, by representing the former as the sum of a spatial and a nonspatial component; it is known in the literature as Spatial+. We employ a multilevel version of the variant of Spatial+ developed by Urdangarin et al., \cite{Urdangarin24}, which has the advantage of not requiring an explicit spatial model on $X$. In our multilevel framework, the value of the $k$-th covariate $X_{\cdot; k}$ observed in municipality $j$ belonging to macro-area $i$ is firstly decomposed as
+$$
+x_{ij;k} = \bar{x}_{i;k} + \Delta x_{ij;k}
+$$
+Being $\bar{x}_{i;k}$ the average value of the covariate observed in the $i$-th macro-area, i.e. at the same level of aggregation of the spatial effect, and is the $(i, k)$-th element of the matrix $\bar{X}:=(\xi^{\top}\xi)^{-1}\xi^{\top}X$; $\Delta x_{ij;k}$ can be considered as the municipality-level noise. \\In matrix form, this decomposition would be: $X = \xi \bar{X} + \Delta X$. Now, let us consider the eigendecomposition of the Laplacian $\mathbf{R}$:
+$$
+\mathbf{R} := VLV^{\top}
+$$ where $V$ is the matrix of eigenvalues and $L$ is the diagonal matrix of eigenvectors. We know that $L$ has $n-G$ non-null entries, corresponding to the first $n-G$ columns of $V$, while the last $G$ columns of $E$ \textcolor{red}{are} the null space of $\mathbf{D} - \mathbf{W}$.  
+
+With no lack of generality, let us consider
+$$
+\bar{X} := Vb
+$$ where $b$ is a appropriately chosen $n \times p$ matrix. Once we express $\bar{X}$ as a linear combination of the eigenvectors of the structure matrix of the spatial random effect, we find that the spatial component of $\bar{X}$ is determined by the last columns of $V$ among those which do not correspond to null eigenvalues. We( can decompose $\bar{X}$ in
+$$
+\bar{X} = \bar{X}^{(NS)} + \bar{X}^{(S)} + \bar{X}^{(0)}
+$$
+Where $\bar{X}^{(NS)}$ is the nonspatial component given by the linear combination of the first $n-G-t$ eigenvectors \textcolor{red}{Come posso rappresentare un set di indici in forma intervallare?} (i.e. $\bar{X}^{(NS)} = (V)_{\cdot[1, n-G-t]}(b)_{[1, n-G-t]}$ ) and represents the nonspatial component of the covariates matrix, $\bar{X}^{(s)}$ is the linear combination of the eigenvectors associated with the last $t$ nonzero eigenvalues and represents the spatial component of the covariates matrix, and $\bar{X}^{(0)}$ is built with the $G$ eigenvectors in the null space of the structure matrix and is constant within connected components. To remove spatial confounding, in the regression model we only take $\xi \left(\bar{X}^{(NS)} + \bar{X}^{(0)}\right) + \Delta X$ as covariates matrix. By doing so, covariates should not be spatially structured anymore. In \cite{Urdangarin24} the term we label as $\bar{X}^{(0)}$ was actually removed; since in the cases covered therein $G$ was equal to one, the eigenvector associated with the null eigenvalue was proportional to a vector of ones and its inclusion in the deconfounded covariates matrix would only scale it by an additive constant.
 
 
 
@@ -553,9 +936,7 @@ Thus, allocating adequate resources is a sensitive challenge for policymakers, a
 Motivated by the previous considerations, we believe that a structured set of multidimensional data about the Italian school system gathered from several institutional sources, along with georeferenced information, would be a valuable tool to detect the main areas of vulnerability and to plan appropriate development policies across the country. To this aim, we have developed \texttt{SchoolDataIT}, a software written in the \texttt{R} programming language \citep{R} which retrieves and harmonizes some relevant institutional databases at the territorial level of either municipalities (LAU hereinafter) and provinces \citep[NUTS-3 henceforth, ][]{NUTS2024}. 
 The \texttt{SchoolDataIT} package is intended as a contribution to a broader repository, namely the AMELIA platform (\url{https://grins.it/progetto/piattaforma-amelia}), an open-data platform designed to produce and harmonize high-quality statistical data and analyses, managed by the \textit{Growing Resilient, Inclusive, and Sustainable} (GRINS) Foundation, a multidisciplinary initiative funded by the NextGenerationEU (NGEU) Recovery Plan \citep{CrescenziEtAl2021, DeLaPorteJensen2021}. An example of package usage to build some simple data sets to be uploaded into AMELIA can be found in \href{https://github.com/lcef97/AMELIA_datasets}{this GitHub repository}.
 
-
 Data providers are the Italian Ministry of Education (formerly MIUR, Ministry of Education, University and Research) \citep{MIUR}, the Institute for the Evaluation of the Education System (hereinafter Invalsi) \citep{Invalsi_IS}, the Italian National Institute of Statistics \citep[ISTAT,][]{InnerAreas, Situas, Shapefiles}, and the in-house company Infratel SPA on behalf of the Italian Ministry of Enterprises and Made in Italy \citep[MIMIT,][]{BB}, which is responsible of implementing and managing the ultra-broad band strategic plan. Since all of the data we take as input are open and publicly accessible, we retrieve them via web scraping, allowing for real-time updated inputs while requiring no storage space in the local machine of the user.
-
 
 The \texttt{SchoolDataIT} software is currently available under version 0.2.4, released on March 28th 2025 on the Comprehensive R Archive Network \href{https://cran.r-project.org/web/packages/SchoolDataIT/index.html}{(CRAN)}. To ensure constant package maintenance, experimental version 0.2.5 is hosted on \href{https://github.com/lcef97/SchoolDataIT}{GitHub}.
 
@@ -710,7 +1091,7 @@ $$
 $$
 For interpretational reasons, the estimator of $b_j$ is scaled to a global mean of 200 points and a global between-students standard deviation of 40 points. The advantage of this model is isolating the ability of students from the intrinsic difficulty of items. For primary schools only, the percentage of sufficient tests is also reported. Scores are already corrected from the effect of cheating, which would otherwise hinder their meaning, other than shrinking their variance. The functions to download and filter the Invalsi database per school year, grade and subject are respectively \texttt{\detokenize{Get_Invalsi_IS}} and \texttt{\detokenize{Util_Invalsi_filter}}. No data quality checks are deemed necessary as this dataset is already carefully processed by the Invalsi Institute.
 
-
+A case-study with more details on the Invalsi census survey is provided in Chapter \ref{Chapter:Invalsi}.
 
 %As an example, in Figure \ref{fig:InvalsiProv} we plot the Invalsi scores in Italian and English reading for the last year of high school at the province level in 2023/24. The North-South divide is obvious. A particularly vulnerable profile can be noticed across the provinces of Naples and Salerno (Campania) and most of the provinces belonging to Calabria, Sicily, and Sardinia (with the partial exception of the province of Cagliari). Highest scores in both subjects are observed in the provinces of Lecco, Como and Bergamo in Lombardy other than Trieste and Bolzano with respect to English scores.
 
@@ -1173,13 +1554,13 @@ Region & High & Middle & Primary & High & Middle & Primary \\
  
  Indeed, territorial gaps in Invalsi scores are immediately evident and have been noticed to expand throughout the schooling process \citep{Invalsi2020}, the gap in high school scores being a matter of particular concern.  Considering analyses carried out at the individual (student) level for both PISA and Invalsi scores, a significant effect is often associated with North - Centre - South dummy variables  \citep[as in e.g. ][]{Giancola, Bratti, Agasisti, UniromaWP1} unless more explanatory variables regarding the labour market and socio-demographic dynamics are taken into account in relatively complex econometric models \citep{Bratti}. Additionally, \cite{Agasisti} partition the data set of Invalsi scores (last year of middle school) among Northern, Central and Southern Italy, running three different regression models, in which the intercepts range almost $11$ points apart in absence of explanatory variables and as far as almost $14$ points apart when some explanatory variables are introduced (at the time, Invalsi scores were expressed in a $[0-100]$ points range). A slightly different approach employs regression models with region-specific intercepts, allowing a higher amount of geographical information \citep{Matteucci} (in this case working with PISA scores); estimated intercepts display a clear territorial pattern, with all Northern regions exceeding the nationwide average and all Southern regions except for Apulia and Basilicata below it.
  
- In this chapter, we propose a spatial modelling framework for the average Invalsi scores for Italian municipalities. We focus on the second year of high school ($10$-th school grade), being the last year of the compulsory education cycle for which Invalsi tests are designed (the last year of high school is beyond the compulsory education cycle). The subjects for which the test is designed for the school grade in scope are Italian and Mathematics.
+ In this chapter, we propose a spatial modelling framework for the average Invalsi scores for Italian municipalities. We focus on the second year of high school ($10$-th school grade), being it the last year of the compulsory education cycle for which Invalsi tests are designed (the last year of high school is beyond the compulsory education cycle). The subjects for which the test is designed for the school grade in scope are Italian and Mathematics.
 
-We explore the association of Invalsi scores with the infrastructural state of municipalities in terms of their centrality degree expressed with the inner areas taxonomy, elaborated by the Italian National Institute of Statistics \citep[ISTAT hereinafter, ][]{InnerAreas}, availability of ultra-broadband internet connection in schools, and school accessibility using urban public transport. Geographical information is taken into account introducing a spatially structured latent effect in the regression model, defined at a higher aggregation level than municipalities, either provinces or catchment areas of infrastructural poles. Based on the prior belief that, besides the effect of explanatory variables, Invalsi scores tend to be closer in value across nearby areas than among ones far apart \citep{CAR}, we assume an Intrinsic Conditional Autoregressive structure \citep[hereinafter ICAR, ][]{BYM}. Since the scores in two subjects are available, a bivariate ICAR \citep{Mardia} spatial effect is modelled.
+We explore the association of Invalsi scores with the infrastructural state of municipalities in terms of their centrality degree expressed with the inner areas taxonomy \citep{InnerAreas}, availability of ultra-broadband internet connection in schools, and school accessibility using urban public transport. Geographical information is taken into account introducing a spatially structured latent effect in the regression model, defined at a higher aggregation level than municipalities, either provinces or catchment areas of infrastructural poles. Based on the prior belief that, besides the effect of explanatory variables, Invalsi scores tend to be closer in value across nearby areas than among ones far apart \citep{CAR}, we assume an Intrinsic Conditional Autoregressive structure \citep[hereinafter ICAR, ][]{BYM}. Since the scores in two subjects are available, a bivariate ICAR \citep{Mardia} spatial effect is modelled.
 
 To ensure that covariates and spatial effects do not compete in explaining the target variable, we employ the variant of the Spatial+ approach proposed by \citep{Urdangarin24} allowing to overcome the need to define a spatial model on covariates by leveraging on the spectral properties of the neighbouring structure of the data.
 
-The analysis proposed here follows a Bayesian paradigm and the main object of inference are therefore the marginal posterior distributions of both covariates and latent spatial effects. Due to the complexity of deriving the posterior marginals of interest, we resort to INLA \citep[INLA hereinafter, ][]{INLA, VBINLA}, a computational method implemented in a dedicated \texttt{R} environment \citep[\texttt{R-INLA},][]{INLAbook, Wang}, available at (\url{https://www.r-inla.org/home}). Since its introduction in 2009, one of the main fields of application of INLA has been spatial statistics indeed \citep{INLArev, Blangiardo}. In particular, multivariate spatial modelling of areal data is implemented in the \texttt{INLAMSM} package \citep{INLAMSM, INLAMSM2}, available \href{https://github.com/becarioprecario/INLAMSM}{on GitHub}, which we employ here for model fitting.
+The analysis proposed here follows a Bayesian paradigm and the main object of inference are therefore the marginal posterior distributions of both covariates and latent spatial effects. Due to the complexity of deriving the posterior marginals of interest, we resort to INLA {INLA, VBINLA}, see also Chapter \ref{chapter:INLA}. In particular, multivariate spatial modelling of areal data is implemented in the \texttt{INLAMSM} package \citep{INLAMSM, INLAMSM2}, available \href{https://github.com/becarioprecario/INLAMSM}{on GitHub}.
  
 The remainder of this chapter is structured as follows. In Section \ref{section:data} the data employed and the spatial structure referred to are described. In Section \ref{section:Model_outline} we outline the regression model used and the method followed to deal with spatial confounding. In Section \ref{section:Method} we summarise the application of the INLA and compare some possible model formulations. In Section \ref{section:results} we discuss the results of the models implemented.
 
@@ -1188,12 +1569,12 @@ The remainder of this chapter is structured as follows. In Section \ref{section:
 %% --------- Data --------------------------------------- &&
 \section{Student outcome data and infrastructural endowement} \label{section:Invalsi:data}
 In this Section, the data on high school student outcomes together with some auxiliary data on the state of the infrastructure of Italian municipalities are described. 
-Notice that Italian municipalities for which all relevant data are available amount to $873$ over $7904$ for the school year 2022/2023, the last school year for which all data are available on October 29, 2024. Data are obtained through the \texttt{SchoolDataIT} package \cite{SchoolDataIT}. 
+Notice that Italian municipalities for which all relevant data are available amount to $873$ over $7904$ for the school year 2022/2023, the last school year for which all data are available on October 29, 2024. Data are obtained through the \texttt{SchoolDataIT} package, described in Chapter \ref{chapter:SchoolDataIT}. 
  
 \subsection{Invalsi scores}\label{Par:Invalsi} 
 
+Municipality-level Invalsi scores in Mathematics and Italian at the 2nd year of high school in the school year 2022/2023 are displayed in Figure \ref{fig:Invalsi}. The sparse structure of data is mostly due to the concentration of high schools across a limited number of municipalities, and in smaller part to the selection criteria of the Invalsi institute. Nevertheless, the N-S territorial pattern appears clear, especially for Mathematics scores.
 
-Invalsi scores in Mathematics and Italian at the 2nd year of high school in the school year 2022/2023 are displayed in Figure \ref{fig:Invalsi}. This and all other figures are made with \texttt{ggplot2}.
 \begin{figure}
   \centering
   \includegraphics[width = 0.9\textwidth]{Invalsi/Invalsi_10_mun.pdf} 
@@ -1263,7 +1644,7 @@ Urban transport & 0.0662 & 1.1072  \\
 \label{tab:MoranProv}
 \end{table}
 
-%When averaging covariates across infrastructural catchment areas, the values of $I_{std}$ are generally higher, and we find evidence for spatial autocorrelation also for the proportion of schools served by urban public transport.
+ When averaging covariates across infrastructural catchment areas, the values of $I_{std}$ are generally higher, and we find evidence for spatial autocorrelation also for the proportion of schools served by urban public transport.
 
 %\begin{figure}
 %  \centering
@@ -1279,19 +1660,19 @@ Urban transport & 0.0662 & 1.1072  \\
 %\end{figure}
 
 
-%\begin{table}[ht]
-%\centering
-%\begin{tabular}{lrr}
-%Variable & $I$ & $I_{std}$             \\ \hline
-%Central & 0.7100 & 15.4990             \\
-%Peripheral & 0.2085  & 4.6337         \\ %1.79$\cdot 10^{-6}$
-%Broadband avail. & 0.3089  & 6.8224  \\
-%Urban transport &  0.3051 & 6.7238    \\
-%\hline
-%\end{tabular}
-%\caption{Moran's $I$ values for infrastructural catchment area-level averages of auxiliary variables}
-%\label{tab:MoranPole}
-%\end{table}
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrr}
+Variable & $I$ & $I_{std}$             \\ \hline
+Central & 0.7100 & 15.4990             \\
+Peripheral & 0.2085  & 4.6337         \\ %1.79$\cdot 10^{-6}$
+Broadband avail. & 0.3089  & 6.8224  \\
+Urban transport &  0.3051 & 6.7238    \\
+\hline
+\end{tabular}
+\caption{Moran's $I$ values for infrastructural catchment area-level averages of auxiliary variables}
+\label{tab:MoranPole}
+\end{table}
 
 %% --------- Autoregressive model ----------------------- %%
 \section{A bivariate spatial model for student scores}\label{section:Model_outline}
