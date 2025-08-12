@@ -32,24 +32,26 @@
 \chapter{Elements of areal data modelling} \label{chapter:theory}
 %% -------- Introduction --------------------------------- %%
 \section{Introduction}
-In this chapter, we provide an overview on the statistical methodology followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox in areal data modelling, with specific application in chapter \ref{Chapter:Invalsi}.
-We start by introducing perhaps the simplest and most intuitive model in the class of multivariate autoregressives, namely the Intrinsic Conditional Autoregressive \citep{Mardia}, which generalises to the multivariate case the seminal paper of \cite{CAR}.
+In this chapter, we provide an overview on the statistical methodology followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox in areal data modelling, with specific application in chapter \ref{Chapter:Invalsi}. Since the application regards multivariate data, here we describe multivariate models directly, although the univariate case is perhaps more frequent in applications literature. However, once the multivariate model is defined, the univariate one follows straightforwardly. We start by introducing the simplest and most intuitive autoregressive model, namely the Intrinsic Conditional Autoregressive \citep{Mardia}, which generalises to the multivariate case the seminal paper of \cite{CAR}. We then introduce some simple extensions of the ICAR which may be needful to handle random noise. Lastly, we introduce a typical and frequently discussed issue not only in areal data modelling but in spatial statistic literature as a whole, i.e. spatial confounding. 
 
 %% -------- ICAR ----------------------------------------- %%
 \section{The intrinsic CAR model} \label{section:icar}
 
-Consider a $p$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{E}$ is the set of edges and $\mathcal{S}$ the set of nodes (sites) $\mathcal{S} \subset \mathbb{N}^n$. The graph is described by:
+Consider a $p$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{E}$ is the set of edges, such that a generic element $\epsilon_{ij}$ denotes the edge between sites $s_i$ and $s_j$;  $\mathcal{S} := \lbrace s_1, s_2, \dots s_n \rbrace$ the set of nodes (sites), and $\partial_i := \lbrace s_j :\epsilon_{ij} \in \mathcal{E}\rbrace$ is the set of neighbours of site $i$.  The graph is described by:
 \begin{itemize}
-\item The binary neighbourhood matrix $\mathbf{W}$, with $w_{ij} = 1 \Longleftrightarrow s_i \in \partial s_j$ and $w_{ij}$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs})
+\item The binary neighbourhood matrix $\mathbf{W}$, with $w_{ij} = 1 \Longleftrightarrow s_i \in \partial s_j$ and $w_{ij}=0$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs})
 \item The diagonal degree matrix $\mathbf{D}$, whose elements correspond to the number of edges of each node or, alternatively, to the row or column sums of $\mathbf{W}$, hence $d_i = \sum_{j=1}^{n} w_{ij} = \mathrm{card}(\partial s_i)$
 \item The Laplacian matrix $\mathbf{L} =\mathbf{ D} - \mathbf{W}$, which is singular by construction and more precisely has rank deficiency equal the number of connected components in $\mathcal{G}$, \citep[see e.g.][]{ICAR, Hodges2003}
 \end{itemize}
 
 Following \cite{Mardia}, see also chapter 10 of \cite{Banerjee}, we suppose that $z_i$ follows this prior conditional distribution:
-$$
-z_i | z_{-i}, \Lambda \sim \mathcal{N} \left(\sum_{j=1}^{n} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \Lambda^{-1}\right)
-$$
-Where $\Lambda$ is a matrix-valued precision parameter. Please notice this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \Lambda \sim \mathcal{N} \left(\sum_{j=1}^{n} B_{i,j} z_{i}, \frac{1}{d_i} \Lambda^{-1}\right)$ and presented $B_{ij} = \frac{w_ij}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
+%
+\begin{equation}
+z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \Sigma\right)
+\label{eq:icarconditional}
+\end{equation}
+%
+Where $\Sigma$ is a matrix-valued scale parameter. Please notice this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} B_{i,j} z_{i}, \frac{1}{d_i} \Sigma \right)$ and presented $B_{ij} = \frac{w_ij}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
 
 
 To compute the joint distribution $\pi(y|\sigma^2)$ we rely on the Brook's Lemma \citep{HammersleyClifford, CAR}:
@@ -64,10 +66,10 @@ To compute the joint distribution $\pi(y|\sigma^2)$ we rely on the Brook's Lemma
 Where $x$ is a set of known variables satisfying the positivity condition. Also, notice  $\pi(x)$ is a constant term we can treat a a normalising constant. Then, consider:
 %
 \begin{align}
-\ln \left(z_i | \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Lambda  \right) = \\ =
+\ln \left(z_i | \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Sigma  \right) = \\ =
 C_0 - \frac{d_i}{2} \left( 
 z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_i}z_k
-\right)^{\top} \Lambda \left( 
+\right)^{\top} \Sigma^{-1} \left( 
 z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_i}z_k
 \right)
 \end{align}
@@ -75,14 +77,14 @@ z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_
 Where $C_0$ is an additive constant. Now, with no loss of generality, let us assume $x_i = 0 \,   \forall \, i \in [1,n]$, so that numerator elements in \ref{eq:brookslemma}
 %
 \begin{align}
- \ln \pi \left(z_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Lambda  \right) =
+ \ln \pi \left(z_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Sigma  \right) =
  C_0 - \frac{d_i}{2 } \left(z_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}z_k  \right) ^{\top}
- \Lambda  \left(z_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}z_k  \right)=  \\
- = C_0- \frac{d_i}{2 } \left[ z^{\top}_i \Lambda z_i - 
- 2 \left(\sum_{k=i+1}^n    \frac{w_{ik}}{d_i}z_k\right) ^{\top} \Lambda z_i \right] 
+ \Sigma^{-1}  \left(z_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}z_k  \right)=  \\
+ = C_0- \frac{d_i}{2 } \left[ z^{\top}_i \Sigma^{-1} z_i - 
+ 2 \left(\sum_{k=i+1}^n    \frac{w_{ik}}{d_i}z_k\right) ^{\top} \Sigma^{-1} z_i \right] 
  - \frac{d_i}{2}  \left( 
  \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
- \right) ^{\top} \Lambda \left( 
+ \right) ^{\top} \Sigma^{-1} \left( 
  \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
  \right)
  \label{eq:numerator}
@@ -90,61 +92,62 @@ Where $C_0$ is an additive constant. Now, with no loss of generality, let us ass
 %
 And denominator elements take the form:
 \begin{equation}
- \ln \pi \left(x_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Lambda  \right)\mid_{x_i=0} = C_0 - \frac{d_i}{2}  \left( 
+ \ln \pi \left(x_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Sigma  \right)\mid_{x_i=0} = C_0 - \frac{d_i}{2}  \left( 
  \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
- \right) ^{\top} \Lambda \left( 
+ \right) ^{\top} \Sigma^{-1} \left( 
  \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
  \right)
 \label{eq:denominator}
 \end{equation}
 Then, with a little bit of standard algebra we get:
 \begin{equation}
-\ln \pi(z \mid \Lambda) = C_1 + \sum_{i=1}^n d_i z_i ^{\top} \Lambda z_i -
-\sum_{i=1}^n \sum_{k=1}^n w_{ik} z_i^{\top} \Lambda z_k
+\ln \pi(z \mid \Sigma) = C_1 + \sum_{i=1}^n d_i z_i ^{\top} \Sigma^{-1} z_i -
+\sum_{i=1}^n \sum_{k=1}^n w_{ik} z_i^{\top} \Sigma^{-1} z_k
 \end{equation}
-Where $C_1$ is an additive constant independent on $z$. Now, let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks rowwise the elements of a $n \times p$ matrix into a $np \times 1$ vector. First consider:
+Where $C_1$ is an additive constant independent on $z$. Now, let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks row-wise the elements of a $n \times p$ matrix into a $np \times 1$ vector. First consider:
 $$
- \sum_{i=1}^n d_i z^{\top}_i \Lambda z_i = 
+ \sum_{i=1}^n d_i z^{\top}_i \Sigma^{-1} z_i = 
 \begin{pmatrix}
 z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
 \end{pmatrix}^{\top}
 \begin{pmatrix}
-d_1 \Lambda & 0 & \ldots & 0 \\
-0 & d_2 \Lambda & \ldots & 0 \\
+d_1 \Sigma^{-1} & 0 & \ldots & 0 \\
+0 & d_2 \Sigma^{-1} & \ldots & 0 \\
 \vdots & \vdots & \ddots & \vdots \\
-0 & 0 & \ldots & d_n \Lambda
+0 & 0 & \ldots & d_n \Sigma^{-1}
 \end{pmatrix}
 \begin{pmatrix}
 z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
 \end{pmatrix}  = 
-\mathrm{vec}_r(z) ^{\top} (W \otimes \Lambda) \mathrm{vec}_r(z)
+\mathrm{vec}_r(z) ^{\top} (W \otimes \Sigma^{-1}) \mathrm{vec}_r(z)
 $$
 Then, consider:
 $$
- \sum_{i=1}^n \sum_{k=1}^n w_{ik} z^{\top}_i \Lambda z_k = 
+ \sum_{i=1}^n \sum_{k=1}^n w_{ik} z^{\top}_i \Sigma^{-1} z_k = 
 \begin{pmatrix}
 z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
 \end{pmatrix}^{\top}
 \begin{pmatrix}
-0 & w_{12} \Lambda & \ldots & w_{1n} \Lambda\\
-w_{21} \Lambda & 0 & \ldots & w_{2n} \Lambda\\
+0 & w_{12} \Sigma^{-1} & \ldots & w_{1n} \Sigma^{-1}\\
+w_{21} \Sigma^{-1} & 0 & \ldots & w_{2n} \Sigma^{-1}\\
 \vdots & \vdots & \ddots & \vdots \\
-w_{n1} \Lambda & w_{n2} \Lambda & \ldots & 0
+w_{n1} \Sigma^{-1} & w_{n2} \Sigma^{-1} & \ldots & 0
 \end{pmatrix}
 \begin{pmatrix}
 z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
 \end{pmatrix}  = 
-\mathrm{vec}_r(z) ^{\top} (D \otimes \Lambda) \mathrm{vec}_r(z)
+(\mathrm{vec}_r z) ^{\top} (D \otimes \Sigma^{-1}) \mathrm{vec}_r z
 $$
 
 This proves the joint distribution of $z$ is \citep[][this latter case regarding the proper CAR]{Mardia, Banerjee, Gelfand}:
 \begin{equation}
-\pi(z  | \Lambda) \propto -\frac{1}{2} \mathrm{vec}_r(z) ^{\top} (\mathbf{L} \otimes \Lambda)\, \mathrm{vec}_r(z)
+\pi(z  | \Sigma^{-1}) \propto -\frac{1}{2} \mathrm{vec}_r(z) ^{\top} (\mathbf{L} \otimes \Sigma^{-1})\, \mathrm{vec}_r(z)
 \label{eq:rowwise}
 \end{equation}
-For practical reasons, if we want to fit such a model in \texttt{R-INLA}, it is convenient to rearrange $z$ columnwise through the $\mathrm{vec}_c$ operator \cite{INLAMSM}, such that $\mathrm{vec}(z) = (z_{11},\, \ldots, \,z_{n1},\, z_{12},\, \ldots,\, z_{n2},\, \ldots ,\, z_{1p}, \,\ldots, \,z_{np} )^{\top}$. To do so, we are actually using an orthogonal permutation matrix $\mathcal{P}$, such that 
-$$\mathrm{vec}_c(z) = \mathcal{P} \times \mathrm{vec}_r(z)$$
-Here we give a definition of $\mathcal{P}$. To do so, consider the $i$-th basis vector of $\mathbb{R}^p$, $e_i$, the $i$-th row of $I_n$, whose $i$-th element is $1$ and all other elements are zero, $\forall i \in [1,n]$. We then have:
+In practical applications (see chapter \ref{chapter:INLA}) it is convenient to rearrange $z$ column-wise through the $\mathrm{vec}$ operator \cite{INLAMSM}, such that $\mathrm{vec}\,z = (z_{11},\, \ldots, \,z_{n1},\, z_{12},\, \ldots,\, z_{n2},\, \ldots ,\, z_{1p}, \,\ldots, \,z_{np} )^{\top}$. To do so, we are actually using an orthogonal permutation matrix $\mathcal{P}$, such that 
+$$\mathrm{vec}\,z = \mathcal{P} \times \mathrm{vec}_r(z)$$
+
+To define $\mathcal{P}$, consider the $i$-th basis vector of $\mathbb{R}^p$, $e_i$, the $i$-th row of $I_n$, whose $i$-th element is $1$ and all other elements are zero, $\forall i \in [1,n]$. We then have:
 $$
 \mathcal{P}  := \begin{pmatrix} 
 I_n \otimes e_1^{\top} \\ I_n \otimes e_2^{\top} \\ \vdots \\ I_n \otimes e_p^{\top}
@@ -152,32 +155,34 @@ I_n \otimes e_1^{\top} \\ I_n \otimes e_2^{\top} \\ \vdots \\ I_n \otimes e_p^{\
 $$
 %
 Considering that$
-\mathrm{Var}[\mathrm{vec}_c(z)] = \mathcal{P} \times \mathrm{Var}[\mathrm{vec}_r(z)] \times \mathcal{P}^{\top}$, hence $\mathrm{Prec}[\mathrm{vec}_c(z)] = \mathcal{P} \times \mathrm{Prec}[\mathrm{vec}_r(z)] \times \mathcal{P}$, it holds that:
+\mathrm{Var}[\mathrm{vec}\, z] = \mathcal{P} \times \mathrm{Var}[\mathrm{vec}_rz] \times \mathcal{P}^{\top}$, hence $\mathrm{Prec}[\mathrm{vec}\, z] = \mathcal{P} \times \mathrm{Prec}[\mathrm{vec}_r z] \times \mathcal{P}$, it holds that:
 $$
-\mathcal{P} \left( \mathbf{L} \otimes \Lambda \right) \mathcal{P}^{\top}= \Lambda \otimes \mathbf{L}
+\mathcal{P} \left( \mathbf{L} \otimes \Sigma^{-1} \right) \mathcal{P}^{\top}= \Sigma^{-1} \otimes \mathbf{L}
 $$
 Which can be proved with some algebra. Hence, in total equivalence with equation \ref{eq:rowwise}, we know that the joint distribution of a multivariate ICAR process is
 %
 \begin{equation}
-z|\Lambda \sim \mathcal{N} \left( 0, (\Lambda \otimes \mathbf{L})^{+}\right)
+z|\Sigma \sim \mathcal{N} \left( 0, \Sigma^{-1} \otimes \mathbf{L}^{+}\right)
+\label{eq:icarjoint}
 \end{equation}
 %
-The $^{+}$ superscript here denotes the Moore-Penrose pseudoinverse, which is the block-component of the variance of intrinsic models such as the ICAR.
+Here, the $^{+}$ superscript here denotes the Moore-Penrose pseudoinverse.
 
-\subsection{Precision scaling}
+\subsection{Precision scaling} \label{subsection:scaling}
 As it can be seen in the previous equations, the ICAR precision is the product of two terms, the global precision (inverse scale) and a structure matrix. This hinders parameter interpretation at the global level; to start discussing it, let us first consider the case of a connected graph. Denoting with $\mathbf{S} : = \mathbf{L}^{+}$, the marginal variance of a generic $i$-th realisation of the latent effect for the $h$-th variable is: 
 $$
-\mathrm{VAR}[z_{ih} \mid T] = \sigma_{h}^2 s_{ii}
+\mathrm{VAR}[z_{ih} \mid \Sigma] = \sigma_{h}^2 s_{ii}
 $$
-Where $\sigma_h^2$ is the marginal variance of the $h$-th variable, corresponding to the $h$-th diagonal element of of $\Lambda^{-1}$; in other words, $s_{ii}$ would be the marginal variance of $z_i$ if the relevant global precision was equal to 1.
+Where $\sigma_h^2$ is the marginal variance of the $h$-th variable, corresponding to the $h$-th diagonal element of of $\Sigma$; in other words, $s_{ii}$ would be the marginal variance of $z_i$ if the relevant global precision was equal to 1.
 
-Hence, by definition, ICAR variance incorporates a factor determined by the neighbourhood structure. At the global level, this consideration implies that process variability is not described by the precision parameter alone, since a deterministic scale factor concurs as well. The intuitive solution to this issue is to scale the ICAR model, as shown by \cite{Sorbye}. Following their operational proposal, we take the geometric mean of the diagonal of $\mathbf{S}$ as scaling factor - or, in other words, the geometric mean of marginal variances if all global precision parameters (diagonal entries of $\Lambda^{-1}$) were equal to 1, namely
+Hence, by definition, ICAR variance incorporates a factor determined by the neighbourhood structure. At the global level, this consideration implies that process variability is not described by the precision parameter alone, since a deterministic scale factor concurs as well. The intuitive solution to this issue is to scale the ICAR model, as shown by \cite{Sorbye}. Following their operational proposal, we take the geometric mean of the diagonal of $\mathbf{S}$ as scaling factor - or, in other words, the geometric mean of marginal variances if all global precision parameters (diagonal entries of $\Sigma$) were equal to 1, namely
 $$
 \bar{\sigma}^{2} = \prod_{i=1}^{n} s_{ii}^{1/n}
 $$
 this scaling factor is sometimes referred to as reference variance (or generalised variance, 
 %\textcolor{red}{(though this phrase generally denotes a determinant, hence taking into account also off-diagonal elements)}, 
-or typical marginal variance). We are thus able to separate the parameter $\Lambda$ from the effect on precision induced by the graph structure. To do so, the scaled model does not employ $\mathbf{L}$ as the structure matrix, but the scaled matrix $\mathbf{L}_\mathrm{scaled} = \bar{\sigma}^2 \mathbf{L} $. On the other hand, the precision parameter becomes $ \displaystyle{\frac{1}{\bar{\sigma}^2}} \Lambda$, and this is what actually expresses the precision of the process independently of how the graph is structured. 
+or typical marginal variance). We are thus able to separate the parameter $\Sigma$ from the effect on variance induced by the graph structure. To do so, the scaled model does not employ $\mathbf{L}$ as the structure matrix, but the scaled matrix $\mathbf{L}_\mathrm{scaled} = \bar{\sigma}^2 \mathbf{L} $. On the other hand, the covariance matrix becomes $\bar{\sigma}^2 \Sigma$, which actually expresses the variability of the process independently of how the graph is structured. 
+%$ \displaystyle{\frac{1}{\bar{\sigma}^2}} \Lambda$, and this is what actually expresses the precision of the process independently of how the graph is structured. 
 
 
 When the graph has $G >1$ connected components, its Laplacian matrix is (a permutation of) the direct sum of the component Laplacians, as mentioned in the previous paragraph. The pseudo-inverses of these matrices may clearly have different typical marginal variances. In this case, it is necessary to scale the component-specific precisions separately, as shown in \cite{Freni}:
@@ -185,19 +190,128 @@ $$
 \mathbf{L}_\mathrm{scaled} = \mathcal{P} \left( \bar{\sigma}_1^2 \mathbf{L_1} \oplus \bar{\sigma}_2^2 \mathbf{L_2}
 \oplus ... \oplus \bar{\sigma}_G^2 \mathbf{L_G} \right) \mathcal{P^{\top}}
 $$
-Where $\mathcal{G}$ is an appropriate permutation matrix, $\mathbf{L_i}$ is the Laplacian of the $i$-th component of the graph, and $\bar{\sigma}_i^2$ is the relevant typical variance.
+Where $\mathcal{P}$ is an appropriate permutation matrix, $\mathbf{L_i}$ is the Laplacian of the $i$-th component of the graph, and $\bar{\sigma}_i^2$ is the relevant typical variance.
 
 
-%% -------- LGM outline ---------------------------------- %%
-\section{Latent Gaussian model outline}\label{section:LGM}
+%% -------- More flexible areal models ------------%%
+\section{Some extensions of the Intrinsic CAR} \label{section:CARs}
+
+The ICAR model has a relatively small number of parameters, i.e. $p(p+1)/2$, corresponding to the entries of the precision matrix, and is easy to interpret. However, it can be easily seen that it is not a flexible model, in that it assumes a spatial autocorrelation parameter equal to $1$. It can be thought of as the spatial equivalent of $RW(1)$ processes in time series analysis: it is suited to detect strong spatial structures, but is misspecified when spatial trends are not particularly smooth. For this reason, some extension have been developed in literature. Here we introduce three popular ones, the so-called Proper CAR \citep{PCAR_Gelfand}, the Leroux proper CAR \citep{Leroux}, and the Besag-York-Mollié \citep[BYM][]{BYM, BYM2}  convolution model. 
+
+\subsection{The Proper CAR} \label{subsection:pcar}
+
+Thinking analogously as time series analysts, an intuitive generalisation of the ICAR would be to introduce a parameter, say $ \alpha \in [0, 1]$, controlling for spatial autocorrelation \citep[][chapter 10]{Banerjee}. This would yield the conditional prior distribution:
+%
+$$
+z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} \frac{w_{ij}}{d_i}\alpha z_{j}, \frac{1}{d_i} \Sigma \right)
+$$
+%
+Please notice that $\alpha$ is a scalar here. With calculations like those in section \ref{section:icar}, the joint prior becomes:
+%
+\begin{equation}
+z|\Sigma, \alpha \sim \mathcal{N} \left( 0, \Sigma \otimes (\mathbf{D} - \alpha \mathbf{W})^{-1}\right)
+ \label{eq:pcar}
+\end{equation}
+%
+On a side note, this is a proper distribution, in that for $\alpha < 1$ the precision matrix is full-rank \footnote{For this reason, this model has been known in literature as the 'proper' CAR. Properness is far from an exclusive feature of this model, and is not even limited to the models listed in this section, yet this naming has become a convention. We respect this convention for reasons of notation brevity.}. One advantage of this model is the ease in interpretation, as $\alpha$ quantifies the extent to which the value of $z_j$ depends on the neighbouring sites. Clearly, the limit case for $\alpha = 1$ is the ICAR, while the limit case for $\alpha = 0$ is an independent but \textit{not} identically distributed model, in which the variance is proportional to the inverse degree matrix $\mathbf{D}^{-1}$, hence a site with a higher number of neighbours will have a smaller prior conditional variance.
+
+\subsection{The Leroux proper CAR} \label{subsection:lcar}
+
+As we have seen, a partial drawback of the PCAR model is that the limit case in absence of spatial autocorrelation is not an IID process. A simple solution would be to employ a rather similar model has been proposed by \cite{Leroux}. This time, the idea is to balance the precision matrix between the ICAR precision (proportional to the Laplacian) and the precision of an IID process (proportional to the identity matrix). To do so, a precision mixing parameter is introduced; here we label it as $\lambda \in [0,1]$.% \footnote{In literature, this parameter is typically labelled as $\lambda$. Here we need to depart from standard notation to avoid confusion with either the marginal precision $\Lambda$ or the generic eigenvalues}.
+The starting point is the conditional prior:
+%
+$$
+z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} \frac{ \lambda w_{ij}}{1 - \lambda  + \lambda d_i} z_{j}, \frac{1}{1 - \lambda + \lambda d_i} \Sigma\right)
+$$
+%
+As can be seen, for $\lambda = 0$ the conditional prior becomes $\mathcal{N}(0, \Sigma) \, \forall i$, and for $\lambda = 1$ we revert to the ICAR. After the usual algebra, the joint prior reads:
+%
+\begin{equation}
+z|\Sigma, \lambda \sim \mathcal{N} \left( 0,    \Sigma
+  \otimes [\lambda \mathbf{L} + (1-\lambda)\mathbf{I}_n ]^{-1}\right)
+ \label{eq:pcar}
+\end{equation}
+%
+Interpreting this model is less simple, as it involves understanding the meaning of precision mixing. As we will see more in detail in section \ref{section:GMRFs}, the precision matrix of a Gaussian Markov Random Field informs us of the \textit{conditional} dependence structure of the spatial domain, and in both the LCAR and PCAR models the off-diagonal precision elements take the form $-\alpha$ or $-\lambda$ times the global precision parameter for neighbouring sites, hence roughly speaking both these parameters can be read as the strength of spatial association. 
+
+\subsection{The Besag-York-Mollié model} \label{subsection:bym}
+
+The original version of this model, proposed by \cite{BYM} was the convolution of a univariate ICAR, say $u' \sim \mathcal{N}=(0, \sigma_u^2 \mathbf{L})$, and a IID process, say $v \sim \mathcal{N}(0, \sigma_v^2 \mathbf{I})$. The underlying idea is to control for both spatial variation and random noise. This is particularly useful in disease mapping contexts, in which the dependent variable is usually Poisson distributed and the linear predictor needs a term to account for random noise, which is not captured by the IMCAR component alone. Some drawbacks can be found, however, in this model. The two components $u$ and $v$ are not separable and their convolution $z =: u' + v$ is what needs being modelled.
+
+This formulation, however, hinders the interpretation of the extent to which process variability is driven either by spatial autocorrelation or by noise. For this reason, \cite{BYM2} proposed a reparametrisation of the BYM which allows to scale the variance; to do so, a variance mixing parameter $\phi \in [0,1]$ is introduced, and a unique scale parameter $\sigma^2$ is used in place of the two former parameters $\sigma_u^2$ and $\sigma_v^2$. The univariate scaled BYM model becomes thus:
+$$
+\left\{ \begin{array}{ll} 
+z = \sigma \sqrt{\phi} u + \sigma \sqrt{1-\phi}v \\
+u \sim \mathcal{N} \left(0, \mathbf{L}_{\mathrm{scaled}}^{+} \right)\\
+v \sim \mathcal{N}(0, \mathbf{I}_n)
+\end{array} \right.
+$$
+The interesting feature is that, since the Laplacian matrix is scaled, the two addenda are now defined on the same scale of variability, which implies the mixing parameter can be interpreted as the balancing of variability between spatial structure and noise. In the multivariate case, the joint distribution of $z$ is:
+%
+\begin{equation}
+z|\Sigma, \phi \sim \mathcal{N} \left( 0, 
+ \Sigma \otimes (\phi \mathbf{L}_\mathrm{scaled}^+ + (1-\phi) \mathbf{I}_{n})\right)
+ \label{eq:pcar}
+\end{equation}
+%
+As can be seen, the precision of the BYM field is a dense matrix. Operations such as inversion, eigendecomposition, or multiplication, would then have cubic computational cost, which in most real-world applications is prohibitive. \cite{BYM2}, therefore, suggest to model $z$ and $u$ jointly, as a process of length $2n$ (or $2nk$ in the multivariate case). The resulting joint process has then a sparse precision matrix, retaining the same rank deficiency as $\mathbf{L}$, which requires the sum-to-zero constraint on the ICAR component $u$. To sum up, the BYM model boasts some desirable features, namely: 
+\begin{itemize}
+\item Flexibility (as the PCAR and LCAR as well) 
+\item Limit cases being the ICAR and the IID models for $\phi=1$ and $\phi=0$ respectively (as for the LCAR)
+\item Straightforward interpretation (as the PCAR)
+\item Scalability (as the IMCAR)
+\end{itemize}
+This explains its popularity in areal data analysis and especially in disease mapping. 
+
+\subsection{M-models} \label{subsection:Mmodels}
+
+For all the autoregressive models discussed above, we observed that the precision (or the covariance) matrix can be conveniently factorised as the Kronecker product of a precision (or scale, respectively) parameter and a structure matrix, which is deterministic for the ICAR and unknown but independent on the precision parameter for the other models; in this latter case, the structure matrix only depends on one scalar-valued parameter (the AR parameter for the PCAR, the precision mixing for the LCAR and the variance mixing for the BYM). The hypothesis of a constant hyperparameter for \textit{all} the spatial fields can be, however, strong. A more flexible class of models, introduced by \cite{Mmodels}, leverage on the decomposition of the scale parameter $\Sigma$ into $\mathbf{M}^ \top \mathbf{M}$, where $\mathbf{M}$ is a generic $k \times p$ full-rank matrix for any $k$; these models are known in literature as M-models. M-models generalise proper autoregressives by relaxing the hypothesis of a scalar-value hyperparameter controlling the strength of spatial association and allow for $k$ different hyperparameters.
+
+The core idea is defining $\mathbf{z} := \mathbf{z}^{(0)} \mathbf{M}$, where $\mathbf{z}^{(0)} = (z_1^{(0)}, z_2^{(0)} \dots z_k^{(0)})$ and the $z_1^{(0)} \dots z_k^{(0)}$ fields are independent, each one following a prior of the form: $z_j^{(0)} \sim \mathcal{N}(0, \Omega_j) \quad \forall j \in[1,k]$ where $\Omega_j$ is an inverse structure matrix; taking the PCAR model as an example we have $\Omega_j = (\mathbf{D} - \alpha_j \mathbf{W})^{-1}$.
+
+Even though the $\mathbf{M}$ matrix does not have to be squared, if the number of variables is not prohibitive, models with squared $\mathbf{M}$, i.e. $k=p$, are easier to interpret and allow for exactly one spatial association parameter for each variable. 
+
+Take the PCAR model as an example. With $k=p$, equation \ref{eq:pcar} can be generalised as $\mathrm{Var}[z | \Sigma, A] = \Sigma \otimes(I_p \otimes \mathbf{D} - A \otimes \mathbf{W})^{-1}$, where $A$ is diagonal, and in the block-factorisable case seen in subsection \ref{subsection:pcar} it was $A = \alpha I_p$. When $A = \mathrm{diag}(\alpha_1, \alpha_2, \dots, \alpha_p)$ the variance becomes
+%
+\begin{equation}
+\text{PCAR:} \quad \quad 
+\mathrm{Var}[z | \Sigma, A] = (\mathbf{M^\top \otimes I_n})
+(I_p \otimes \mathbf{D} - A \otimes \mathbf{W})^{-1} (\mathbf{M} \otimes I_n)
+\end{equation}
+%
+The same reasoning easily applies to the LCAR:
+%
+\begin{equation}
+\text{LCAR:} \quad \quad 
+\mathrm{Var}[z | \Sigma, A] = (\mathbf{M^\top \otimes I_n})
+\lbrace \Sigma \otimes [\mathbf{L} + (I_p - \Lambda) \otimes \mathbf{I}_n]^{-1} \rbrace (\mathbf{M} \otimes I_n)
+\end{equation}
+%
+Regarding the BYM, throughout this thesis we will rely on the simplifying hypothesis that:
+%
+\begin{equation}
+z = \mathbf{U} \Phi^\frac{1}{2} \mathbf{M} + 
+\mathbf{V} (I_p - \Phi)^\frac{1}{2} \mathbf{M}
+\label{eq:mmbym}
+\end{equation}
+%
+i.e. both the components share the same scale parameter. This is not as immediate as in the univariate case, in which the univariate scale parameter could be easily rescaled leveraging on the presence of the mixing parameter. This simplifying hypothesis is not admitted, e.g., by \cite{Corpas}, who did not employ the scaled BYM parametrisation and admitted a different scale parameter for each of the two BYM components. On the contrary, the unique $M$ approach is followed by \cite{Urdangarin24}, who indeed extend the parametrisation of \cite{BYM2} to the M-model case. We follow this approach as well.
+Lastly, in Appendix \ref{appendix:MMBYM} we show that sparse parametrisation is also possible for the multivariate BYM.
+
+
+%% -------- Spatial confounding --------------------------- %%
+\section{Spatial Confounding} \label{section:confounding}
+Autoregressive models are usually employed as latent variables in spatial regression. This is partly motivated by the improper prior distribution of intrinsic processes, which however does not imply an improper posterior \citep{Banerjee}. When a spatially structured latent random variable is included in a regression model, it may happen to be correlated with some explanatory variables. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in almost two decades of literature (\citep{Urdangarin23}, \citep{DupontArXiv}), starting from the intuitive solution of constraining random effects to be linearly independent on covariates (\citep{RHZ}, \cite{Hodges}), which goes under the name of restricted spatial regression (RSR); this is done by projecting random effects to the orthogonal subspace the covariates matrix, i.e. setting $X(X^{\top}X)^{-1}X^{\top} \xi z = 0$.
+
+
+\subsection{Preliminary: Latent Gaussian model outline}\label{section:LGM}
 
 %Spatial confounding can occur when a regression model includes a spatially structured latent random variable, say $z$, correlated with some explanatory variables, say $\mathbf{X}$. This issue implies a competition between $\mathbf{X}$ and $z$ in explaining $y$, introducing bias in the estimation of $\beta$. Several approaches have been developed in almost two decades of literature \citep{Urdangarin23, DupontArXiv}, starting from the intuitive solution of constraining spatial random effects to be linearly independent of covariates \citep{RHZ, Hodges}, which goes under the name of restricted spatial regression (RSR hereinafter). This is done by projecting random effects onto the subspace orthogonal to the design matrix $\mathbf{X_\mathrm{tot}} = (\xi\mathbf{C}, \mathbf{X})$, i.e. conditioning $z$ to the constraint $\mathbf{X_\mathrm{tot}}(\mathbf{X_\mathrm{tot}}^{\top}\mathbf{X_\mathrm{tot}})^{-1}\mathbf{X_\mathrm{tot}}^{\top} \, \xi z = \mathbf{0}$. The idea behind RSR is to rule out confounding bias when estimating the effects of covariates. RSR can be extended to the multilevel case \citep{Nobre}, where spatial effects are defined at a higher scale than observations, as we do in the present framework. Nevertheless, under RSR the posterior means of covariate effects tend to approximate those of the nonspatial model \citep{Khan}, which leads to biased estimates of $\beta$ by ignoring the presence of a latent spatial field and assuming independent errors \citep{DupontArXiv}.This suggests exploring further methodologies to deal with spatial confounding.
 
 %The Spatial+ approach \citep{Dupont} involves the adjustment of covariates, instead of constraining spatial effects, by decomposing the former as the sum of a spatial and a nonspatial component. Here a variant of the Spatial+ method, developed by \cite{Urdangarin24}, is applied while working in a multilevel framework. This innovative methodology consists in extracting the spatial component of covariates without requiring an explicit spatial model on $\mathbf{X}$. Following \cite{Lamouroux}, we label this methodology as Spatial+ 2.0. 
 
-Autoregressive models are usually employed as latent variables in spatial regression. This is partly motivated by the improper prior distribution of intrinsic processes, which however does not imply an improper posterior \citep{Banerjee}. Here we briefly outline a general latent Gaussian model, which will be useful to explain the next section. 
 
-
+Here we briefly outline a general latent Gaussian model, which will be useful to explain the current section. Let us consider:
 $$
 \left\{ \begin{array}{ll} 
 \mathbb{E}\left[y \mid \eta, \Psi \right] = g^{-1}(\eta) \\
@@ -206,30 +320,23 @@ $$
 \end{array} \right. 
 $$
 where $y$ denotes the respondse variable consisting of $N$ observations; $\eta$ is the linear predictor linked with a function $g$ to the expected value of $y$; $\vartheta$ is a generic vector of latent variables of interest; $\sigma_{\varepsilon}^2 := \mathrm{Var}[\varepsilon]$ is the variance of the IID Gaussian error $\varepsilon$, $A$ is a known design matrix; $\Psi$ is the array of hyperparameters.%, whose size is usually in $\mathcal{O}(10^1)$. 
-$\mathbf{Q}_{\Psi}$ denotes the precision matrix. In the case of the multivariate ICAR, as seen in Section \ref{section:icar}, the precision is $\mathbf{Q}_{\Psi} = \Lambda \otimes \mathbf{L}$, where $\Lambda \equiv \Psi$ is the global precision and $\mathbf{L}$ is the graph Laplacian matrix. For the univariate case, the precision parameter clearly reduces to a positive scalar.
+$\mathbf{Q}_{\Psi}$ denotes the precision matrix. In the case of the multivariate ICAR, as seen in Section \ref{section:icar}, the precision is $\mathbf{Q}_{\Psi} = \Sigma^{-1} \otimes \mathbf{L}$, where $\Sigma$ is the scale parameter and $\mathbf{L}$ is the graph Laplacian matrix. For the univariate case, the precision parameter clearly reduces to a positive scalar.
 
 The linear predictor, to our aims, can be defined as:
 $$  
 \mathbf{A} := \left(X \quad \xi \right) \quad \text{and} \quad
 \vartheta := \begin{pmatrix} \beta \\ \mathbf{z} \end{pmatrix}
 $$
-where $\beta$ is the array of regression coefficients of length $p$, $z$ is the array of spatial latent effects of length $n$, $X$ is a matrix of explanatory variables of size $N \times p$, and $\xi$ is the design matrix of latent effects of size $N \times n$.
-
-Labelling $\beta$ as "fixed" and $z$ as "random" effects is quite frequent in hierarchical regression applications, but due to the polysemic nature of these terms we will tend to avoid them. In a strictly probability perspective, there is no conceptual distinction between them: they are both unknown random variables entering the linear predictor through a known design matrix (either $X$ or $\xi$), are typically assumed to be Gaussian \textit{a priori} and their posterior distribution is the primary aim of statistical inference. We keep them separated due to how they are interpreted: $\beta$ represents the association between a set of known variables ($X$) and $y$, while $z$ is an unobserved process shaping the structure of $y$ itself.
+where $\beta$ is the array of regression coefficients of length $p$, $z$ is the array of spatial latent effects\footnote{Labelling $\beta$ as "fixed" and $z$ as "random" effects is quite frequent in hierarchical regression applications, but due to the polysemic nature of these terms we will tend to avoid them. In a strictly probability perspective, there is no conceptual distinction between them: they are both unknown random variables entering the linear predictor through a known design matrix (either $X$ or $\xi$), are typically assumed to be Gaussian \textit{a priori} and their posterior distribution is the primary aim of statistical inference. We keep them separated due to how they are interpreted: $\beta$ represents the association between a set of known variables ($X$) and $y$, while $z$ is an unobserved process shaping the structure of $y$ itself.} of length $n$, $X$ is a matrix of explanatory variables of size $N \times p$, and $\xi$ is the design matrix of latent effects of size $N \times n$.
 
 The common, base assumption is that $(y_j\perp\!\!\!\perp y_k )|\vartheta, \Psi$ and $(y_j\perp\!\!\!\perp \eta_k )|\vartheta, \Psi$ for any $j,k \in [1, N]$ with $j \neq k$, so each observation $y_j$ depends on $\vartheta$ only through one value $\eta_j$. This also implies that the likelihood can be factorised as follows:
 $$
 f(y|\vartheta, \Psi) = f(y| \eta, \Psi) = \prod_{j = 1}^N f(y_j | \eta_j, \Psi)
 $$
 
-
-\section{Spatial Confounding} \label{section:confounding}
-
-When a spatially structured latent random variable is included in a regression model as in the previous section, it may happen to be correlated with some explanatory variables. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in almost two decades of literature (\citep{Urdangarin23}, \citep{DupontArXiv}), starting from the intuitive solution of constraining random effects to be linearly independent on covariates (\citep{RHZ}, \cite{Hodges}), which goes under the name of restricted spatial regression (RSR); this is done by projecting random effects to the orthogonal subspace the covariates matrix, i.e. setting $X(X^{\top}X)^{-1}X^{\top} \xi z = 0$.
-
 %in order to map each observed value $y_j$ to one realisation of the random effect $z_i$, i.e. if $y_j$ depends on $z_i$ and therefore $\xi_{ji} = 1$, then  $y_j \perp\!\!\!\perp  z_{-i}$, with $i \in [1, n]$ and $j \in [1, N]$, where each row of $\xi$ has exactly one entry equal to $1$ and all other entries equal to $0$. 
 
-Recall the hierarchical regression model in Section \ref{par:LGM}. For illustration purposes, let us suppose that $y$ is Gaussian and the linear predictor includes a univariate Gaussian latent effect of size $n$ with prior mean $0$ and non-negative defined precision matrix $\mathbf{Q}(\Psi) = \tau \mathbf{R}$, where $\mathbf{R}$ is a semidefinite positive structure matrix and $\tau$ is a global precision parameter; for the ICAR case, clearly $\mathbf{R} \equiv \mathbf{L}$. In such Gaussian regression framework, the model becomes:
+ For illustration purposes, let us now suppose that $y$ is Gaussian and the linear predictor includes a univariate Gaussian latent effect of size $n$ with prior mean $0$ and non-negative defined precision matrix $\mathbf{Q}(\Psi) = \tau \mathbf{R}$, where $\mathbf{R}$ is a semidefinite positive structure matrix and $\tau$ is a global precision parameter; for the ICAR case, clearly $\mathbf{R} \equiv \mathbf{L}$. In such Gaussian regression framework, the model becomes:
 %
 \begin{equation}
 %\begin{aligned}
@@ -304,11 +411,13 @@ E[\beta | y, \tau_{\varepsilon}, \bar{r}] = G^{-1} \lbrace X^{\top}
 - X^{\top} \xi S_{11} ^{-1} \xi^{\top}
 \rbrace \, y
 \end{aligned}
+\label{eq:expbeta}
 \end{equation}
 And
 \begin{equation}
-E[z | y, \tau_{\varepsilon}, \bar{r}] = \left[ S_{11} \right]^{-1}
+E[z | y, \tau_{\varepsilon}, \bar{r}] =  S_{11}  ^{-1}
 (\xi^{\top} - \xi^{\top} X G^{-1} X^{\top}) \, y
+\label{eq:expzeta}
 \end{equation}
 
 Equivalently, if for brevity we define $\Gamma = \xi ^{\top} \xi + \bar{r} \mathbf{R} - \xi^{\top} X G^{-1} X^{\top} \xi$ this means that 
@@ -318,11 +427,12 @@ H_{\tau_{\varepsilon}, \bar{r}} = XG^{-1}X^{\top} + \xi \Gamma^{-1} \xi^{\top} -
 XG^{-1}X^{\top} \xi \Gamma^{-1} \xi^{\top} -  \xi \Gamma^{-1} \xi^{\top}XG^{-1}X^{\top} +\\
 +XG^{-1}X^{\top} \xi \Gamma^{-1} \xi^{\top} XG^{-1}X^{\top}
 \end{aligned}
+\label{eq:projmat}
 \end{equation}
 
-If a flat prior is defined on $\beta$, we have $M \longrightarrow \infty$, with $G \longrightarrow X^{\top}X$. In this case, it is possible to show that the limits for equations (4) and (5) are the results stated by \citep{RHZ} at page 1199; in that case, $\xi = I_n$. Moreover, the hat matrix does not depend on $\tau_{\varepsilon}$ but only on $\bar{r}$.
+If a flat prior is defined on $\beta$, we have $M \longrightarrow \infty$, with $G \longrightarrow X^{\top}X$. In this case, it is possible to show that the limits for equations \ref{eq:expbeta} and \ref{eq:expzeta} are the results stated by \cite[][page 1199]{RHZ}. Moreover, the hat matrix does not depend on $\tau_{\varepsilon}$ but only on $\bar{r}$.
 
-
+ \subsection{Restricted Regression} \label{subsection:RSR}
 We now consider the projection matrix of $y$ onto its least squares fitted values, and its orthongonal complement, respectively:
 $$
 P := X(X^{\top}X)^{-1}X^{\top} \quad \quad \text{and} \quad \quad P_{\bot} := I - X(X^{\top}X)X^{\top} = I - P
@@ -417,6 +527,7 @@ $$
 
 RSR can be extended to the multilevel case \cite{Nobre}, in which e.g. spatial effects are defined at a higher scale than observations, as in Chapter \ref{chapter:theory}.
 
+
 Now, as it has been seen, under RSR the posterior means of covariate effects approximate those of a nonspatial model, and if $y$ is Gaussian and $\beta$ has a flat prior, equality holds. Interestingly, \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta |y]$ if confounding occurs: intuitively, the expectation would be approximately the same of a model which ignores the existence of the spatial component. In terms of interpretation, this would mean that adding a spatial effect to the model should not significantly alter the estimated regression coefficients.
 
 A different approach to deal with spatial confounding, introduced by \cite{Dupont}, is based on adjusting the covariates rather than constraining spatial effects by representing the former as the sum of a spatial and a nonspatial component; it is known in the literature as Spatial+.% While Spatial+ was originally proposed for thin plate spline regression, 
@@ -441,6 +552,142 @@ A different approach to deal with spatial confounding, introduced by \cite{Dupon
 %Where $\bar{X}^{(NS)}$ is the nonspatial component given by the linear combination of the first $n-G-t$ eigenvectors \textcolor{red}{Come posso rappresentare un set di indici in forma intervallare?} (i.e. $\bar{X}^{(NS)} = (V)_{\cdot[1, n-G-t]}(b)_{[1, n-G-t]}$ ) and represents the nonspatial component of the covariates matrix, $\bar{X}^{(s)}$ is the linear combination of the eigenvectors associated with the last $t$ nonzero eigenvalues and represents the spatial component of the covariates matrix, and $\bar{X}^{(0)}$ is built with the $G$ eigenvectors in the null space of the structure matrix and is constant within connected components. To remove spatial confounding, in the regression model we only take $\xi \left(\bar{X}^{(NS)} + \bar{X}^{(0)}\right) + \Delta X$ as covariates matrix. By doing so, covariates should not be spatially structured anymore. In \cite{Urdangarin24} the term we label as $\bar{X}^{(0)}$ was actually removed; since in the cases covered therein $G$ was equal to one, the eigenvector associated with the null eigenvalue was proportional to a vector of ones and its inclusion in the deconfounded covariates matrix would only scale it by an additive constant.
 
 
+
+\begin{appendices}
+
+\section{Sparse parametrisation for M-model BYM extension}\label{appendix:MMBYM}
+
+Here we generalise the sparse-precision parametrisation of \cite{BYM2}.
+First let us consider the multivariate ICAR component. With no loss of generality, we define $\mathbf{U} = (U_1, U_2, \dots U_p)$. We suppose all its univariate components to have the same prior distribution, i.e. 
+$$U_j \sim N_n(0, \mathbf{L}^{+}) \quad \forall j \in [1,p]$$
+and assume independence among them, such that $\mathrm{vec}(\mathbf{U}) \sim \mathcal{N}_{np}(0, I_p \otimes \mathbf{L}^{+})$.
+The same assumption is made on the IID component, i.e. $\mathrm{vec}(\mathbf{V}) \sim \mathcal{N}_{np}(0, I_p \otimes I_n)$.
+
+As mentioned in section \ref{subsection:Mmodels}, we use a unique scale parameter $\Sigma$, and define $\mathbf{M}$ as a generic full-rank matrix such that $\mathbf{M}^{\top}\mathbf{M} = \Sigma$. For convenience, we also define the precision parameter $\mathbf{T} =: \Sigma^{-1}$.
+
+Here, $\mathbf{M}$ does not have to be the Cholesky factor of $\Sigma$; in fact, a rather convenient yet not unique definition is $\mathbf{M} = D^{\frac{1}{2}}\mathbf{E}^{\top}$, where $D$ is the diagonal matrix of the eigenvalues of $\Sigma$ and $\mathbf{E}$ are the eigenvectors of $\Sigma$. Consider the model in equation \ref{eq:mmbym}, it holds that
+$$
+\mathrm{Var}\left[ \mathrm{vec} \mathbf{z} \mid \Sigma, \Phi \right] = 
+\left( \mathbf{M}^\top \otimes \mathbf{I}_n\right) 
+\mathrm{diag}\left(\Omega_1,\ldots,\Omega_p\right)
+\left( \mathbf{M} \otimes \mathbf{I}_n \right)
+$$
+Where each diagonal block $\Omega_j$ is the variance of $U_j \Phi + V_j \bar{\Phi}$, i.e. $\Omega_j = \phi_j \mathbf{L}^+ + (1-\phi_j) \mathbf{I}_n$. 
+Keeping up with the approach of \cite{BYM2}, and defining for the sake of brevity $\bar{\Phi} := \mathbf{I}_p - \Phi$, we know that:
+
+$$
+\mathbb{E} [\mathrm{vec}\, \mathbf{z} \mid U, \Phi , \Sigma] = \mathrm{vec}(\mathbf{U} \Phi^{\frac{1}{2}} \mathbf{M}) =
+[( \mathbf{M}^{\top}\Phi^{\frac{1}{2}}) \otimes \mathbf{I}_n] \mathrm{vec}\,\mathbf{U}
+$$
+
+and similarly 
+
+$$
+\mathrm{Var} [\mathrm{vec}\, \mathbf{z} \mid \mathbf{U}, \Phi , \Sigma] =
+\left[( M^{\top} \bar{\Phi}^{\frac{1}{2}}) \otimes I_n \right] 
+\mathbb{E} \left[
+\mathrm{vec}(\mathbf{V})
+\mathrm{vec}(\mathbf{V})^\top \right]
+\left[(\bar{\Phi}^{\frac{1}{2}} \mathbf{M}) \otimes I_n \right] = 
+\left(
+ \mathbf{M}^\top \bar{\Phi}  \mathbf{M} \right) \otimes I_n
+$$
+
+
+The distribution of $\mathbf{Y} \mid \mathbf{U}, \Sigma, \Phi $ then reads:
+\begin{align*}
+-2 \ln \pi \left(\mathrm{vec}(\mathbf{Y}) \mid \mathbf{U}, \Sigma, \phi \right) %\\
+% = C+ \Big{ \{ }
+% \mathrm{vec}(\mathbf{Y}) - \left[ \left( \mathbf{M}^\top \Phi^{\frac{1}{2}} \right) \otimes I_n \right] \mathrm{vec}(\mathbf{U}) \Big{\} } ^{\top}
+%
+%\left[ \left(
+% \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top
+%\right) \otimes I_n \right] 
+%
+%\Big{ \{ } \mathrm{vec}(\mathbf{Y}) -\left[ \left( \mathbf{M}^\top \Phi^{\frac{1}{2}} \right) \otimes I_n \right] \mathrm{vec}(\mathbf{U}) \Big{\}} 
+ = C + 
+%
+\mathrm{vec}(\mathbf{Y})^{\top}
+\left[ \left(
+ \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top
+\right) \otimes I_n \right] 
+\mathrm{vec}(\mathbf{Y}) \\ 
+%
+- 2\mathrm{vec}(\mathbf{Y})^{\top} 
+\left[ \left( 
+ \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top\right) \otimes I_n \right] 
+\left[ \left( \mathbf{M}^\top \Phi^{\frac{1}{2}} \right) \otimes I_n \right] \,\mathrm{vec}(\mathbf{U})   \\
+%
++  \mathrm{vec}(\mathbf{U})^{\top}
+    \left[ \left(\Phi^{\frac{1}{2}} \mathbf{M} \right) \otimes I_n \right]
+    \left[ \left(  \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top\right) \otimes I_n \right]
+    \left[ (\mathbf{M}^\top\Phi^{\frac{1}{2}} ) \otimes I_n \right]
+   \mathrm{vec}(\mathbf{U}) =\\
+%
+= C + \mathrm{vec}(\mathbf{Y})^{\top}
+\left[ \left(
+ \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top
+\right) \otimes I_n \right] 
+\mathrm{vec}(\mathbf{Y}) \\ 
+%
+- 2\mathrm{vec}(\mathbf{Y})^{\top} 
+\left[ \left(  \mathbf{M}^{-1} \bar{\Phi}^{-1} \Phi^{\frac{1}{2}}  \right)
+\otimes I_n \right]  \,\mathrm{vec}(\mathbf{U})   \\
+%
++  \mathrm{vec}(\mathbf{U})^{\top}
+    \left[ \left(  \Phi  \bar{\Phi}^{-1}  \right) \otimes I_n \right]
+   \mathrm{vec}(\mathbf{U})
+\end{align*}
+
+Now, for brevity let us define the following $p \times p$ matrices:
+\begin{align*}
+q_{11} :=  \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top; \quad
+q_{12} :=  \mathbf{M}^{-1} \bar{\Phi}^{-1} \Phi^{\frac{1}{2}}; \quad
+q_{22} := \Phi \bar{\Phi}^{-1}
+\end{align*}
+Hence 
+\begin{align*}
+-2 \ln \pi \left(\mathrm{vec}(\mathbf{z}) \mid \mathbf{U}, \Sigma, \Phi \right) 
+= C + \mathrm{vec}(\mathbf{z})^{\top}
+\left(q_{11} \otimes I_n \right) 
+\mathrm{vec}(\mathbf{z}) \\
+%
+- 2\mathrm{vec}(\mathbf{z})^{\top} 
+\left(  q_{12} \otimes I_n \right)  \,\mathrm{vec}(\mathbf{U})\\
+%
++  \mathrm{vec}(\mathbf{U})^{\top}
+    \left(q_{22} \otimes I_n \right)
+   \mathrm{vec}(\mathbf{U})
+\end{align*}
+Then, we have 
+\begin{align*}
+-2 \ln \pi \left(\mathrm{vec}(\mathbf{z}), \mathrm{vec}(\mathbf{U}) \mid \Sigma, \phi \right)  
+= C + \mathrm{vec}(\mathbf{z})^{\top}
+\left(q_{11} \otimes I_n \right) 
+\mathrm{vec}(\mathbf{z})\\ 
+%
+- 2\mathrm{vec} \,\mathbf{z}^{\top} 
+\left(  q_{12} \otimes \mathbf{I}_n \right)  \,\mathrm{vec}(\mathbf{U})\\  
+%
++  \mathrm{vec}(\mathbf{U})^{\top}
+    \left(q_{12} \otimes \mathbf{I}_n + I_p \otimes L\right)
+   \mathrm{vec}(\mathbf{U})
+\end{align*}
+Hence, with some straightforward algebra, it can be concluded that:
+\begin{equation} \label{eq:joint_bym_mmod}
+    \begin{pmatrix}
+        \mathrm{vec} (\mathbf{z}) \\ \mathrm{vec} (\mathbf{U}) 
+    \end{pmatrix}
+    \sim N_{2np} \left( 0, \begin{pmatrix}
+            q_{11} \otimes I_n \, & 
+            \, - q_{12} \otimes I_n \\
+            - q_{12}^\top\otimes I_n \, & \,
+             q_{22} \otimes I_n + I_p \otimes \mathbf{L}
+        \end{pmatrix}^{-1} \right)
+\end{equation}
+Which consists of four blocks; three are diagonal and the lower-right one has the same zeroes pattern as $\mathbf{L}$
+ 
+\end{appendices}
 
 %
 %
@@ -759,12 +1006,12 @@ Section \ref{par:GRFs} shows that conditional pairwise independence in Gaussian 
 
 It is thus convenient to identify a class of probabilistic models for Gaussian random fields for which conditional pairwise independence holds by definition. A sufficient condition to this aim is to satisfy the Markov property. Following \citep[][Section 2.2]{GMRFs}, a Markovian random field can be intuitively defined with respect to a graph; it is easy to notice that the graph structure is a common representation for data like time series or lattice (either regular or irregular, in any number of dimensions). 
 
-We start by assuming that each \textcolor{red}{element} of an $n$-dimensional Gaussian random field can thus be associated with a node in a graph denoted as $\mathcal{G} :=(\mathcal{S}, \mathcal {E}) $, where $\mathcal{S} = \lbrace s_i \rbrace_{i=1}^n$ is the set of nodes of size $n$ and $\mathcal{E} := \lbrace (s_i, s_j) : s_j \in \partial s_i  \rbrace_{i,j=1}^n$ is the set of edges;  hereinafter $\partial s_i$ denotes the set of neighbours of node $s_i$, or equivalently the set of nodes \textit{connected with} node $s_i$. By convention, it is assumed that $s_i \notin \partial s_i$.
+We start by assuming that each \textcolor{red}{element} of an $n$-dimensional Gaussian random field can thus be associated with a node in a graph defined as at the beginning of section \ref{section:icar}.
 
 The \textcolor{red}{relationship} $X:\mathcal{S} \rightarrow \mathbb{R}^n$ is thus assumed to hold, and for brevity we will write $X_i$ in place of $X(s_i)$. The \textit{global} Markov property \citep{HammersleyClifford} means that:
 %
 \begin{equation}
-\pi(X_i \mid X_{-i}) = \pi(X_i \mid \partial s_i)
+\pi(X_i \mid X_{-i}) = \pi \left(X_i \mid \lbrace X_j : s_j \in \partial_i \rbrace \right)
     \label{eq:gMarkov}
 \end{equation}
 %
@@ -1034,7 +1281,7 @@ Finally, for better insight into the general infrastructural state, we add the I
 
 In Figure \ref{fig:TPU23} we show the percentage of schools served by public transport in 2022/23 at the province and municipality level, in this latter case only for the Apulia region, which is the region with the highest share of municipalities hosting at least one high school ($124$ over $257$). As mentioned in Section \ref{section:Data}, though northern and central regions have a higher proportion of schools served by urban public transport, regions like Abruzzo in the South or Veneto and Emilia-Romagna in the North are in contrast the general trend. In the provinces of Aosta, Trieste, La Spezia (North), Massa (Center) and Chieti (South) all schools are reached by public transport, while this percentage is higher than $95\%$ in the provinces of Pavia, Bergamo (North), Pesaro-Urbino, Pisa, Lucca and Latina (Center). On the other hand, in the province of Salerno in Southern Italy only $0.07\%$ of schools is served by public transport; this percentage is lower than $40\%$ in the provinces of Ferrara and Pordenone in the North and Crotone, Foggia and Naples in the South.%The negative record belongs to the provinces of Salerno and Naples in Campania and Crotone in Calabria.
 
-The code to download the raw input dataset and display these maps and all the following ones is in the Supplementary Material. 
+The code to download the raw input dataset and display these maps and all the following ones is in the online \href{https://static-content.springer.com/esm/art%3A10.1007%2Fs10260-025-00805-0/MediaObjects/10260_2025_805_MOESM1_ESM.pdf}{Supplementary material} of the paper corresponding to this chapter. 
 
 \begin{figure}
   \centering
@@ -1722,36 +1969,23 @@ Covariate effects $\beta$ have $N(0, 10^3)$ non-informative priors, while priors
 Precision parameters for the error terms, namely $\omega_{1}$ and $\omega_2$, have independent Gamma vague priors with shape $10^{-3}$ and rate $10^{-3}$.
 
 \subsection{Modelling the spatial component} \label{par:ICAR}
-Considering the neighbourhood structure outlined in Section \ref{par:graph}, $z$ is modelled as a bivariate ICAR defined on the graph $\mathcal{G}$, following this conditional prior distribution at the spatial unit level for each $i$-th node, with $i \in [1, n]$:
+Considering the neighbourhood structure outlined in Section \ref{par:graph}, $z$ is modelled as a bivariate ICAR defined on the graph $\mathcal{G}$, following the prior defined in equation \ref{eq:icarconditional}
+In this case, considering the graph structure, the joint prior distribution of the ICAR field becomes
 \begin{equation}
-z_{i} | z_{-i}, \Lambda \sim \mathcal{N} \left(\sum_{j \sim i} \frac{w_{ij}}{d_i} z_{j}, \, \frac{1}{d_i} \Lambda^{-1}\right)
-\label{eq:ICAR_local}
-\end{equation}
-where  $d_i := \sum_{s=1}^n w_{is}$ is the number of neighbours of node $i$ and $\Lambda$ is the precision parameter. This representation is a special case of the model developed by \citep[][theorem 2.1, corollary 2]{Mardia} and implies a joint Normal prior on $z$ with zero mean and precision $\Lambda \otimes \mathbf{R}$,
-
-\begin{equation}
-\pi\left(z\mid \Lambda \right) =
-\left( \frac{1}{2 \pi} \right)^{n-3}\sqrt{\mid \Lambda \otimes\mathbf{R}  \mid_{+}} \, \, 
+\pi\left(z\mid \mathbf{T} \right) =
+\left( \frac{1}{2 \pi} \right)^{n-3}
+\sqrt{\mid \mathbf{T} \otimes\mathbf{L}  \mid_{+}} \, \, 
  e^{\displaystyle{-\tfrac{1}{2}
-\mathrm{vec}(z)'(\Lambda \otimes \mathbf{R} ) \mathrm{vec}(z)}}
+(\mathrm{vec} \, \mathbf{z})^\top(\mathbf{T} \otimes \mathbf{L} ) \mathrm{vec}\, \mathbf{z}}}
 \label{eq:ICAR}
 \end{equation}
 
-where $\mathbf{R} := \mathbf{D} - \mathbf{W}$ is the Laplacian matrix of the graph $\mathcal{G}$ with $3$ connected components and $\mathbf{D} = \mathrm{diag}(d_1, d_2 \ldots d_n)$ is the degree matrix of $\mathcal{G}$.
-Since $\mathbf{R}$ is singular with rank deficiency $3$ and $\pi(z|\Lambda)$ is therefore improper \citep{Hodges2003}, it is necessary to constrain $z$ to sum to zero within each connected graph component \citep{ICAR}. 
+where $\mathbf{L} := \mathbf{D} - \mathbf{W}$ is the Laplacian matrix of the graph $\mathcal{G}$ with $3$ connected components and $\mathbf{D} = \mathrm{diag}(d_1, d_2 \ldots d_n)$ is the degree matrix of $\mathcal{G}$ (as discussed more in detail in Chapter \ref{chapter:theory}). The matrix $\mathbf{T} = \Sigma^{-1}$ is the $2 \times 2$ precision parameter. 
+Since $\mathbf{L}$ is singular with rank deficiency $3$ \citep{Hodges2003}, it is necessary to constrain $z$ to sum to zero within each connected graph component \citep{ICAR}. 
 This is the reason for adopting component-specific intercepts $\beta_C$ in equation \ref{eq:model}.
 
-To ease the interpretation of $\Lambda$ as the precision parameter of $z$, it is possible to cleanse it from the effect of the neighbourhood structure by defining a scaled version of $\mathbf{R}$ \cite{Sorbye} and reparametrising the precision of $z$ accordingly.
-Since $\mathcal{G}$ is disconnected, each component-specific block of $\mathbf{R}$ is multiplied by the relevant typical variance, namely the geometric mean of the diagonal of the corresponding block of its pseudoinverse, following the methodology proposed by \cite{Freni}. It is therefore possible to define a precision parameter $\Lambda_\mathrm{scaled}$ which is not confounded with graph-induced effects. The scaled precision is assigned a Wishart prior \citep{Gelman} with $2k+1$ degrees of freedom and scale parameter equal to the identity matrix, i.e. $\Lambda_\mathrm{scaled} \sim \mathrm{Wishart}_{k}( I_k, 2k+1)$, with $k=2$ \citep{INLAMSM}.
-
-
-$$
-\mathbf{R}_\mathrm{scaled} := \mathcal{P} \left( \bar{\sigma}_{C_1}^2 \mathbf{R_{C_1}} \oplus \bar{\sigma}_{C_2}^2 \mathbf{R_{C_2}}  
-\oplus \bar{\sigma}_{C_3}^2 \mathbf{R_{C_3}} \right) \mathcal{P'}
-$$
-where $\mathcal{P}$ is an appropriate permutation matrix, $\mathbf{R_{C_i}}$ is the Laplacian of the $i$-th connected component of the graph and $\bar{\sigma}_{C_i}^2$ is the relevant typical variance. 
-
-
+To ease the interpretation of $T$ as the precision parameter of $z$, it is possible to cleanse it from the effect of the neighbourhood structure by defining a scaled version of $\mathbf{L}$ \cite{Sorbye} and reparametrising the precision of $z$ accordingly. The scaling procedure is described in subsection \ref{subsection:scaling}.
+Since $\mathcal{G}$ is disconnected, each component-specific block of $\mathbf{L}$ is multiplied by the relevant typical variance, namely the geometric mean of the diagonal of the corresponding block of its pseudoinverse, following the methodology proposed by \cite{Freni}. It is therefore possible to define a precision parameter $T_\mathrm{scaled}$ which is not confounded with graph-induced effects. The scaled precision is assigned a Wishart prior \citep{Gelman} with $2k+1$ degrees of freedom and scale parameter equal to the identity matrix, i.e. $T_\mathrm{scaled} \sim \mathrm{Wishart}_{k}( I_k, 2k+1)$, with $k=2$ \citep{INLAMSM}.
 
 In \texttt{R-INLA}, precision scaling is implemented automatically for intrinsic models, like the univariate ICAR, through the option \texttt{scale.model} within the \texttt{inla()} function call; otherwise the scaled structure matrix for each component can be computed as a standalone object with \texttt{inla.scale.model()}. In the multivariate case, \texttt{INLAMSM} provides readily-defined models for which the user is required to provide the neighbourhood matrix $\mathbf{W}$ instead of the Laplacian (as different models with the same neighbourhood matrix have different structure matrices). Hence, to scale a multivariate ICAR model we derive $\mathbf{W}$ from the scaled Laplacian.
 
