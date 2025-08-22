@@ -13,6 +13,10 @@
 \usepackage{url}                % For bare url links
 \usepackage[svgnames]{xcolor}   % For colouring text
 \usepackage{xfrac}              % For inline fractions, advised by: https://tex.stackexchange.com/questions/128496
+%
+% Setups
+% Links of any kind: always, categorically, blue
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
 
 \title{Thesis draft}
 \author{Leonardo Cefalo}
@@ -35,7 +39,6 @@
 \chapter{Elements of areal data modelling} \label{chapter:theory}
 %% -------- Introduction --------------------------------- %%
 \section{Introduction}
-\textcolor{red}{Just a check that this works.}
 In this chapter, we provide an overview on the statistical methodology followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox in areal data modelling, with specific application in chapter \ref{Chapter:Invalsi}. Since the application regards multivariate data, here we describe multivariate models directly, although the univariate case is perhaps more frequent in application literature. However, once the multivariate model is defined, the univariate one follows straightforwardly. 
 
 We start by introducing the simplest and most intuitive autoregressive model, namely the Intrinsic Conditional Autoregressive \citep{Mardia}, which generalises to the multivariate case the seminal paper of \cite{CAR}. We then introduce some simple extensions of the ICAR which may be needful to handle random noise. 
@@ -563,7 +566,7 @@ We have just seen that under RSR the posterior means of covariate effects approx
 
 For this reason, a recent strand of literature criticised RSR, starting from \cite{Khan} who proved analytically how RSR yields to similar coefficient estimates as nonspatial regression (equality holds at least in the case of Normal likelihood and Uniform prior on the coefficients), yet it underestimates coefficient variability, resulting in reduced coverage with respect to nonspatial regression. 
 
-Before criticism against RSR, several alternative approaches have being proposed in the last twenty years. One of the earliest ones was introduced by \cite{HughesHaran} and can be thought of as a refinement of RSR. In brief, they noticed the constraints used in RSR are not informative on the spatial structure of data, hence they developed a restriction methodology based on the eigenvectors of a generalised Moran operator, rather than the projection matrix. This is particularly interesting in that the collinearity between the unmeasured confounder and the explanatory variables is ruled out by means of a spatial filter. As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/eigenvectors.gif}{in this gif} we show the structure of the 30 eigenvectors corresponding to the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice.
+Before criticism against RSR, several alternative approaches have being proposed in the last twenty years. One of the earliest ones was introduced by \cite{HughesHaran} and can be thought of as a refinement of RSR. In brief, they noticed the constraints used in RSR are not informative on the spatial structure of data, hence they developed a restriction methodology based on the eigenvectors of a generalised Moran operator, rather than the projection matrix. This is particularly interesting in that the collinearity between the unmeasured confounder and the explanatory variables is ruled out by means of a spatial filter. As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_eigenvectors.gif}{in this gif} we show the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the queen's criterion (neighbours share either an edge or a vertex).
 
 %A different approach to deal with spatial confounding, introduced by \cite{Dupont}, is based on adjusting the covariates rather than constraining spatial effects by representing the former as the sum of a spatial and a nonspatial component; it is known in the literature as Spatial+.% While Spatial+ was originally proposed for thin plate spline regression, 
 
