@@ -16,7 +16,7 @@
 %
 % Setups
 % Links of any kind: always, categorically, blue
-\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
+\hypersetup{colorlinks=true, citecolor=black, linkcolor=blue, menucolor=black, urlcolor=blue}
 
 \title{Thesis draft}
 \author{Leonardo Cefalo}
@@ -566,7 +566,24 @@ We have just seen that under RSR the posterior means of covariate effects approx
 
 For this reason, a recent strand of literature criticised RSR, starting from \cite{Khan} who proved analytically how RSR yields to similar coefficient estimates as nonspatial regression (equality holds at least in the case of Normal likelihood and Uniform prior on the coefficients), yet it underestimates coefficient variability, resulting in reduced coverage with respect to nonspatial regression. 
 
-Before criticism against RSR, several alternative approaches have being proposed in the last twenty years. One of the earliest ones was introduced by \cite{HughesHaran} and can be thought of as a refinement of RSR. In brief, they noticed the constraints used in RSR are not informative on the spatial structure of data, hence they developed a restriction methodology based on the eigenvectors of a generalised Moran operator, rather than the projection matrix. This is particularly interesting in that the collinearity between the unmeasured confounder and the explanatory variables is ruled out by means of a spatial filter. As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_eigenvectors.gif}{in this gif} we show the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the queen's criterion (neighbours share either an edge or a vertex).
+\subsubsection{Filtering based on Moran operator}
+Before criticism against RSR, several alternative approaches have being proposed in the last twenty years. One of the earliest ones was introduced by \cite{HughesHaran} and can be thought of as a refinement of RSR. In brief, they noticed the constraints used in RSR are not informative on the spatial structure of data, hence they developed a restriction methodology based on the eigenvectors of what authors define the generalised Moran operator, rather than the projection matrix.
+
+\paragraph{The Moran coefficient} \label{par:I_moran}
+To gain some context, let us first recall that the Moran index $I(x)$ referring to a vector $x$ of length $n$ taking values over a graph with neighbourhood matrix $\mathbf{W}$ is given by 
+%
+\begin{equation}
+I(x) = \frac{n}{\mathbf{1^\top W 1}} \frac{x^\top \mathcal{C} \mathbf{W} \mathcal{C}x}{x^\top \mathbf{W}x}
+\label{eq:I_moran}
+\end{equation}
+%
+where $\mathcal{C}$ is the idempotent centering matrix $\mathcal{C}:=\mathbf{I}_n - \frac{1}{n}\mathbf{11}^\top$ implying  $\mathcal{C}x = x - \bar{x}$
+
+\paragraph{Smoothing orthogonal to the}
+
+%is basically the numerator of the Moran coefficient \citep{Cliff_Ord} and for a variable $x$ taking values over a graph whose neighbourhood matrix is labelled as $\mathbf{W}$ we have $\mathcal{M}x := (x - \bar{x})^\top \mathbf{W} (x - \bar{x}) 1 = x^\top(\mathbf{I}_n - \frac{1}{n}\mathbf{11}^\top) \mathbf{W} (\mathbf{I}_n - \frac{1}{n}\mathbf{11}^\top)x$, where $\mathbf{1}$ is a vector of ones of appropriate length
+
+This is particularly interesting in that the collinearity between the unmeasured confounder and the explanatory variables is ruled out by means of a spatial filter and not by automatic constraints. As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_Eigenvectors.gif}{in this gif} we show the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the rook criterion (neighbours must share an edge).
 
 %A different approach to deal with spatial confounding, introduced by \cite{Dupont}, is based on adjusting the covariates rather than constraining spatial effects by representing the former as the sum of a spatial and a nonspatial component; it is known in the literature as Spatial+.% While Spatial+ was originally proposed for thin plate spline regression, 
 
@@ -1005,9 +1022,7 @@ Section \ref{par:GRFs} shows that conditional pairwise independence in Gaussian 
 
 It is thus convenient to identify a class of probabilistic models for Gaussian random fields for which conditional pairwise independence holds by definition. A sufficient condition to this aim is to satisfy the Markov property. Following \citep[][Section 2.2]{GMRFs}, a Markovian random field can be intuitively defined with respect to a graph; it is easy to notice that the graph structure is a common representation for data like time series or lattice (either regular or irregular, in any number of dimensions). 
 
-We start by assuming that each \textcolor{red}{element} of an $n$-dimensional Gaussian random field can thus be associated with a node in a graph defined as at the beginning of section \ref{section:icar}.
-
-The \textcolor{red}{relationship} $X:\mathcal{S} \rightarrow \mathbb{R}^n$ is thus assumed to hold, and for brevity we will write $X_i$ in place of $X(s_i)$. The \textit{global} Markov property \citep{HammersleyClifford} means that:
+We start by assuming that each element of an $n$-dimensional Gaussian random field can thus be associated with a node in a graph defined as at the beginning of section \ref{section:icar}. The relationship $X:\mathcal{S} \rightarrow \mathbb{R}^n$ is thus assumed to hold, and for brevity we will write $X_i$ in place of $X(s_i)$. The \textit{global} Markov property \citep{HammersleyClifford} means that:
 %
 \begin{equation}
 \pi(X_i \mid X_{-i}) = \pi \left(X_i \mid \lbrace X_j : s_j \in \partial_i \rbrace \right)
@@ -1082,9 +1097,8 @@ g(\vartheta) \approx   g(\vartheta_0) + \nabla   g(\vartheta_0)'(\vartheta - \va
 %\end{align*}
 Where $H_f(x_0)$ denotes the Hessian matrix of a generic scalar-valued function $f(\cdot)$ evaluated at $x_0$
 
-\footnote{
-Please notice the Hessian matrix can be further simplified. To see this, first consider that 
-$$H_g(\vartheta) = H_{ \ln \pi (\vartheta \mid \Psi)}(\vartheta) + \sum_{j=1}^{N} H_{\ln f(y \mid \vartheta, \Psi)}(\vartheta)$$. The first addendum is $-\mathbf{q}_{\Psi} \forall \vartheta$. Concerning the second term, notice that instead of $\vartheta$ inference can be made on the first $N$ elements of the vector $\theta:= ((\eta + \epsilon)^{\top}, \beta^{\top}, \vartheta^{\top})^{\top}$, which is itself a GMRF \citep{INLA2017}. The term $\epsilon$ is a Gaussian error with arbitrarily small variance employed to make the distribution of the augmented predictor $\eta + \epsilon$. We then have, $\forall i,j \in [1, N]$, that $\sfrac{\partial^2 \ln f(y_i \mid\theta_i, \Psi)}{\partial \theta_r \partial \theta_c}$ is different from zero only for $r = c = i$, hence under this parametrisation $H_f(\theta)$ is a diagonal matrix.}
+\footnote{Please notice the Hessian matrix can be further simplified. To see this, first consider that 
+$$H_g(\vartheta) = H_{ \ln \pi (\vartheta \mid \Psi)}(\vartheta) + \sum_{j=1}^{N} H_{\ln f(y \mid \vartheta, \Psi)}(\vartheta)$$ The first addendum is $-\mathbf{q}_{\Psi} \forall \vartheta$. Regarding the second term, notice that instead of $\vartheta$ inference can be made on the first $N$ elements of the vector $\theta:= ((\eta + \epsilon)^{\top}, \beta^{\top}, \vartheta^{\top})^{\top}$, which is itself a GMRF \citep{INLA2017}. The term $\epsilon$ is a Gaussian error with arbitrarily small variance employed to make the distribution of the augmented predictor $\eta + \epsilon$. We then have, $\forall i,j \in [1, N]$, that $\sfrac{\partial^2 \ln f(y_i \mid\theta_i, \Psi)}{\partial \theta_r \partial \vartheta_c}$ is different from zero only for $r = c = i$, hence under this parametrisation $H_f(\theta)$ is a diagonal matrix.}
 
 
 
@@ -1135,7 +1149,7 @@ KLD\left( f_{VB}(\vartheta | y, \Psi) \mid \mid f(\vartheta | \Psi)\right) + \\
 \label{VBINLA}
 \end{aligned}
 \end{equation}
-where $KLD(f(x) \mid \mid g(x)) := \int f(x) ln \displaystyle{\frac{f(x)}{g(x)}}  dx$ denotes the Kullback-Leibler divergence between a proposed model $f(x)$ and a baseline model $g(x)$. Given the relatively small cardinality of $\lambda$, this methodology is referred to as low-rank correction. 
+where $KLD(f(x) \mid \mid g(x)) := \int f(x) \ln \displaystyle{\frac{f(x)}{g(x)}}  dx$ denotes the Kullback-Leibler divergence between a proposed model $f(x)$ and a baseline model $g(x)$. Given the relatively small cardinality of $\lambda$, this methodology is referred to as low-rank correction. 
 
 %% -------- R-INLA --------------------------------------- %% 
 \section{The \texttt{R-INLA} package} \label{section:r_inla}
@@ -1170,10 +1184,10 @@ Another dimension drawing attention from the literature is safety in school buil
 
 The Italian school system offers a self-evident case for the significance of territorial disparities in education quality, both in terms of infrastructure endowment and student outcomes. Regarding the first case,  \cite{Garlaschi} and \cite{BDI} provide a detailed analysis of the distribution of school infrastructure on the national territory; Importantly, the northern regions show an advantage in terms of recreational spaces, learning spaces, safety certifications and school accessibility. In addition, \cite{BDI} show that such infrastructural characteristics have an impact on the results of the students. Regarding student outcomes, it is worth noting that the North-South divide is widely acknowledged to shape dramatically the distribution of student performances, e.g., as shown in \cite{Agasisti}. In particular, this disparity increases along the schooling process, implicitly suggesting that educational gaps tend to accumulate over time \citep{Invalsi2020}. In addition to the North-South gap,  evidence for spatial patterns in student outcome results can also be detected within the Northern and Southern macroregions and territorial clusters in both cases \citep[][respectively]{bag:do:north, do:bag:mar:south}. Overall evidence suggests therefore the need for policy actions directed at improving the material conditions of schools in the most vulnerable areas.
 
-Thus, allocating adequate resources is a sensitive challenge for policymakers, also considering the heterogeneous funding system of school buildings and the uneven spending capacities between regions \citep[as in the case of Northern special statute regions, see][]{BDI}.
+Thus, allocating adequate resources is a sensitive challenge for policymakers, also considering the heterogeneous funding system of school buildings and the uneven spending capacities between regions, as in the case of Northern special statute regions, see \cite{BDI}.
 
 Motivated by the previous considerations, we believe that a structured set of multidimensional data about the Italian school system gathered from several institutional sources, along with georeferenced information, would be a valuable tool to detect the main areas of vulnerability and to plan appropriate development policies across the country. To this aim, we have developed \texttt{SchoolDataIT}, a software written in the \texttt{R} programming language \citep{R} which retrieves and harmonizes some relevant institutional databases at the territorial level of either municipalities (LAU hereinafter) and provinces \citep[NUTS-3 henceforth, ][]{NUTS2024}. 
-The \texttt{SchoolDataIT} package is intended as a contribution to a broader repository, namely the AMELIA platform (\url{https://grins.it/progetto/piattaforma-amelia}), an open-data platform designed to produce and harmonize high-quality statistical data and analyses, managed by the \textit{Growing Resilient, Inclusive, and Sustainable} (GRINS) Foundation, a multidisciplinary initiative funded by the NextGenerationEU (NGEU) Recovery Plan \citep{CrescenziEtAl2021, DeLaPorteJensen2021}. An example of package usage to build some simple data sets to be uploaded into AMELIA can be found in \href{https://github.com/lcef97/AMELIA_datasets}{this GitHub repository}.
+The \texttt{SchoolDataIT} package is intended as a contribution to a broader repository, namely the AMELIA platform (\url{https://grins.it/progetto/piattaforma-amelia}), an open-data platform designed to produce and harmonize high-quality statistical data and analyses, managed by the \textit{Growing Resilient, Inclusive, and Sustainable} (GRINS) Foundation, a multidisciplinary initiative funded by the NextGenerationEU (NGEU) Recovery Plan \citep{CrescenziEtAl2021, DeLaPorteJensen2021}. Some simple datasets were loaded in Amelia in April 2025 and regard classroom size, Invalsi scores, and a selecion of variables from the school buildings database. The relevant usage example and the full R codes, alongside with the complete metadata in \texttt{.csv} format can be found at this link: \url{https://github.com/lcef97/AMELIA_datasets}.
 
 Data providers are the Italian Ministry of Education (formerly MIUR, Ministry of Education, University and Research) \citep{MIUR}, the Institute for the Evaluation of the Education System (hereinafter Invalsi) \citep{Invalsi_IS}, the Italian National Institute of Statistics \citep[ISTAT,][]{InnerAreas, Situas, Shapefiles}, and the in-house company Infratel SPA on behalf of the Italian Ministry of Enterprises and Made in Italy \citep[MIMIT,][]{BB}, which is responsible of implementing and managing the ultra-broad band strategic plan. Since all of the data we take as input are open and publicly accessible, we retrieve them via web scraping, allowing for real-time updated inputs while requiring no storage space in the local machine of the user.
 
@@ -2103,20 +2117,20 @@ The Conditional Predictive Ordinate is a leave-one-out cross-validatory diagnost
 $$
 \mathrm{CPO}_{j,h} := \pi(y_{j,h} \mid y_{-(j,h)})
 $$  %% = \frac{\pi(y)}{\pi(y_{-j})}
-Low CPO values denote "surprising" observations and, hence, possible outliers. Details on how the CPO is computed in \texttt{R-INLA} are provided by \cite{CPOINLA}. Here, we compare models through the LPML \citep{Geisser}, i.e.  $\mathrm{LPML} :=\displaystyle{- \sum_{h=1}^2 \sum_{j = 1}^N \mathrm{ln}\, \mathrm{CPO}_{j,h}}$.
+Low CPO values denote "surprising" observations and, hence, possible outliers. Details on how the CPO is computed in \texttt{R-INLA} are provided by \cite{CPOINLA}. Here, we compare models through the LPML \citep{Geisser}, i.e.  $\mathrm{LPML} :=\displaystyle{- \sum_{h=1}^2 \sum_{j = 1}^N \ln \mathrm{CPO}_{j,h}}$.
 
 The Deviance Information Criterion (DIC, \cite{DIC}) is given by:
 $$
 \mathrm{DIC} := P_D + \mathbb{E}[D(\vartheta, \Psi) \mid y]
 $$
-Where $$P_D = \mathbb{E}[D(\vartheta, \Psi)] - D(\hat{\vartheta}, \hat{\Psi})$$ denotes the effective number of parameters or unconstrained parameters and measures model complexity, $D(\vartheta, \Psi) = -2 \mathrm{ln} \pi(y \mid \vartheta, \Psi)$ being the model deviance, whose expectation measures the goodness of fit. Following \cite{INLA} we define $\hat{\vartheta}$ as $\mathbb{E}[\vartheta | y]$ and $\hat{\Psi}$  as the posterior mode of $\Psi$, this latter choice being due to the skewness in $\pi(\Psi | y)$. We show both the effective number of parameters and the expected deviance alongside the DIC.
+Where $$P_D = \mathbb{E}[D(\vartheta, \Psi)] - D(\hat{\vartheta}, \hat{\Psi})$$ denotes the effective number of parameters or unconstrained parameters and measures model complexity, $D(\vartheta, \Psi) = -2 \ln \pi(y \mid \vartheta, \Psi)$ being the model deviance, whose expectation measures the goodness of fit. Following \cite{INLA} we define $\hat{\vartheta}$ as $\mathbb{E}[\vartheta | y]$ and $\hat{\Psi}$  as the posterior mode of $\Psi$, this latter choice being due to the skewness in $\pi(\Psi | y)$. We show both the effective number of parameters and the expected deviance alongside the DIC.
  
 The Watanabe-Akaike Information Criterion \cite{WAIC}, also known as Widely Applicable Information Criterion, is also useful in balancing model complexity and goodness of fit, the former being measured as $\mathrm{Var}[\mathrm{ln} \pi(y |\vartheta, \Psi)]$. An interesting feature of the WAIC is given by its averaging the likelihood over $\vartheta$ and $\Phi$ rather than using point estimates (\cite{GelmanWAIC}). We use the formulation provided by \cite{GelmanWAIC}. \\
  
 
 $$
-WAIC = 2 \sum_{j=1}^N VAR[\mathrm{ln} \pi(y_j |\vartheta, \Psi)]
-- 2 \sum_{j=1}^N  \mathrm{ln} \mathbb{E}[\pi(y_j | \vartheta, \Psi)]
+WAIC = 2 \sum_{j=1}^N VAR[\ln \pi(y_j |\vartheta, \Psi)]
+- 2 \sum_{j=1}^N  \ln \mathbb{E}[\pi(y_j | \vartheta, \Psi)]
 $$
 
 %%Lastly we compute the Mean Square Error (MSE) of the expected value of linear predictors, a purely goodness-of-fit metric, only informative for point estimates.
