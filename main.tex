@@ -48,7 +48,7 @@ Lastly, we introduce a typical and frequently discussed issue not only in areal 
 %% -------- ICAR ----------------------------------------- %%
 \section{The intrinsic CAR model} \label{section:icar}
 
-Consider a $p$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{E}$ is the set of edges, such that a generic element $\epsilon_{ij}$ denotes the edge between sites $s_i$ and $s_j$;  $\mathcal{S} := \lbrace s_1, s_2, \dots s_n \rbrace$ the set of nodes (sites), and $\partial_i := \lbrace s_j :\epsilon_{ij} \in \mathcal{E}\rbrace$ is the set of neighbours of site $i$.  The graph can be described by:
+Consider a $k$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{E}$ is the set of edges, such that a generic element $\epsilon_{ij}$ denotes the edge between sites $s_i$ and $s_j$;  $\mathcal{S} := \lbrace s_1, s_2, \dots s_n \rbrace$ the set of nodes (sites), and $\partial_i := \lbrace s_j :\epsilon_{ij} \in \mathcal{E}\rbrace$ is the set of neighbours of site $i$.  The graph can be described by:
 \begin{itemize}
 \item The binary neighbourhood matrix $\mathbf{W}$, with $w_{ij} = 1 \Longleftrightarrow s_i \in \partial s_j$ and $w_{ij}=0$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs})
 \item The diagonal degree matrix $\mathbf{D}$, whose elements correspond to the number of edges of each node or, alternatively, to the row or column sums of $\mathbf{W}$, hence $d_i = \sum_{j=1}^{n} w_{ij} = \mathrm{card}(\partial s_i)$
@@ -62,7 +62,7 @@ z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} \frac{w_{ij}}{d_i}z_{
 \label{eq:icarconditional}
 \end{equation}
 %
-Where $\Sigma$ is a matrix-valued scale parameter. Please notice this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} B_{i,j} z_{i}, \frac{1}{d_i} \Sigma \right)$ and presented $B_{ij} = \frac{w_ij}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
+Where $\Sigma$ is a $k \times k$ variance-covariance matrix. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} B_{i,j} z_{i}, \frac{1}{d_i} \Sigma \right)$ and presented $B_{ij} = \frac{w_ij}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
 
 
 To compute the joint density $\pi(y|\sigma^2)$ we rely on the Brook's Lemma \citep{HammersleyClifford, CAR}:
@@ -121,11 +121,11 @@ Then, with a little bit of standard algebra we get:
 %
 Where $C_1$ is an additive constant independent on $z$. 
 %
-Let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks row-wise the elements of a $n \times p$ matrix into a $pn \times 1$ vector. First consider:
+Let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks row-wise the elements of a $n \times k$ matrix into a $kn \times 1$ vector. First consider:
 $$
  \sum_{i=1}^n d_i z^{\top}_i \Sigma^{-1} z_i = 
 \begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n1} \\ \vdots \\ z_{nk}
 \end{pmatrix}^{\top}
 \begin{pmatrix}
 d_1 \Sigma^{-1} & 0 & \ldots & 0 \\
@@ -134,7 +134,7 @@ d_1 \Sigma^{-1} & 0 & \ldots & 0 \\
 0 & 0 & \ldots & d_n \Sigma^{-1}
 \end{pmatrix}
 \begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n1} \\ \vdots \\ z_{nk}
 \end{pmatrix}  = 
 \mathrm{vec}_r(z) ^{\top} (W \otimes \Sigma^{-1}) \mathrm{vec}_r(z)
 $$
@@ -142,7 +142,7 @@ Then, consider:
 $$
  \sum_{i=1}^n \sum_{k=1}^n w_{ik} z^{\top}_i \Sigma^{-1} z_k = 
 \begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n1} \\ \vdots \\ z_{nk}
 \end{pmatrix}^{\top}
 \begin{pmatrix}
 0 & w_{12} \Sigma^{-1} & \ldots & w_{1n} \Sigma^{-1}\\
@@ -151,7 +151,7 @@ w_{21} \Sigma^{-1} & 0 & \ldots & w_{2n} \Sigma^{-1}\\
 w_{n1} \Sigma^{-1} & w_{n2} \Sigma^{-1} & \ldots & 0
 \end{pmatrix}
 \begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1p} \\ z_{21} \\ \vdots \\ z_{2p} \\ \vdots \\z_{n1} \\ \vdots \\ z_{np}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n1} \\ \vdots \\ z_{nk}
 \end{pmatrix}  = 
 (\mathrm{vec}_r z) ^{\top} (D \otimes \Sigma^{-1}) \mathrm{vec}_r z
 $$
@@ -159,29 +159,28 @@ $$
 This proves the joint distribution of $z$ is \citep{Mardia, Banerjee, Gelfand}:
 %
 \begin{equation}
-\pi(z  | \Sigma^{-1}) \propto -\frac{1}{2} \mathrm{vec}_r(z) ^{\top} (\mathbf{L} \otimes \Sigma^{-1})\, \mathrm{vec}_r(z)
+\pi(z  | \Sigma^{-1}) \propto -\frac{1}{2} (\mathrm{vec}_r\,z)^{\top} (\mathbf{L} \otimes \Sigma^{-1})\, \mathrm{vec}_rz
 \label{eq:rowwise}
 \end{equation}
 %
-In practical applications (see chapter \ref{chapter:INLA}) it is convenient to rearrange $z$ column-wise through the $\mathrm{vec}$ operator \cite{INLAMSM}, such that $\mathrm{vec}\,z = (z_{11},\, \ldots, \,z_{n1},\, z_{12},\, \ldots,\, z_{n2},\, \ldots ,\, z_{1p}, \,\ldots, \,z_{np} )^{\top}$. To do so, we are actually using an orthogonal permutation matrix $\mathcal{P}$, such that 
-$$\mathrm{vec}\,z = \mathcal{P} \times \mathrm{vec}_r z $$
+In practical applications (see chapter \ref{chapter:INLA}) it is convenient to rearrange $z$ column-wise through the $\mathrm{vec}$ operator \cite{INLAMSM}, such that $\mathrm{vec}\,z = (z_{11},\, \ldots, \,z_{n1},\, z_{12},\, \ldots,\, z_{n2},\, \ldots ,\, z_{1k}, \,\ldots, \,z_{nk} )^{\top}$. To do so, we are actually using an orthogonal permutation matrix $\mathcal{P}$, such that 
+$$\mathrm{vec}\,z = \mathcal{P} \mathrm{vec}_r z $$
 
 To define $\mathcal{P}$, consider the $i$-th basis vector of $\mathbb{R}^p$, $e_i$, the $i$-th row of $I_n$, whose $i$-th element is $1$ and all other elements are zero, $\forall i \in [1,n]$. We then have:
 $$
 \mathcal{P}  := \begin{pmatrix} 
-I_n \otimes e_1^{\top} \\ I_n \otimes e_2^{\top} \\ \vdots \\ I_n \otimes e_p^{\top}
+I_n \otimes e_1^{\top} \\ I_n \otimes e_2^{\top} \\ \vdots \\ I_n \otimes e_k^{\top}
 \end{pmatrix}
 $$
 %
-Considering that$
-\mathrm{Var}[\mathrm{vec}\, z] = \mathcal{P} \times \mathrm{Var}[\mathrm{vec}_rz] \times \mathcal{P}^{\top}$, hence $\mathrm{Prec}[\mathrm{vec}\, z] = \mathcal{P} \times \mathrm{Prec}[\mathrm{vec}_r z] \times \mathcal{P}$, it holds that:
+Considering that $\mathrm{Var}[\mathrm{vec}\, z] = \mathcal{P} \,\mathrm{Var}[\mathrm{vec}_rz] \mathcal{P}^{\top}$, hence $\mathrm{Prec}[\mathrm{vec}\, z] = \mathcal{P} \mathrm{Prec}[\mathrm{vec}_r z] \mathcal{P}$, it holds that:
 $$
 \mathcal{P} \left( \mathbf{L} \otimes \Sigma^{-1} \right) \mathcal{P}^{\top}= \Sigma^{-1} \otimes \mathbf{L}
 $$
 Which can be proved with some algebra. Hence, in total equivalence with equation \ref{eq:rowwise}, we know that the joint distribution of a multivariate ICAR process is
 %
 \begin{equation}
-z|\Sigma \sim \mathcal{N} \left( 0, \Sigma^{-1} \otimes \mathbf{L}^{+}\right)
+z|\Sigma \sim \mathcal{N}_{kn} \left( 0, \Sigma^{-1} \otimes \mathbf{L}^{+}\right)
 \label{eq:icarjoint}
 \end{equation}
 %
@@ -562,29 +561,37 @@ RSR can be extended to the multilevel case \cite{Nobre}, in which e.g. spatial e
 
 \subsection{Beyond Restricted Regression}
 
-We have just seen that under RSR the posterior means of covariate effects approximate those of a non-spatial model, and if $y$ is Gaussian and $\beta$ has a flat prior, equality holds. Interestingly, \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta |y]$ if confounding occurs: intuitively, the expectation would be approximately the same of a model which ignores the existence of the spatial component. In terms of interpretation, this would mean that adding a spatial effect to the model should not significantly alter the estimated regression coefficients.
+We have just seen that under RSR the posterior means of covariate effects approximate those of a non-spatial model, and even more so when $y$ is Gaussian and $\beta$ has a flat prior the two estimates are equal. Interestingly, \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta |y]$ if confounding occurs: intuitively, the expectation would be approximately the same of a model ignoring the existence of the spatial component. In terms of interpretation, adding a spatial effect forced to be orthogonal to covariates would not significantly alter the point estimation of covariate effects.
 
-For this reason, a recent strand of literature criticised RSR, starting from \cite{Khan} who proved analytically how RSR yields to similar coefficient estimates as nonspatial regression (equality holds at least in the case of Normal likelihood and Uniform prior on the coefficients), yet it underestimates coefficient variability, resulting in reduced coverage with respect to nonspatial regression. 
+A more recent strand of literature criticising RSR has therefore begun developing, starting from \cite{Khan} who proved analytically how RSR yields similar coefficient estimates as nonspatial regression, yet it underestimates coefficient variability, resulting in reduced coverage with respect to nonspatial regression. 
 
 \subsubsection{Filtering based on Moran operator}
-Before criticism against RSR, several alternative approaches have being proposed in the last twenty years. One of the earliest ones was introduced by \cite{HughesHaran} and can be thought of as a refinement of RSR. In brief, they noticed the constraints used in RSR are not informative on the spatial structure of data, hence they developed a restriction methodology based on the eigenvectors of what authors define the generalised Moran operator, rather than the projection matrix.
+
+Several alternatives to RSR have been proposed in the last fifteen years. One of the earliest ones was introduced by \cite{HughesHaran} and can be thought of as a refinement of RSR. In brief, they noticed the constraints used in RSR are not informative on the spatial structure of data, hence they developed a restriction methodology based on the eigenvectors of what authors define the generalised Moran operator, rather than the projection matrix.
 
 \paragraph{The Moran coefficient} \label{par:I_moran}
-To gain some context, let us first recall that the Moran index $I(x)$ referring to a vector $x$ of length $n$ taking values over a graph with neighbourhood matrix $\mathbf{W}$ is given by 
+To gain some context, let us first recall that the Moran index $I(z)$ referring to a vector $z$ of length $n$ taking values over a graph with neighbourhood matrix $\mathbf{W}$ is given by 
 %
 \begin{equation}
-I(x) = \frac{n}{\mathbf{1^\top W 1}} \frac{x^\top \mathcal{C} \mathbf{W} \mathcal{C}x}{x^\top \mathbf{W}x}
+I(\mathbf{W}) = \frac{n}{\mathbf{1^\top W 1}} \frac{z^\top \mathcal{C} \mathbf{W} \mathcal{C}z}{z^\top \mathcal{C}z}
 \label{eq:I_moran}
 \end{equation}
 %
-where $\mathcal{C}$ is the idempotent centering matrix $\mathcal{C}:=\mathbf{I}_n - \frac{1}{n}\mathbf{11}^\top$ implying  $\mathcal{C}x = x - \bar{x}$
+where $\mathcal{C}$ is the idempotent centering matrix $\mathcal{C}:=\mathbf{I}_n - \frac{1}{n}\mathbf{11}^\top$ implying  $\mathcal{C}z = z - \bar{z}$. 
 
-\paragraph{Smoothing orthogonal to the}
+\paragraph{Smoothing orthogonal to the space of covariates by spatial filtering}
 
 %is basically the numerator of the Moran coefficient \citep{Cliff_Ord} and for a variable $x$ taking values over a graph whose neighbourhood matrix is labelled as $\mathbf{W}$ we have $\mathcal{M}x := (x - \bar{x})^\top \mathbf{W} (x - \bar{x}) 1 = x^\top(\mathbf{I}_n - \frac{1}{n}\mathbf{11}^\top) \mathbf{W} (\mathbf{I}_n - \frac{1}{n}\mathbf{11}^\top)x$, where $\mathbf{1}$ is a vector of ones of appropriate length
 
-This is particularly interesting in that the collinearity between the unmeasured confounder and the explanatory variables is ruled out by means of a spatial filter and not by automatic constraints. As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_Eigenvectors.gif}{in this gif} we show the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the rook criterion (neighbours must share an edge).
+This is particularly interesting in that the collinearity between the unmeasured confounder and the explanatory variables is ruled out by means of a spatial filter and not by automatic constraints.  
 
+\cite{HughesHaran} introduce what they refer to as the \emph{Generalised Moran operator for $\mathbf{X}$ with respect to the graph}, i.e.
+%
+$$
+I_{\mathbf{X}}(\mathbf{W}) =  \frac{n}{\mathbf{1^\top W 1}} \frac{z^\top P_\bot \mathbf{W} P_\bot z}{z^\top P_\bot z}
+$$
+%
+Where $P_\bot$ is the orthogonal complement to the projection matrix of $X$, i.e. $P_\bot = I-X(X^\top X)^{-1}X^\top$ As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_Eigenvectors.gif}{this gif} shows the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the rook criterion (neighbours must share an edge).
 %A different approach to deal with spatial confounding, introduced by \cite{Dupont}, is based on adjusting the covariates rather than constraining spatial effects by representing the former as the sum of a spatial and a nonspatial component; it is known in the literature as Spatial+.% While Spatial+ was originally proposed for thin plate spline regression, 
 
  
@@ -619,15 +626,15 @@ $$
 %
 The distribution of $\mathbf{Y} \mid \mathbf{U}, \Sigma, \Phi $ then reads:
 \begin{align*}
--2 \ln \pi \left(\mathrm{vec} \, \mathbf{Y} \mid \mathbf{U}, \Sigma, \phi \right) =\\
+-2 \ln \pi \left(\mathrm{vec} \, \mathbf{Z} \mid \mathbf{U}, \Sigma, \phi \right) =\\
  %
-=(\mathrm{vec}\,\mathbf{Y})^{\top}
+=(\mathrm{vec}\,\mathbf{Z})^{\top}
 \left[ \left(
  \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top
 \right) \otimes \mathbf{I}_n \right] 
-\mathrm{vec}\,\mathbf{Y}+ \\ 
+\mathrm{vec}\,\mathbf{Z}+ \\ 
 %
-- 2(\mathrm{vec}\,\mathbf{Y})^{\top} 
+- 2(\mathrm{vec}\,\mathbf{Z})^{\top} 
 \left[ \left( 
  \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top\right) \otimes \mathbf{I}_n \right] 
 \left[ \left( \mathbf{M}^\top \Phi^{\frac{1}{2}} \right)
@@ -640,13 +647,13 @@ The distribution of $\mathbf{Y} \mid \mathbf{U}, \Sigma, \Phi $ then reads:
     \left[ (\mathbf{M}^\top\Phi^{\frac{1}{2}} ) \otimes \mathbf{I}_n \right]
    \mathrm{vec}\,\mathbf{U} =\\
 %
-= C + (\mathrm{vec}\,\mathbf{Y})^{\top}
+= C + (\mathrm{vec}\,\mathbf{Z})^{\top}
 \left[ \left(
  \mathbf{M}^{-1} \bar{\Phi}^{-1}{\mathbf{M}^{-1}}^\top
 \right) \otimes \mathbf{I}_n \right] 
-\mathrm{vec}\,\mathbf{Y} +\\ 
+\mathrm{vec}\,\mathbf{Z} +\\ 
 %
-- 2(\mathrm{vec}\,\mathbf{Y})^{\top} 
+- 2(\mathrm{vec}\,\mathbf{Z})^{\top} 
 \left[ \left(  \mathbf{M}^{-1} \bar{\Phi}^{-1} \Phi^{1/2}  \right)
 \otimes \mathbf{I}_n \right]  \,\mathrm{vec}\,\mathbf{U}  +\\
 %
@@ -701,7 +708,9 @@ Hence, with some straightforward algebra, it can be concluded that:
              \mathbf{q}_{22} \otimes \mathbf{I}_n + \mathbf{I}_p \otimes \mathbf{L}
         \end{pmatrix}^{-1} \right)
 \end{equation}
-Which consists of four blocks; three are diagonal and the lower-right one has the same zeroes pattern as $\mathbf{L}$
+Which consists of four blocks; three are diagonal and the lower-right one has the same zeroes pattern as $\mathbf{L}$.
+
+
  
 \end{appendices}
 
