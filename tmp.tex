@@ -1,0 +1,25 @@
+\documentclass{article}
+\usepackage{lipsum}
+\newcounter{examplecounter}
+\newenvironment{example}{\begin{quote}%
+    \refstepcounter{examplecounter}%
+  \textbf{Example \arabic{examplecounter}}%
+  \quad
+}{%
+\end{quote}%
+}
+\begin{document}
+\begin{example}\label{ex:simple}
+  A simple example environment
+
+  \lipsum[1]
+\end{example}
+
+Some text: \lipsum[4]
+
+\begin{example}\label{ex:another}
+  Another example
+\end{example}
+
+Example~\ref{ex:another} comes after example~\ref{ex:simple}
+\end{document}
