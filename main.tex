@@ -65,139 +65,26 @@ Lastly, we introduce a typical and frequently discussed issue not only in areal 
 %% -------- ICAR ----------------------------------------- %%
 \section{The intrinsic CAR model} \label{section:icar}
 
-Consider a $k$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{E}$ is the set of edges, such that a generic element $\epsilon_{ij}$ denotes the edge between sites $s_i$ and $s_j$;  $\mathcal{S} := \lbrace s_1, s_2, \dots s_n \rbrace$ the set of nodes (sites), and $\partial_i := \lbrace s_j :\epsilon_{ij} \in \mathcal{E}\rbrace$ is the set of neighbours of site $i$.  The graph can be described by:
+Consider a $k$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{E}$ is the set of edges, such that a generic element $\epsilon_{ij}$ denotes the edge between sites $s_i$ and $s_j$;  $\mathcal{S} := \lbrace s_i \rbrace_{i=1}^{n_z}$ the set of nodes (sites) of size $n_z$, and $\partial_i := \lbrace s_j :\epsilon_{ij} \in \mathcal{E}\rbrace$ is the set of neighbours of site $i$.  The graph can be described by:
 \begin{itemize}
-\item The binary neighbourhood matrix $\boldsymbol{W}$, with $w_{ij} = 1 \Longleftrightarrow s_i \in \partial s_j$ and $w_{ij}=0$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs})
-\item The diagonal degree matrix $\boldsymbol{D}$, whose elements correspond to the number of edges of each node or, alternatively, to the row or column sums of $\boldsymbol{W}$, hence $d_i = \sum_{j=1}^{n} w_{ij} = \mathrm{card}(\partial s_i)$
+\item The binary neighbourhood matrix $\boldsymbol{W}$, with $w_{ij} = 1 \Longleftrightarrow s_j \in \partial s_i$ and $w_{ij}=0$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs})
+\item The diagonal degree matrix $\boldsymbol{D}$, whose elements correspond to the number of edges of each node or, alternatively, to the row or column sums of $\boldsymbol{W}$, hence $d_i = \sum_{j=1}^{n_z} w_{ij} = \mathrm{card}(\partial s_i)$
 \item The Laplacian matrix $\boldsymbol{L} =\boldsymbol{ D} - \boldsymbol{W}$, which is singular by construction and more precisely has rank deficiency equal the number of connected components in $\mathcal{G}$, \citep[see e.g.][]{ICAR, Hodges2003}
 \end{itemize}
 
 Following \cite{Mardia}, see also chapter 10 of \cite{Banerjee}, we suppose that $z_i$ follows this prior conditional distribution:
 %
 \begin{equation}
-z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \Sigma\right)
+z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n_z} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \Sigma\right)
 \label{eq:icarconditional}
 \end{equation}
 %
-Where $\Sigma$ is a $k \times k$ variance-covariance matrix. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n} B_{i,j} z_{i}, \frac{1}{d_i} \Sigma \right)$ and presented $B_{ij} = \frac{w_ij}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
+Where $\Sigma$ is a $k \times k$ variance-covariance matrix. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n_z} B_{ij} z_{i}, \frac{1}{d_i} \Sigma \right)$ and presented $B_{ij} = \frac{w_{ij}}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
 
-
-To compute the joint density $\pi(y|\sigma^2)$ we rely on the Brook's Lemma \citep{HammersleyClifford, CAR}:
- \begin{equation}
- \pi(z) = \prod_{i=1}^n \frac{
- \pi \left(z_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
- }{
- \pi \left(x_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
- } \, \pi(x)
- \label{eq:brookslemma}
- \end{equation}
-Where $x$ is a set of known variables satisfying the positivity condition. Also, notice  $\pi(x)$ is a constant term we can treat a a normalising constant. Then, consider:
-%
-\begin{align}
-\ln \left(z_i | \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Sigma  \right) = \\ =
-C_0 - \frac{d_i}{2} \left( 
-z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_i}z_k
-\right)^{\top} \Sigma^{-1} \left( 
-z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n} \frac{w_ik}{d_i}z_k
-\right)
-\end{align}
-%
-Where $C_0$ is an additive constant. Now, with no loss of generality, let us assume $x_i = 0 \,   \forall \, i \in [1,n]$, so that numerator elements in equation \ref{eq:brookslemma} can be written as
-%
-\begin{align}
- \ln \pi \left(z_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Sigma  \right) =
- C_0 - \frac{d_i}{2 } \left(z_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}z_k  \right) ^{\top}
- \Sigma^{-1}  \left(z_i   -\sum_{k=i+1}^n \frac{w_{ij}}{d_i}z_k  \right)=  \\
- = C_0- \frac{d_i}{2 } \left[ z^{\top}_i \Sigma^{-1} z_i - 
- 2 \left(\sum_{k=i+1}^n    \frac{w_{ik}}{d_i}z_k\right) ^{\top} \Sigma^{-1} z_i \right] 
- - \frac{d_i}{2}  \left( 
- \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
- \right) ^{\top} \Sigma^{-1} \left( 
- \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
- \right)
- \label{eq:numerator}
- \end{align}
-%
-While denominator elements take the form:
+We prove in Appendix \ref{appendix:icar} that the joint distribution of a multivariate ICAR field is:
 %
 \begin{equation}
- \ln \pi \left(x_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \Sigma  \right)\mid_{x_i=0} = C_0 - \frac{d_i}{2}  \left( 
- \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
- \right) ^{\top} \Sigma^{-1} \left( 
- \sum_{k=i+1}^n \frac{w_{ik}}{d_i} z_k
- \right)
-\label{eq:denominator}
-\end{equation}
-%
-Then, with a little bit of standard algebra we get:
-%
-\begin{equation}
-\ln \pi(z \mid \Sigma) = C_1 + \sum_{i=1}^n d_i z_i ^{\top} \Sigma^{-1} z_i -
-\sum_{i=1}^n \sum_{k=1}^n w_{ik} z_i^{\top} \Sigma^{-1} z_k
-\end{equation}
-%
-Where $C_1$ is an additive constant independent on $z$. 
-%
-Let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks row-wise the elements of a $n \times k$ matrix into a $kn \times 1$ vector. First consider:
-$$
- \sum_{i=1}^n d_i z^{\top}_i \Sigma^{-1} z_i = 
-\begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n1} \\ \vdots \\ z_{nk}
-\end{pmatrix}^{\top}
-\begin{pmatrix}
-d_1 \Sigma^{-1} & 0 & \ldots & 0 \\
-0 & d_2 \Sigma^{-1} & \ldots & 0 \\
-\vdots & \vdots & \ddots & \vdots \\
-0 & 0 & \ldots & d_n \Sigma^{-1}
-\end{pmatrix}
-\begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n1} \\ \vdots \\ z_{nk}
-\end{pmatrix}  = 
-\mathrm{vec}_r(z) ^{\top} (W \otimes \Sigma^{-1}) \mathrm{vec}_r(z)
-$$
-Then, consider:
-$$
- \sum_{i=1}^n \sum_{k=1}^n w_{ik} z^{\top}_i \Sigma^{-1} z_k = 
-\begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n1} \\ \vdots \\ z_{nk}
-\end{pmatrix}^{\top}
-\begin{pmatrix}
-0 & w_{12} \Sigma^{-1} & \ldots & w_{1n} \Sigma^{-1}\\
-w_{21} \Sigma^{-1} & 0 & \ldots & w_{2n} \Sigma^{-1}\\
-\vdots & \vdots & \ddots & \vdots \\
-w_{n1} \Sigma^{-1} & w_{n2} \Sigma^{-1} & \ldots & 0
-\end{pmatrix}
-\begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n1} \\ \vdots \\ z_{nk}
-\end{pmatrix}  = 
-(\mathrm{vec}_r z) ^{\top} (D \otimes \Sigma^{-1}) \mathrm{vec}_r z
-$$
-
-This proves the joint distribution of $z$ is \citep{Mardia, Banerjee, Gelfand}:
-%
-\begin{equation}
-\pi(z  | \Sigma^{-1}) \propto -\frac{1}{2} (\mathrm{vec}_r\,z)^{\top} (\boldsymbol{L} \otimes \Sigma^{-1})\, \mathrm{vec}_rz
-\label{eq:rowwise}
-\end{equation}
-%
-In practical applications (see chapter \ref{chapter:INLA}) it is convenient to rearrange $z$ column-wise through the $\mathrm{vec}$ operator \cite{INLAMSM}, such that $\mathrm{vec}\,z = (z_{11},\, \ldots, \,z_{n1},\, z_{12},\, \ldots,\, z_{n2},\, \ldots ,\, z_{1k}, \,\ldots, \,z_{nk} )^{\top}$. To do so, we are actually using an orthogonal permutation matrix $\mathcal{P}$, such that 
-$$\mathrm{vec}\,z = \mathcal{P} \mathrm{vec}_r z $$
-
-To define $\mathcal{P}$, consider the $i$-th basis vector of $\mathbb{R}^p$, $e_i$, the $i$-th row of $I_n$, whose $i$-th element is $1$ and all other elements are zero, $\forall i \in [1,n]$. We then have:
-$$
-\mathcal{P}  := \begin{pmatrix} 
-I_n \otimes e_1^{\top} \\ I_n \otimes e_2^{\top} \\ \vdots \\ I_n \otimes e_k^{\top}
-\end{pmatrix}
-$$
-%
-Considering that $\mathrm{Var}[\mathrm{vec}\, z] = \mathcal{P} \,\mathrm{Var}[\mathrm{vec}_rz] \mathcal{P}^{\top}$, hence $\mathrm{Prec}[\mathrm{vec}\, z] = \mathcal{P} \mathrm{Prec}[\mathrm{vec}_r z] \mathcal{P}$, it holds that:
-$$
-\mathcal{P} \left( \boldsymbol{L} \otimes \Sigma^{-1} \right) \mathcal{P}^{\top}= \Sigma^{-1} \otimes \boldsymbol{L}
-$$
-Which can be proved with some algebra. Hence, in total equivalence with equation \ref{eq:rowwise}, we know that the joint distribution of a multivariate ICAR process is
-%
-\begin{equation}
-z|\Sigma \sim \mathcal{N}_{kn} \left( 0, \Sigma^{-1} \otimes \boldsymbol{L}^{+}\right)
+z|\Sigma \sim \mathcal{N}_{kn_z} \left( 0, \Sigma^{-1} \otimes \boldsymbol{L}^{+}\right)
 \label{eq:icarjoint}
 \end{equation}
 %
@@ -213,7 +100,7 @@ Where $\sigma_h^2$ is the marginal variance of the $h$-th variable, correspondin
 
 Hence, by definition, ICAR variance incorporates a factor determined by the neighbourhood structure. At the global level, this consideration implies that process variability is not described by the precision parameter alone, since a deterministic scale factor concurs as well. The intuitive solution to this issue is to scale the ICAR model, as shown by \cite{Sorbye}. Following their operational proposal, we take the geometric mean of the diagonal of $\boldsymbol{S}$ as scaling factor - or, in other words, the geometric mean of marginal variances if all global precision parameters (diagonal entries of $\Sigma$) were equal to 1, namely
 $$
-\bar{\sigma}^{2} = \prod_{i=1}^{n} \sigma_{ii}^{2/n}
+\bar{\sigma}^{2} = \prod_{i=1}^{n} \sigma_{ii}^{2/n_z}
 $$
 this scaling factor is sometimes referred to as reference variance (or generalised variance, 
 %\textcolor{red}{(though this phrase generally denotes a determinant, hence taking into account also off-diagonal elements)}, 
@@ -221,7 +108,7 @@ or typical marginal variance). We are thus able to separate the parameter $\Sigm
 %$ \displaystyle{\frac{1}{\bar{\sigma}^2}} \Lambda$, and this is what actually expresses the precision of the process independently of how the graph is structured. 
 
 
-When the graph has $G >1$ connected components, its Laplacian matrix is (a permutation of) the direct sum of the component Laplacians, as mentioned in the previous paragraph. The pseudo-inverses of these matrices may clearly have different typical marginal variances. In this case, it is necessary to scale the component-specific precisions separately, as shown in \cite{Freni}:
+When the graph has $G >1$ connected components, its Laplacian matrix is (a permutation of) the direct sum of the Laplacian matrices of its components, as mentioned in the previous paragraph. The pseudo-inverses of these matrices may clearly have different typical marginal variances. In this case, it is necessary to scale the component-specific precisions separately, as shown in \cite{Freni}:
 $$
 \boldsymbol{L}_\mathrm{s} = \mathcal{P} \left( \bar{\sigma}_1^2 \boldsymbol{L_1} \oplus \bar{\sigma}_2^2 \boldsymbol{L_2}
 \oplus ... \oplus \bar{\sigma}_G^2 \boldsymbol{L_G} \right) \mathcal{P^{\top}}
@@ -232,38 +119,38 @@ Where $\mathcal{P}$ is an appropriate permutation matrix, $\boldsymbol{L_i}$ is 
 %% -------- More flexible areal models ------------%%
 \section{Some extensions of the Intrinsic CAR} \label{section:CARs}
 
-The ICAR model has a relatively small number of parameters, i.e. $p(p+1)/2$, corresponding to the entries of the precision matrix, and is easy to interpret. However, it can be easily seen that it is not a flexible model, in that it assumes a spatial autocorrelation parameter equal to $1$. It can be thought of as the spatial equivalent of $RW(1)$ processes in time series analysis: it is suited to detect strong spatial structures, but is misspecified when spatial trends are not particularly smooth. In such cases, the possible outcomes are two: either the model fails at capturing random noise in data, or it does adapt to data but at the price of a higher complexity (overfitting). For this reason, some extension have been developed in literature to account for noise. Here we introduce three popular ones, the so-called Proper CAR \citep{PCAR_Gelfand}, the Leroux proper CAR \citep{Leroux}, and the Besag-York-Mollié \citep[BYM][]{BYM, BYM2} convolution model. 
+The ICAR model has a relatively small number of parameters, i.e. $k(k+1)/2$, corresponding to the entries of the precision matrix, and is easy to interpret. However, it can be easily seen that it is not a flexible model, in that it assumes a spatial autocorrelation parameter equal to $1$. It can be thought of as the spatial equivalent of $RW(1)$ processes in time series analysis: it is suited to detect strong spatial structures, but is misspecified when spatial trends are not particularly smooth. In such cases, the possible outcomes are two: either the model fails at capturing random noise in data, or it does adapt to data but at the price of a higher complexity (overfitting). For this reason, some extension have been developed in literature to account for noise. Here we introduce three popular ones, the so-called Proper CAR \citep{PCAR_Gelfand}, the Leroux proper CAR \citep{Leroux}, and the Besag-York-Mollié \citep[BYM][]{BYM, BYM2} convolution model. 
 
 \subsection{The Proper CAR} \label{subsection:pcar}
 
-Thinking analogously as time series analysts, an intuitive generalisation of the ICAR would be to introduce a parameter, say $ \alpha \in [0, 1]$, controlling for spatial autocorrelation \citep[][chapter 10]{Banerjee}. This would yield the conditional prior distribution:
+Thinking analogously as time series analysts, an intuitive generalisation of the ICAR would be to introduce a parameter, say $ \rho \in [0, 1]$, controlling for spatial autocorrelation \citep[][chapter 10]{Banerjee}. This would yield the conditional prior distribution:
 %
 $$
-z_i | z_{-i}, \Sigma \sim \mathcal{N}_{pn} \left(\sum_{j=1}^{n} \frac{w_{ij}}{d_i}\alpha z_{j}, \frac{1}{d_i} \Sigma \right)
+z_i | z_{-i}, \Sigma \sim \mathcal{N}_{k} \left(\sum_{j=1}^{n_k} \frac{w_{ij}}{d_i}\rho z_{j}, \frac{1}{d_i} \Sigma \right)
 $$
 %
-Please notice that $\alpha$ is a scalar here. With calculations like those in section \ref{section:icar}, the joint prior becomes:
+Please notice that $\rho$ is a scalar here. With calculations like those in section \ref{section:icar}, the joint prior becomes:
 %
 \begin{equation}
-z|\Sigma, \alpha \sim \mathcal{N} \left( 0, \Sigma \otimes (\boldsymbol{D} - \alpha \boldsymbol{W})^{-1}\right)
+z|\Sigma, \rho \sim \mathcal{N}_{kn_z} \left( 0, \Sigma \otimes (\boldsymbol{D} - \rho \boldsymbol{W})^{-1}\right)
  \label{eq:pcar}
 \end{equation}
 %
-On a side note, this is a proper distribution in that for $\alpha < 1$ the precision matrix is full-rank \footnote{For this reason, this model has been known in the literature as the 'proper' CAR. Properness is far from an exclusive feature of this model, and is not even limited to the models listed in this section, yet this naming has become a convention, and we respect this convention for notation brevity.}. One advantage of this model is the ease in interpretation, as $\alpha$ quantifies the extent to which the value of $z_j$ depends on the neighbouring sites. Clearly, the limit case for $\alpha = 1$ is the ICAR, while the limit case for $\alpha = 0$ is an independent but \textit{not} identically distributed model, in which the variance is proportional to the inverse degree matrix $\boldsymbol{D}^{-1}$, hence a site with a higher number of neighbours will have a smaller prior conditional variance.
+On a side note, this is a proper distribution in that for $\rho < 1$ the precision matrix is full-rank \footnote{For this reason, this model has been known in the literature as the 'proper' CAR. Properness is far from an exclusive feature of this model, and is not even limited to the models listed in this section, yet this naming has become a convention, and we respect this convention for notation brevity.}. One advantage of this model is the ease in interpretation, as $\rho$ quantifies the extent to which the value of $z_j$ depends on the neighbouring sites. Clearly, the limit case for $\rho = 1$ is the ICAR, while the limit case for $\rho = 0$ is an independent but \textit{not} identically distributed model, in which the variance is proportional to the inverse degree matrix $\boldsymbol{D}^{-1}$, hence a site with a higher number of neighbours will have a smaller prior conditional variance.
 
 \subsection{The Leroux proper CAR} \label{subsection:lcar}
 
 As we have seen, a partial drawback of the PCAR model is that the limit case in absence of spatial autocorrelation is not an IID process. A simple solution would be to employ a rather similar model proposed by \cite{Leroux}. This time, the idea is to balance the precision matrix between the ICAR precision (proportional to the Laplacian) and the precision of an IID process (proportional to the identity matrix). To do so, a precision mixing parameter is introduced; here we label it as $\lambda \in [0,1]$. The starting point is the conditional prior:
 %
 $$
-z_i | z_{-i}, \Sigma \sim \mathcal{N}_{p} \left(\sum_{j=1}^{n} \frac{ \lambda w_{ij}}{1 - \lambda  + \lambda d_i} z_{j}, \frac{1}{1 - \lambda + \lambda d_i} \Sigma\right)
+z_i | z_{-i}, \Sigma \sim \mathcal{N}_{k} \left(\sum_{j=1}^{n_z} \frac{ \lambda w_{ij}}{1 - \lambda  + \lambda d_i} z_{j}, \frac{1}{1 - \lambda + \lambda d_i} \Sigma\right)
 $$
 %
 As can be seen, for $\lambda = 0$ the conditional prior becomes $\mathcal{N}(0, \Sigma) \, \forall i$, and for $\lambda = 1$ we revert to the ICAR. After the usual algebra, the joint prior reads:
 %
 \begin{equation}
-z|\Sigma, \lambda \sim \mathcal{N}_{pn} \left( 0,    \Sigma
-  \otimes [\lambda \boldsymbol{L} + (1-\lambda)\boldsymbol{I}_n ]^{-1}\right)
+z|\Sigma, \lambda \sim \mathcal{N}_{kn_z} \left( 0,    \Sigma
+  \otimes [\lambda \boldsymbol{L} + (1-\lambda)\boldsymbol{I}_{n_z} ]^{-1}\right)
  \label{eq:lcar}
 \end{equation}
 %
@@ -273,28 +160,27 @@ Interpreting this model is less simple, as it involves understanding the meaning
 
 The original version of this model, proposed by \cite{BYM} was the convolution of a univariate ICAR, say $u' \sim \mathcal{N}=(0, \sigma_u^2 \boldsymbol{L})$, and a IID process, say $v \sim \mathcal{N}(0, \sigma_v^2 \boldsymbol{I})$. The underlying idea is to control for both spatial variation and random noise. This is particularly useful in disease mapping contexts, in which the dependent variable is usually Poisson distributed and the linear predictor needs a term to account for random noise, which is not captured by the IMCAR component alone. Some drawbacks can be found, however, in this model. The two components $u$ and $v$ are not separable and their convolution $z =: u' + v$ is what needs being modelled.
 
-This formulation hinders the interpretation of the extent to which process variability is driven either by spatial autocorrelation or by noise. For this reason, \cite{BYM2} proposed a reparametrisation of the BYM which allows to scale the variance of the ICAR component, as seen in section \ref{section:scaling}. By doing so, a variance mixing parameter $\phi \in [0,1]$ is introduced, and a unique scale parameter $\sigma^2$ is used in place of the two parameters $\sigma_u^2$ and $\sigma_v^2$, replacing the former with $\phi \sigma^2$ and the latter with $(1-\phi) \sigma^2$. The univariate scaled BYM model becomes thus:
+This formulation hinders the interpretation of the extent to which process variability is driven either by spatial autocorrelation or by noise. For this reason, \cite{BYM2} proposed a reparametrisation of the BYM which allows to scale the variance of the ICAR component, as seen in section \ref{subsection:scaling}. By doing so, a variance mixing parameter $\phi \in [0,1]$ is introduced, and a unique scale parameter $\sigma^2$ is used in place of the two parameters $\sigma_u^2$ and $\sigma_v^2$, replacing the former with $\phi \sigma^2$ and the latter with $(1-\phi) \sigma^2$. The univariate scaled BYM model becomes thus:
 $$
 \left\{ \begin{array}{ll} 
 z = \sigma \sqrt{\phi} u + \sigma \sqrt{1-\phi}v \\
-u \sim \mathcal{N}_n \left(0, \boldsymbol{L}_{\mathrm{s}}^{+} \right)\\
-v \sim \mathcal{N}_n(0, \boldsymbol{I}_n)
+u \sim \mathcal{N}_{n_z} \left(0, \boldsymbol{L}_{\mathrm{s}}^{+} \right)\\
+v \sim \mathcal{N}_{n_z}\left(0, \boldsymbol{I}_n\right)
 \end{array} \right.
 $$
 Since the Laplacian matrix is scaled, the two addenda are now defined on the same scale of variability, which implies the mixing parameter can be interpreted as the balancing of variability between spatial structure and noise.
 
 In the multivariate case, suppose all the ICAR fields are independent and have the same distribution, i.e. 
-$U_j \sim \mathcal{N}_n(0, \boldsymbol{L_\mathrm{s}}^{+}) \quad \forall j \in [1,p]$
-and $\mathrm{vec}\boldsymbol{U} \sim \mathcal{N}_{pn}(0, I_p \otimes \boldsymbol{L}^{+})$.
-The same assumption holds for the IID component, i.e. $\mathrm{vec}\boldsymbol{V} \sim \mathcal{N}_{pn}(0, I_p \otimes I_n)$. the joint distribution of $z$ is then:
+$U_j \sim \mathcal{N}_{n_z}(0, \boldsymbol{L_\mathrm{s}}^{+}) \quad \forall j \in [1,k]$
+and $\mathrm{vec}\boldsymbol{U} \sim \mathcal{N}_{pn}(0, I_p \otimes \boldsymbol{L}^{+})$. The same assumption holds for the IID component, i.e. $\mathrm{vec}\boldsymbol{V} \sim \mathcal{N}_{kn_z}(0, \boldsymbol{I_k} \otimes \boldsymbol{I_{n_z}})$. the joint distribution of $z$ is then:
 %
 \begin{equation}
 z|\Sigma, \phi \sim \mathcal{N} \left( 0, 
- \Sigma \otimes (\phi \boldsymbol{L}_\mathrm{s}^+ + (1-\phi) \boldsymbol{I}_{n})\right)
+ \Sigma \otimes (\phi \boldsymbol{L}_\mathrm{s}^+ + (1-\phi) \boldsymbol{I}_{n_z})\right)
  \label{eq:mbym}
 \end{equation}
 %
-As can be seen, the precision of the BYM field is a dense matrix. Operations such as inversion, eigendecomposition, or multiplication, would then have cubic computational cost, which in most real-world applications is prohibitive. \cite{BYM2}, therefore, suggest to model $z$ and $u$ jointly, as a process of length $2n$ (or $2pn$ in the multivariate case). The resulting joint process has then a sparse precision matrix, retaining the same rank deficiency as $\boldsymbol{L}$, which requires the sum-to-zero constraint on the ICAR component $U$. To sum up, the BYM model boasts some desirable features, namely: 
+As can be seen, the precision of the BYM field is a dense matrix. Operations such as inversion, eigendecomposition, or multiplication, would then have cubic computational cost, which in most real-world applications is prohibitive. \cite{BYM2}, therefore, suggest to model $z$ and $u$ jointly, as a process of length $2n_z$ (or $2kn_z$ in the multivariate case). The resulting joint process has then a sparse precision matrix, retaining the same rank deficiency as $\boldsymbol{L}$, which requires the sum-to-zero constraint on the ICAR component $U$. To sum up, the BYM model boasts some desirable features, namely: 
 \begin{itemize}
 \item Flexibility (as the PCAR and LCAR as well) 
 \item Limit cases being the ICAR and the IID models for $\phi=1$ and $\phi=0$ respectively (as for the LCAR)
@@ -305,33 +191,37 @@ This explains its popularity in areal data analysis and especially in disease ma
 
 \subsection{M-models} \label{subsection:Mmodels}
 
-For all the autoregressive models discussed above, we observed that the precision (or the covariance) matrix can be conveniently factorised as the Kronecker product of a precision (or scale, respectively) parameter and a structure matrix, which is deterministic for the ICAR and unknown but independent on the precision parameter for the other models; in this latter case, the structure matrix only depends on one scalar-valued parameter (the AR parameter for the PCAR, the precision mixing for the LCAR and the variance mixing for the BYM). The hypothesis of a constant hyperparameter for \textit{all} the spatial fields can be, however, strong. A more flexible class of models, introduced by \cite{Mmodels}, leverage on the decomposition of the scale parameter $\Sigma$ into $\boldsymbol{M}^ \top \boldsymbol{M}$, where $\boldsymbol{M}$ is a generic $k \times p$ full-rank matrix for any $k$; these models are known in literature as M-models. M-models generalise proper autoregressives by relaxing the hypothesis of a scalar-value hyperparameter controlling the strength of spatial association and allow for $k$ different hyperparameters.
+For all the autoregressive models discussed above, we observed that the precision (or the covariance) matrix can be conveniently factorised as the Kronecker product of a precision (or scale, respectively) parameter and a structure matrix, which is deterministic for the ICAR and unknown but independent on the precision parameter for the other models; in this latter case, the structure matrix only depends on one scalar-valued parameter (the AR parameter for the PCAR, the precision mixing for the LCAR and the variance mixing for the BYM). The hypothesis of a constant hyperparameter for \textit{all} the spatial fields can be, however, strong. A more flexible class of models, introduced by \cite{Mmodels}, leverage on the decomposition of the scale parameter $\Sigma$ into $\boldsymbol{M}^ \top \boldsymbol{M}$, where $\boldsymbol{M}$ is a generic $p \times k$ full-rank matrix for any $p$; these models are known in literature as M-models. M-models generalise proper autoregressives by relaxing the hypothesis of a scalar-value hyperparameter controlling the strength of spatial association and allow for $p$ different hyperparameters.
 
-The core idea is defining $\boldsymbol{z} := \boldsymbol{z}^{(0)} \boldsymbol{M}$, where $\boldsymbol{z}^{(0)} = (z_1^{(0)}, z_2^{(0)} \dots z_k^{(0)})$ and the $z_1^{(0)} \dots z_k^{(0)}$ fields are independent, each one following a prior of the form: $z_j^{(0)} \sim \mathcal{N}(0, \Omega_j) \quad \forall j \in[1,k]$ where $\Omega_j$ is an inverse structure matrix; taking the PCAR model as an example we have $\Omega_j = (\boldsymbol{D} - \alpha_j \boldsymbol{W})^{-1}$.
+The core idea is defining $\boldsymbol{z} := \boldsymbol{z}^{(0)} \boldsymbol{M}$, where $\boldsymbol{z}^{(0)} = (z_1^{(0)}, z_2^{(0)} \dots z_p^{(0)})$ and the $z_1^{(0)} \dots z_p^{(0)}$ fields are independent, each one following a prior of the form: $z_j^{(0)} \sim \mathcal{N}_{n_z}(0, \Omega_j) \quad \forall j \in[1,p]$ where $\Omega_j$ is an inverse structure matrix; taking the PCAR model as an example we have $\Omega_j = (\boldsymbol{D} - \rho \boldsymbol{W})^{-1}$.
 
-Even though the $\boldsymbol{M}$ matrix does not have to be squared, if the number of variables is not prohibitive, models with squared $\boldsymbol{M}$, i.e. $k=p$, are easier to interpret and allow for exactly one spatial association parameter for each variable. 
+Even though the $\boldsymbol{M}$ matrix does not have to be squared, if the number of variables is not prohibitive, models with squared $\boldsymbol{M}$, i.e. $p=k$, are easier to interpret and allow for exactly one spatial association parameter for each variable. 
 
-Take the PCAR model as an example. With $k=p$, equation \ref{eq:pcar} can be generalised as $\mathrm{Var}[z | \Sigma, A] = \Sigma \otimes(I_p \otimes \boldsymbol{D} - A \otimes \boldsymbol{W})^{-1}$, where $A$ is diagonal, and in the block-factorisable case seen in subsection \ref{subsection:pcar} it was $A = \alpha I_p$. When $A = \mathrm{diag}(\alpha_1, \alpha_2, \dots, \alpha_p)$ the variance becomes
+Take the PCAR model as an example. With $p=k$, equation \ref{eq:pcar} can be generalised as $\mathrm{Var}[z | \Sigma, \boldsymbol{\rho}] = \Sigma \otimes(\boldsymbol{I_k} \otimes \boldsymbol{D} - \boldsymbol{\rho} \otimes \boldsymbol{W})^{-1}$, where $\boldsymbol{\rho} = \mathrm{diag}(\rho_1, \rho_2, \dots, \rho_k)$, and in the block-factorisable case seen in subsection \ref{subsection:pcar} it was $\boldsymbol{\rho} = \rho \boldsymbol{I_k}$. When the autocorrelation parameter is multivariate, the variance becomes
 %
 \begin{equation}
 \text{PCAR:} \quad \quad 
-\mathrm{Var}[ \mathrm{vec}\,z | \Sigma, A] = (\boldsymbol{M^\top \otimes I_n})
-(I_p \otimes \boldsymbol{D} - A \otimes \boldsymbol{W})^{-1} (\boldsymbol{M} \otimes I_n)
+\mathrm{Var}[ \mathrm{vec}\,z | \boldsymbol{\Sigma}, \boldsymbol{\rho}] = 
+\left( \boldsymbol{M ^\top } \otimes\boldsymbol{ I_{n_z}} \right)
+\left(\boldsymbol{I_p} \otimes \boldsymbol{D} - \boldsymbol{\rho} \otimes \boldsymbol{W} \right)^{-1}
+\left(\boldsymbol{M} \otimes \boldsymbol{ I_{n_z}} \right)
 \end{equation}
 %
 The same reasoning easily applies to the LCAR:
 %
 \begin{equation}
 \text{LCAR:} \quad \quad 
-\mathrm{Var}[\mathrm{vec} \,z | \Sigma, \Lambda] = (\boldsymbol{M^\top \otimes I_n})
- [\Lambda \otimes \boldsymbol{L} + (\boldsymbol{I}_p - \Lambda) \otimes \boldsymbol{I}_n]^{-1} (\boldsymbol{M} \otimes I_n)
+\mathrm{Var}[\mathrm{vec} \,z | \boldsymbol{\Sigma}, \boldsymbol{\Lambda}] = 
+\left( \boldsymbol{M ^\top } \otimes\boldsymbol{ I_{n_z}} \right)
+ \left[ \Lambda \otimes \boldsymbol{L} + (\boldsymbol{I}_p - \Lambda) \otimes \boldsymbol{I}_n\right]^{-1} 
+ \left(\boldsymbol{M} \otimes \boldsymbol{ I_{n_z}} \right)
 \end{equation}
 %
 Regarding the BYM, throughout this thesis we will rely on the simplifying hypothesis that:
 %
 \begin{equation}
-z = \boldsymbol{U} \Phi^\frac{1}{2} \boldsymbol{M} + 
-\boldsymbol{V} (I_p - \Phi)^\frac{1}{2} \boldsymbol{M}
+\boldsymbol{z} = \boldsymbol{U}\boldsymbol{ \Phi}^\frac{1}{2} \boldsymbol{M} + 
+\boldsymbol{V} (\boldsymbol{I_k} -\boldsymbol{ \Phi})^\frac{1}{2} \boldsymbol{M}
 \label{eq:mmbym_stochrep}
 \end{equation}
 %
@@ -339,9 +229,10 @@ i.e. both the ICAR and IID components share the same scale parameter. This is no
 %
 \begin{equation}
     \text{BYM:} \quad \quad
-    \mathrm{Var}[\mathrm{vec} \, z | \Sigma, \Phi] = (\boldsymbol{M^\top \otimes I_n})
- \  [ \Phi \otimes \boldsymbol{L} + (\boldsymbol{I}_p - \Phi) \otimes \boldsymbol{I}_n]
- (\boldsymbol{M} \otimes I_n)
+    \mathrm{Var}[\mathrm{vec} \, z | \boldsymbol{\Sigma},\boldsymbol{ \Phi}] = 
+    \left( \boldsymbol{M ^\top } \otimes\boldsymbol{ I_{n_z}} \right)
+ \left[ \boldsymbol{\Phi} \otimes \boldsymbol{L} + (\boldsymbol{I_k} - \boldsymbol{\Phi}) \otimes \boldsymbol{I}_n \right]
+ \left(\boldsymbol{M} \otimes \boldsymbol{ I_{n_z}} \right)
  \label{eq:mmbym}
 \end{equation}
 %
@@ -361,120 +252,124 @@ Autoregressive models are usually employed as latent variables in spatial regres
 %The Spatial+ approach \citep{Dupont} involves the adjustment of covariates, instead of constraining spatial effects, by decomposing the former as the sum of a spatial and a nonspatial component. Here a variant of the Spatial+ method, developed by \cite{Urdangarin24}, is applied while working in a multilevel framework. This innovative methodology consists in extracting the spatial component of covariates without requiring an explicit spatial model on $\boldsymbol{X}$. Following \cite{Lamouroux}, we label this methodology as Spatial+ 2.0. 
 
 
-To gain more insight on restricted regression, let us briefly outline a general latent Gaussian model, which will be useful to explain the current section, and consider:
+To gain more insight on restricted regression, let us briefly outline a general latent Gaussian linear model, which will be useful to explain the current section, and consider:
 $$
 \left\{ \begin{array}{ll} 
-\mathbb{E}\left[y \mid \eta, \Psi \right] = g^{-1}(\eta) \\
+\mathbb{E}\left[y \mid \eta, \psi \right] = g^{-1}(\eta) \\
 \eta = \boldsymbol{A} \vartheta \\
-\vartheta | \Psi \sim \mathcal{N}(0, \boldsymbol{Q_{\Psi}}^{-1})
+\vartheta | \psi \sim \mathcal{N}(0, \boldsymbol{Q_{\psi}}^{-1})
 \end{array} \right. 
 $$
-where $y$ denotes the respondse variable consisting of $N$ observations; $\eta$ is the linear predictor linked with a function $g$ to the expected value of $y$; $\vartheta$ is a generic vector of latent variables of interest; $\sigma_{\varepsilon}^2 := \mathrm{Var}[\varepsilon]$ is the variance of the IID Gaussian error $\varepsilon$, $\boldsymbol{A}$ is a known design matrix; $\Psi$ is the array of hyperparameters, and $\boldsymbol{Q_{\Psi}}$ is the precision matrix of $\vartheta$. %In the case of the multivariate ICAR, as seen in Section \ref{section:icar}, the precision is $\boldsymbol{Q}_{\Psi} = \Sigma^{-1} \otimes \boldsymbol{L}$, where $\Sigma$ is the scale parameter and $\boldsymbol{L}$ is the graph Laplacian matrix. For the univariate case, the precision parameter clearly reduces to a positive scalar.
-
-The linear predictor, to our aims, can be defined as:
+where $y$ denotes the response variable consisting of $n_y$ observations; $\eta$ is the linear predictor linked with a function $g$ to the expected value of $y$; $\vartheta$ is a generic vector of latent variables of interest; $\sigma_{\varepsilon}^2 := \mathrm{Var}[\varepsilon]$ is the variance of the IID Gaussian error $\varepsilon$, $\boldsymbol{A}$ is a known design matrix; $\psi$ is the array of hyperparameters, and $\boldsymbol{Q_{\psi}}$ is the prior precision matrix of $\vartheta$. Let us assume that the linear predictor, only depends on an array of effects of explanatory variables, say $\beta \in \mathbb{R}^p$ and  an array of spatial latent effects \footnote{Labelling $\beta$ as "fixed" and $z$ as "random" effects is quite frequent in hierarchical regression applications, but due to the polysemic nature of these terms we will tend to avoid them. In a strictly probability perspective, there is no conceptual distinction between them: they are both unknown random variables entering the linear predictor through a known design matrix (either $\boldsymbol{X}$ or $\boldsymbol{\xi}$), are typically assumed to be Gaussian \textit{a priori} and their posterior distribution is the primary aim of statistical inference. We keep them separated due to how they are interpreted: $\beta$ represents the association between a set of known variables ($\boldsymbol{X}$) and $y$, while $z$ is an unobserved process shaping the structure of $y$ itself.}, say $z \in \mathbb{R}^{n_z}$. The design matrix and the vector of latent variables can be then written as
 $$  
-\boldsymbol{A} := \left(X \quad \xi \right) \quad \text{and} \quad
-\vartheta := \begin{pmatrix} \beta \\ \boldsymbol{z} \end{pmatrix}
+\boldsymbol{A} := 
+\left(\boldsymbol{X} \quad \boldsymbol{\xi} \right) 
+\quad \text{and} \quad
+\vartheta := \begin{pmatrix} \beta \\ z \end{pmatrix}
 $$
-where $\beta$ is the array of regression coefficients of length $p$, $z$ is the array of spatial latent effects\footnote{Labelling $\beta$ as "fixed" and $z$ as "random" effects is quite frequent in hierarchical regression applications, but due to the polysemic nature of these terms we will tend to avoid them. In a strictly probability perspective, there is no conceptual distinction between them: they are both unknown random variables entering the linear predictor through a known design matrix (either $X$ or $\xi$), are typically assumed to be Gaussian \textit{a priori} and their posterior distribution is the primary aim of statistical inference. We keep them separated due to how they are interpreted: $\beta$ represents the association between a set of known variables ($X$) and $y$, while $z$ is an unobserved process shaping the structure of $y$ itself.} of length $n$, $X$ is a matrix of explanatory variables of size $N \times p$, and $\xi$ is the design matrix of latent effects of size $N \times n$. In most cases, $N=n$, though this assumption is not necessary and is violated in the case study outlined in Chapter \ref{Chapter:Invalsi}.
+where $\boldsymbol{X}$ is a matrix of explanatory variables or covariates of size $n_y \times p$, and $\boldsymbol{\xi}$ is the design matrix of latent effects of size $n_y \times n_z$. In many cases, such as in typical spatial disease mapping models, $n_y=n_z$, though this assumption is not necessary and is violated e.g. in multilevel models, such as the case study in Chapter \ref{Chapter:Invalsi}.
 
-Let us further assume that $(y_j\perp\!\!\!\perp y_k )|\vartheta, \Psi$ and $(y_j\perp\!\!\!\perp \eta_k )|\vartheta, \Psi$ for any $j,k \in [1, N]$ with $j \neq k$, so each observation $y_j$ depends on $\vartheta$ only through one value $\eta_j$ and the likelihood can be factorised as follows:
+Let us further assume that $(y_j\perp\!\!\!\perp y_k )|\vartheta, \psi$ and $(y_j\perp\!\!\!\perp \eta_k )|\vartheta, \psi$ for any $j,k \in [1, n_y]$ with $j \neq k$, so each observation $y_j$ depends on $\vartheta$ only through one value $\eta_j$ and the likelihood can be factorised as:
 $$
-\pi(y|\vartheta, \Psi) = \pi(y| \eta, \Psi) = \prod_{j = 1}^N \pi(y_j | \eta_j, \Psi)
+\pi(y|\vartheta, \psi) = \pi(y| \eta, \psi) = \prod_{j = 1}^{n_y} \pi(y_j | \eta_j, \psi)
 $$
-
-%in order to map each observed value $y_j$ to one realisation of the random effect $z_i$, i.e. if $y_j$ depends on $z_i$ and therefore $\xi_{ji} = 1$, then  $y_j \perp\!\!\!\perp  z_{-i}$, with $i \in [1, n]$ and $j \in [1, N]$, where each row of $\xi$ has exactly one entry equal to $1$ and all other entries equal to $0$. 
-
- For illustration purposes, let us now assume that $y$ is Gaussian and the linear predictor includes a univariate Gaussian latent effect of size $n$ with prior mean $0$ and non-negative defined precision matrix $\boldsymbol{Q}(\Psi) = \tau \boldsymbol{R}$, where $\boldsymbol{R}$ is a semidefinite positive structure matrix and $\tau$ is a global precision parameter; for the ICAR case, clearly $\boldsymbol{R} \equiv \boldsymbol{L}$. In such Gaussian regression framework, the model becomes:
+ For illustration purposes, let us now assume that $y$ is Gaussian and the latent spatial effect $z$ has prior mean $0$ and precision matrix $\boldsymbol{Q}(\psi) = \tau \boldsymbol{R}$, where $\boldsymbol{R}$ is a semidefinite positive structure matrix and $\tau \in \psi$ is a global precision parameter; for univariate spatial autoregressive models described in sections \ref{section:icar} and \ref{section:CARs}, $\boldsymbol{R}=\boldsymbol{\Omega^+}=\boldsymbol{L^+}$ for the ICAR $\boldsymbol{R}=\boldsymbol{\Omega^{-1}}$ if the model is proper. In such Gaussian regression framework, the regression model becomes:
 %
 \begin{equation}
 %\begin{aligned}
 \left\{ \begin{array}{ll} 
-    y = X \beta + \xi z + \varepsilon \\
-    z \sim \mathcal{N} (0, \tau^{-1} \boldsymbol{R}^{-1}) \\
-    \beta \sim \mathcal{N}(0, M)\\
-    \varepsilon \sim \mathcal{N}(0, \tau_{\varepsilon}^{-1}I_n)
+    y = \boldsymbol{X} \beta + \boldsymbol{\xi} z + \varepsilon \\
+    z \sim \mathcal{N}_{n_z} (0, \tau^{-1} \boldsymbol{R}^{-1}) \\
+    \beta \sim \mathcal{N}_p(0, N\boldsymbol{I_p})\\
+    \varepsilon \sim \mathcal{N}_{n_y}(0, \tau_{\varepsilon}^{-1}\boldsymbol{I_{n_y}})
     \end{array} \right.
+    \label{eq:LGM_eps}
 %\end{aligned}
 \end{equation}
 %
-The covariate matrix $X$ has size $n \times p$; $\xi$ is the model matrix for the spatial effects (usually the $n \times n$ identity matrix), $\tau_\varepsilon$ is the error precision parameter and $M$ is an arbitrarily large scalar.
+Where $\tau_\varepsilon \in \psi$ is the error precision parameter and $N$ is an arbitrarily large scalar.
 
 This model can be parametrised in a more general way \citep[see e.g.][]{DIC}:
 %
 \begin{equation}
 \begin{aligned}
-y \sim \mathcal{N}(A_1 \vartheta_1,\tau_{\varepsilon}^{-1} I_n ) \\
-\vartheta_1 \sim \mathcal{N}(A_2  \vartheta_2,\tau_{\varepsilon}^{-1} C)
+y \sim \mathcal{N}_{n_y}
+\left(\boldsymbol{A_1} \vartheta_1, \,
+\tau_{\varepsilon}^{-1} \boldsymbol{I_{n_y}} \right) \\
+\vartheta_1 \sim \mathcal{N}_{n_\vartheta} \left(\boldsymbol{A_2 } \vartheta_2,\,
+\tau_{\varepsilon}^{-1} \boldsymbol{C}\right)
 \end{aligned}
 \label{eq:LGM_y_theta}
 \end{equation}
 %
-Where  $A_1 = (X \, \xi)$, and $\vartheta_1 = (\beta^{\top} z^{\top})^{\top}$ is the vector of parameters. The term $A_2 \vartheta_2$ has by construction both mean and variance zero. Moreover,
+Where  $\boldsymbol{A_1} = \left(\boldsymbol{X} \, \boldsymbol{\xi} \right)$, $\vartheta_1 = (\beta^{\top} z^{\top})^{\top}$ is the vector of parameters, and $n_\vartheta = n_z + p$. The term $\boldsymbol{A_2} \vartheta_2$ has by construction both mean and variance zero. Moreover,
 $$ 
-C^{-1} = \tfrac{\tau}{\tau_{\varepsilon}} \begin{pmatrix}
- \frac{1}{\tau M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & \boldsymbol{R}
+\boldsymbol{C}^{-1} = \tfrac{\tau}{\tau_{\varepsilon}} \begin{pmatrix}
+ \frac{1}{\tau N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\
+ \boldsymbol{0_{n_z \times p}} & \boldsymbol{R}
 \end{pmatrix}
 $$
 
-Since the error term $\varepsilon$ and the latent effects $z$ have different precision parameters, the matrix $C^{-1}$ cannot be considered known. To see this, consider the prior precision of the random effects defined as $\tau \boldsymbol{R}$; $\tau_{\varepsilon} C^{-1}$ must thus be structured as $\begin{pmatrix} \frac{1}{M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & \tau \boldsymbol{R} \end{pmatrix}$ where $M$ is the known variance parameter of $\beta$, but $\tau$ is unknown and isolating $\tau$ to express $\tau_{\varepsilon} C^{-1} = \tau \begin{pmatrix}
- \frac{1}{\tau M} \, I_p & 0_{p \times n} \\ 0_{n \times p} & \boldsymbol{R}
+Since the error term $\varepsilon$ and the latent effects $z$ have different precision parameters, the matrix $\boldsymbol{C}^{-1}$ cannot be considered known. To see this, consider the prior precision of the spatial effects defined as $\tau \boldsymbol{R}$; $\tau_{\varepsilon} \boldsymbol{C}^{-1}$ must thus be structured as $\begin{pmatrix} \frac{1}{N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\ \boldsymbol{0_{n_z \times p}} & \tau \boldsymbol{R} \end{pmatrix}$ where $N$ is the known variance parameter of $\beta$, but $\tau$ is unknown and isolating $\tau$ to express $\tau_{\varepsilon} \boldsymbol{C}^{-1} = \tau \begin{pmatrix}
+ \frac{1}{\tau N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\ \boldsymbol{0_{n_z \times p}}& \boldsymbol{R}
 \end{pmatrix}$ would leave it dependent on an unknown parameter.
 
 
 Now, it is possible to show \citep{LindleySmith} that the posterior mean of $\vartheta_1$, conditional on the model hyperparameters, is
 %
 \begin{equation}
-E[\vartheta_1 | y, \tau, \tau_{\varepsilon}] =  \left( A_{1}^{\top}A_{1} + C^{-1} \right)^{-1}A_{1}^{\top}y
+\mathbb{E}[\vartheta_1 | y, \tau, \tau_{\varepsilon}] =
+\left( \boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C^{-1}} \right)^{-1}\boldsymbol{A_{1}^{\top}}y
 \end{equation}
 %
-For brevity, we refer to the matrix $A_1 \left( A_{1}^{\top}A_{1} + C^{-1} \right)^{-1}A_{1}$ as the hat matrix or $H$. Based on how we defined $A_1$ and $C$, notice that
+We can thus define the hat matrix as:
+$$
+\boldsymbol{H}:=\boldsymbol{A_1} \left(\boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C^{-1}} \right)^{-1}\boldsymbol{A_{1}}
+$$
+Based on how we defined $\boldsymbol{A_1}$ and $\boldsymbol{C}$, notice that
 \begin{equation}
 \begin{aligned}
-\left( A_{1}^{\top}A_{1} + C^{-1} \right)^{-1} = 
+\left( \boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C}^{-1} \right)^{-1} = 
 \begin{pmatrix}
- X^{\top}X + r_{\varepsilon} I_p & X^{\top} \xi \\
- \xi ^{\top} X & \xi^{\top} \xi + \bar{r} \boldsymbol{R}
+ \boldsymbol{X ^\top X} + r_{\varepsilon} \boldsymbol{I_p} & \boldsymbol{X}^{\top} \boldsymbol{\xi} \\
+ \boldsymbol{\xi} ^{\top} \boldsymbol{X} & \boldsymbol{\xi}^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R}
 \end{pmatrix}^{-1} = \\ = 
 \begin{pmatrix}
-G^{-1} + G^{-1} X^{\top} \xi S_{11}^{-1} \xi ^{\top} XG^{-1} & 
--G^{-1} X^{\top} \xi S_{11}^{-1}\\
--  S_{11}^{-1} \xi^{\top} X G^{-1} & 
- S_{11}^{-1}
+\boldsymbol{G^{-1}} + \boldsymbol{G^{-1}} \boldsymbol{X}^{\top} \boldsymbol{\xi} \boldsymbol{S_{11}}^{-1} \boldsymbol{\xi} ^{\top} \boldsymbol{XG}^{-1} & 
+-\boldsymbol{G}^{-1} \boldsymbol{X}^{\top} \boldsymbol{\xi} \boldsymbol{S_{11}}^{-1}\\
+-  \boldsymbol{S_{11}}^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} & 
+ \boldsymbol{S_{11}}^{-1}
 \end{pmatrix}
 \end{aligned}
 \end{equation}
-%\begin{pmatrix}
-%G^{-1} + G^{-1} X^{\top} \xi(\xi ^{\top} \xi + \bar{r} \boldsymbol{R} - \xi ^{\top} X G^{-1} X^{\top} \xi)^{-1} \xi ^{\top} XG^{-1} %& 
-%-G^{-1} X^{\top} \xi(\xi ^{\top} \xi + \bar{r} \boldsymbol{R} - \xi ^{\top} X G^{-1} X^{\top} \xi)^{-1}\\
-%-  (\xi ^{\top} \xi + \bar{r} \boldsymbol{R} - \xi ^{\top} X G^{-1} X^{\top} \xi)^{-1} \xi^{\top} X G^{-1} & 
-% (\xi ^{\top} \xi + \bar{r} \boldsymbol{R} - \xi ^{\top} X G^{-1} X^{\top} \xi)^{-1}
-%\end{pmatrix}
-
-Where $S_{11} := (\xi ^{\top} \xi + \bar{r} \boldsymbol{R} - \xi ^{\top} X G^{-1} X^{\top} \xi)$ is the Schur complement of the upper-left block in $\left(A_1^\top A_1 + C^{-1}\right)^{-1}$, $\bar{r} := \dfrac{\tau}{\tau_{\varepsilon}}$ and $G := (X^{\top}X + r_{\varepsilon}I_p)$, where $r_{\varepsilon} := \dfrac{1}{\tau_{\varepsilon}M} = \dfrac{\sigma_{\varepsilon}^{2}}{M}$.
+Where $\boldsymbol{S_{11}} := (\boldsymbol{\xi} ^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R} - \boldsymbol{\xi} ^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top}\boldsymbol{\xi})$ is the Schur complement of the upper-left block in $\left(\boldsymbol{A_1}^\top \boldsymbol{A_1} + \boldsymbol{C}^{-1}\right)^{-1}$ \citep[][paragraph 0.7.3]{HornJohnson}, $\bar{r} := \dfrac{\tau}{\tau_{\varepsilon}}$ and $\boldsymbol{G} := (\boldsymbol{X}^{\top}\boldsymbol{X} + r_{\varepsilon}\boldsymbol{I_p})$, where $r_{\varepsilon} := \dfrac{1}{\tau_{\varepsilon}N} = \dfrac{\sigma_{\varepsilon}^{2}}{N}$.
 It can thus be shown that:
 \begin{equation}
 \begin{aligned}
-E[\beta | y, \tau_{\varepsilon}, \bar{r}] = G^{-1} \lbrace X^{\top} 
-+ X^{\top} \xi S_{11}  ^{-1} \xi^{\top} X G^{-1} X^{\top} 
-- X^{\top} \xi S_{11} ^{-1} \xi^{\top}
+\mathbb{E}[\beta | y, \tau_{\varepsilon}, \bar{r}] = \boldsymbol{G}^{-1} \lbrace 
+\boldsymbol{X}^{\top} 
++ \boldsymbol{X}^{\top} \boldsymbol{\xi S_{11}} ^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top} 
+- \boldsymbol{X}^{\top} \boldsymbol{\xi S_{11}}^{-1} \boldsymbol{\xi}^{\top}
 \rbrace \, y
 \end{aligned}
 \label{eq:expbeta}
 \end{equation}
 And
 \begin{equation}
-E[z | y, \tau_{\varepsilon}, \bar{r}] =  S_{11}  ^{-1}
-(\xi^{\top} - \xi^{\top} X G^{-1} X^{\top}) \, y
+\mathbb{E}[z | y, \tau_{\varepsilon}, \bar{r}] =  \boldsymbol{S_{11}} ^{-1}
+\left(\boldsymbol{\xi}^{\top} - \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top}\right) \, y
 \label{eq:expzeta}
 \end{equation}
 
-Equivalently, if for brevity we define $\Gamma = \xi ^{\top} \xi + \bar{r} \boldsymbol{R} - \xi^{\top} X G^{-1} X^{\top} \xi$ this means that the hat matrix equals:
+Equivalently, if for brevity we define $\boldsymbol{\Gamma}= \boldsymbol{\xi} ^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R} - \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top} \boldsymbol{\xi}$ this means that the hat matrix equals:
 \begin{equation}
 \begin{aligned}
-H_{\tau_{\varepsilon}, \bar{r}} = XG^{-1}X^{\top} + \xi \Gamma^{-1} \xi^{\top} -
-XG^{-1}X^{\top} \xi \Gamma^{-1} \xi^{\top} -  \xi \Gamma^{-1} \xi^{\top}XG^{-1}X^{\top} +\\
-+XG^{-1}X^{\top} \xi \Gamma^{-1} \xi^{\top} XG^{-1}X^{\top}
+\boldsymbol{H_{\tau_{\varepsilon}, \bar{r}}} =
+\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} +
+\boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} -
+\boldsymbol{XG}^{-1}X^{\top} \boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} -
+\boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top}\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} +\\
++\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} \boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{XG}^{-1}\boldsymbol{X}^{\top}
 \end{aligned}
 \label{eq:projmat}
 \end{equation}
@@ -483,7 +378,7 @@ Where the subscript $\tau_e, r$ denotes the dependence on the two precision para
  \subsection{Restricted Regression} \label{subsection:RSR}
 We now consider the projection matrix of $y$ onto its least squares fitted values, and its orthogonal complement, respectively:
 $$
-P := X(X^{\top}X)^{-1}X^{\top} \quad \quad \text{and} \quad \quad P_{\bot} := I - X(X^{\top}X)X^{\top} = I - P
+\boldsymbol{P} := \boldsymbol{X}(\boldsymbol{X}^{\top}\boldsymbol{X})^{-1}X^{\top} \quad \quad \text{and} \quad \quad \boldsymbol{P_{\bot}} := \boldsymbol{I_{n_y}} - \boldsymbol{X}(\boldsymbol{X}^{\top}\boldsymbol{X})\boldsymbol{X}^{\top} = \boldsymbol{I_{n_y}} - \boldsymbol{P}
 $$
 
 The crucial step of all the forthcoming analysis is the eigendecomposition of $P_{\bot}$. Firstly, consider that its first $n-p$ eigenvalues are ones, and the latter $p$ are zeroes.
@@ -591,11 +486,11 @@ Several alternatives to RSR have been proposed in the last fifteen years. One of
 To gain some context, let us first recall that the Moran index $I(z)$ referring to a vector $z$ of length $n$ taking values over a graph with neighbourhood matrix $\boldsymbol{W}$ is given by 
 %
 \begin{equation}
-I(\boldsymbol{W}) = \frac{n}{\boldsymbol{1^\top W 1}} \frac{z^\top \mathcal{C} \boldsymbol{W} \mathcal{C}z}{z^\top \mathcal{C}z}
+I(\boldsymbol{W}) = \frac{n_z}{\boldsymbol{1^\top W 1}} \frac{z^\top \mathcal{C} \boldsymbol{W} \mathcal{C}z}{z^\top \mathcal{C}z}
 \label{eq:I_moran}
 \end{equation}
 %
-where $\mathcal{C}$ is the idempotent centering matrix $\mathcal{C}:=\boldsymbol{I}_n - \frac{1}{n}\boldsymbol{11}^\top$, hence  $\mathcal{C}z = z - \bar{z}$. 
+where $\mathcal{C}$ is the idempotent centering matrix $\mathcal{C}:=\boldsymbol{I_{n_z}} - \frac{1}{n_z}\boldsymbol{11}^\top$, hence  $\mathcal{C}z = z - \bar{z}$. 
 
 The Moran coefficient plays a crucial role in hypothesis testing, as under the assumption of spatial independence $z$ follows \citep{Cliff_Ord} or converges in distribution to \citep{Griffith2010} a Normal distribution with known mean and variance. This allows to test easily for the absence of spatial autocorrelation across an observed variable. 
 
@@ -608,10 +503,10 @@ This is particularly interesting in that the collinearity between the unmeasured
 \cite{HughesHaran} introduce what they refer to as the \emph{Generalised Moran operator for $\boldsymbol{X}$ with respect to the graph}, i.e.
 %
 $$
-I_{\boldsymbol{X}}(\boldsymbol{W}) =  \frac{n}{\boldsymbol{1^\top W 1}} \frac{z^\top P_\bot \boldsymbol{W} P_\bot z}{z^\top P_\bot z}
+I_{\boldsymbol{X}}(\boldsymbol{W}) =  \frac{n_z}{\boldsymbol{1^\top W 1}} \frac{z^\top \boldsymbol{P_\bot} \boldsymbol{W P_\bot} z}{z^\top \boldsymbol{P_\bot} z}
 $$
 %
-Where $P_\bot$ is the orthogonal complement to the projection matrix of $X$, i.e. $P_\bot = I-X(X^\top X)^{-1}X^\top$ As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_Eigenvectors.gif}{this gif} shows the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the rook criterion (neighbours must share an edge).
+Where $\boldsymbol{P_\bot}$ is the orthogonal complement to the projection matrix of $\boldsymbol{X}$, i.e. $\boldsymbol{P_\bot} = \boldsymbol{I_{n_y}}-\boldsymbol{X}(\boldsymbol{X}^\top \boldsymbol{X})^{-1}\boldsymbol{X}^\top$ As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_Eigenvectors.gif}{this gif} shows the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the rook criterion (neighbours must share an edge).
 %A different approach to deal with spatial confounding, introduced by \cite{Dupont}, is based on adjusting the covariates rather than constraining spatial effects by representing the former as the sum of a spatial and a nonspatial component; it is known in the literature as Spatial+.% While Spatial+ was originally proposed for thin plate spline regression, 
 
  
@@ -619,22 +514,148 @@ Where $P_\bot$ is the orthogonal complement to the projection matrix of $X$, i.e
 
 \begin{appendices}
 
+\section{Jont distribution of multivariate ICAR}
+To compute the joint density $\pi(y|\boldsymbol{\Sigma})$ we rely on the Brook's Lemma \citep{HammersleyClifford, CAR}:
+ \begin{equation}
+ \pi(z) = \prod_{i=1}^{n_z} \frac{
+ \pi \left(z_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
+ }{
+ \pi \left(x_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
+ } \, \pi(x)
+ \label{eq:brookslemma}
+ \end{equation}
+Where $x$ is a set of known variables with the same cardinality ass $z$ and satisfying the positivity condition. Also, notice  $\pi(x)$ is a constant term we can treat a a normalising constant. Then, consider:
+%
+\begin{align}
+\ln \pi \left(z_i | \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) = \\ =
+C_0 - \frac{d_i}{2} \left( 
+z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n_z} \frac{w_ik}{d_i}z_k
+\right)^{\top} \boldsymbol{\Sigma}^{-1} \left( 
+z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n_z} \frac{w_ik}{d_i}z_k
+\right)
+\end{align}
+%
+Where $C_0$ is an additive constant. Now, with no loss of generality, let us assume $x_i = 0 \,   \forall \, i \in [1,n_z]$, so that numerator elements in equation \ref{eq:brookslemma} can be written as
+%
+\begin{align}
+ \ln \pi \left(z_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) =
+ C_0 - \frac{d_i}{2 } \left(z_i   -\sum_{k=i+1}^{n_z} \frac{w_{ij}}{d_i}z_k  \right) ^{\top}
+ \boldsymbol{\Sigma}^{-1}  \left(z_i   -\sum_{k=i+1}^{n_z} \frac{w_{ij}}{d_i}z_k  \right)=  \\
+ = C_0- \frac{d_i}{2 } \left[ z^{\top}_i \boldsymbol{\Sigma}^{-1} z_i - 
+ 2 \left(\sum_{k=i+1}^{n_z}    \frac{w_{ik}}{d_i}z_k\right) ^{\top} \boldsymbol{\Sigma}^{-1} z_i \right] 
+ - \frac{d_i}{2}  \left( 
+ \sum_{k=i+1}^{n_z} \frac{w_{ik}}{d_i} z_k
+ \right) ^{\top} \boldsymbol{\Sigma}^{-1} \left( 
+ \sum_{k=i+1}^{n_z} \frac{w_{ik}}{d_i} z_k
+ \right)
+ \label{eq:numerator}
+ \end{align}
+%
+While denominator elements take the form:
+%
+\begin{equation}
+ \ln \pi \left(x_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right)\mid_{x_i=0} = C_0 - \frac{d_i}{2}  \left( 
+ \sum_{k=i+1}^{n_z} \frac{w_{ik}}{d_i} z_k
+ \right) ^{\top} \boldsymbol{\Sigma}^{-1} \left( 
+ \sum_{k=i+1}^{n_z} \frac{w_{ik}}{d_i} z_k
+ \right)
+\label{eq:denominator}
+\end{equation}
+%
+Then, with some standard algebra we get:
+%
+\begin{equation}
+\ln \pi(z \mid \boldsymbol{\Sigma}) = C_1 + \sum_{i=1}^{n_z} d_i z_i ^{\top} \boldsymbol{\Sigma}^{-1} z_i -
+\sum_{i=1}^{n_z} \sum_{k=1}^{n_z} w_{ik} z_i^{\top} \boldsymbol{\Sigma}^{-1} z_k
+\end{equation}
+%
+Where $C_1$ is an additive constant independent on $z$. 
+%
+Let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks row-wise the elements of a $n \times k$ matrix into a $kn \times 1$ vector. First consider:
+$$
+ \sum_{i=1}^{n_z} d_i z^{\top}_i \boldsymbol{\Sigma}^{-1} z_i = 
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+\end{pmatrix}^{\top}
+\begin{pmatrix}
+d_1 \boldsymbol{\Sigma}^{-1} & 0 & \ldots & 0 \\
+0 & d_2 \boldsymbol{\Sigma}^{-1} & \ldots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \ldots & d_{n_z} \boldsymbol{\Sigma}^{-1}
+\end{pmatrix}
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+\end{pmatrix}  = 
+\mathrm{vec}_r(z) ^{\top} (W \otimes \boldsymbol{\Sigma}^{-1}) \mathrm{vec}_r(z)
+$$
+Then, consider:
+$$
+ \sum_{i=1}^{n_z} \sum_{k=1}^{n_z} w_{ik} z^{\top}_i \boldsymbol{\Sigma}^{-1} z_k = 
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+\end{pmatrix}^{\top}
+\begin{pmatrix}
+\boldsymbol{0_{k \times k}} & w_{12} \boldsymbol{\Sigma}^{-1} & \ldots & w_{1n_z} \boldsymbol{\Sigma}^{-1}\\
+w_{21} \boldsymbol{\Sigma}^{-1} & \boldsymbol{0_{k \times k}} & \ldots & w_{2n_z} \boldsymbol{\Sigma}^{-1}\\
+\vdots & \vdots & \ddots & \vdots \\
+w_{n_z1} \boldsymbol{\Sigma}^{-1} & w_{n_z2} \boldsymbol{\Sigma}^{-1} & \ldots & \boldsymbol{0_{k \times k}}
+\end{pmatrix}
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+\end{pmatrix}  = 
+(\mathrm{vec}_r z) ^{\top} (\boldsymbol{D} \otimes \boldsymbol{\Sigma}^{-1}) \mathrm{vec}_r z
+$$
+
+This proves the joint distribution of $z$ is \citep{Mardia, Banerjee, Gelfand}:
+%
+\begin{equation}
+ \pi(z  | \boldsymbol{\Sigma}^{-1}) \propto e^{
+ -\frac{1}{2} (\mathrm{vec}_r\,z)^{\top} (\boldsymbol{L} \otimes \boldsymbol{\Sigma}^{-1})\, \mathrm{vec}_rz
+ }
+\label{eq:rowwise}
+\end{equation}
+%
+Which is a Gaussian density with mean zero and precision $\boldsymbol{L} \otimes \boldsymbol{\Sigma}^{-1}$. In practical applications (see chapter \ref{chapter:INLA}) it is convenient to rearrange $z$ column-wise through the $\mathrm{vec}$ operator \cite{INLAMSM}, such that 
+$$
+\mathrm{vec}\,z = (z_{11},\, \ldots, \,z_{n_z1},\, z_{12},\, \ldots,\, z_{n_z2},\, \ldots ,\, z_{1k}, \,\ldots, \,z_{n_zk} )^{\top}
+$$
+To do so, we are actually using an orthogonal permutation matrix $\mathcal{P}$, such that 
+$$\mathrm{vec}\,z = \mathcal{P} \mathrm{vec}_r z $$
+
+To define $\mathcal{P}$, consider the $i$-th basis vector of $\mathbb{R}^p$, $e_i$, the $i$-th row of $\boldsymbol{I_{n_z}}$, whose $i$-th element is $1$ and all other elements are zero, $\forall i \in [1,n_z]$. The permutation matrix is:
+$$
+\mathcal{P}  := \begin{pmatrix} 
+\boldsymbol{I_{n_z}} \otimes e_1^{\top} \\ \boldsymbol{I_{n_z}} \otimes e_2^{\top} \\ \vdots \\ \boldsymbol{I_{n_z}} \otimes e_k^{\top}
+\end{pmatrix}
+$$
+%
+Considering that $\mathrm{Var}[\mathrm{vec}\, z] = \mathcal{P} \,\mathrm{Var}[\mathrm{vec}_rz] \mathcal{P}^{\top}$, hence $\mathrm{Prec}[\mathrm{vec}\, z] = \mathcal{P} \mathrm{Prec}[\mathrm{vec}_r z] \mathcal{P}$, it holds that:
+$$
+\mathcal{P} \left( \boldsymbol{L} \otimes \boldsymbol{\Sigma}^{-1} \right) \mathcal{P}^{\top}= \boldsymbol{\Sigma}^{-1} \otimes \boldsymbol{L}
+$$
+Which can be proved with some algebra. Hence, in total equivalence with equation \ref{eq:rowwise}, we find that
+$$
+z \mid \boldsymbol{\Sigma} \sim \mathcal{N}_{kn_z} \left(0, \boldsymbol{\Sigma} \otimes \boldsymbol{L}^+\right)
+$$
+Where the $^+$ sign denotes the Moore-Penrose pseudoinverse of the Laplacian matrix $\boldsymbol{L}$. Pseudoinversion is needed due to Laplacian singularity.
+
+
 \section{Sparse parametrisation for M-model BYM extension}\label{appendix:MMBYM}
 
 Here we generalise the sparse-precision parametrisation of \cite{BYM2}.
-As mentioned in section \ref{subsection:Mmodels}, we use a unique scale parameter $\Sigma$ for the two components, and define $\boldsymbol{M}$ as a generic full-rank matrix such that $\boldsymbol{M}^{\top}\boldsymbol{M} = \Sigma$. For convenience, we also define the precision parameter $\boldsymbol{T} =: \Sigma^{-1}$.
+As mentioned in section \ref{subsection:Mmodels}, we use a unique scale parameter $\boldsymbol{\Sigma}$ for the two components, and define $\boldsymbol{M}$ as a generic full-rank matrix such that $\boldsymbol{M}^{\top}\boldsymbol{M} = \boldsymbol{\Sigma}$. For convenience, we also define the precision parameter $\boldsymbol{T} =: \boldsymbol{\Sigma}^{-1}$.
 
 Consider the model in equation \ref{eq:mmbym}. Keeping up with the approach of \cite{BYM2}, and defining for the sake of brevity $\bar{\Phi} := \boldsymbol{I}_p - \Phi$, we know that:
 %
 $$
-\mathbb{E} [\mathrm{vec}\, \boldsymbol{z} \mid U, \Phi , \Sigma] = \mathrm{vec}(\boldsymbol{U} \Phi^{\frac{1}{2}} \boldsymbol{M}) =
+\mathbb{E} [\mathrm{vec}\, \boldsymbol{z} \mid U, \Phi , \boldsymbol{\Sigma}] = \mathrm{vec}(\boldsymbol{U} \Phi^{\frac{1}{2}} \boldsymbol{M}) =
 [( \boldsymbol{M}^{\top}\Phi^{\frac{1}{2}}) \otimes \boldsymbol{I}_n] \mathrm{vec}\,\boldsymbol{U}
 $$
 %
 and similarly 
 %
 $$
-\mathrm{Var} [\mathrm{vec}\, \boldsymbol{z} \mid \boldsymbol{U}, \Phi , \Sigma] =
+\mathrm{Var} [\mathrm{vec}\, \boldsymbol{z} \mid \boldsymbol{U}, \Phi , \boldsymbol{\Sigma}] =
 \left[( \boldsymbol{M}^{\top} \bar{\Phi}^{ 1/2}) \otimes \boldsymbol{I}_n \right] 
 \mathbb{E} \left[
 \mathrm{vec}\boldsymbol{V}
@@ -644,9 +665,9 @@ $$
  \boldsymbol{M}^\top \bar{\Phi}  \boldsymbol{M} \right) \otimes \boldsymbol{I}_n
 $$
 %
-The distribution of $\boldsymbol{Y} \mid \boldsymbol{U}, \Sigma, \Phi $ then reads:
+The distribution of $\boldsymbol{Y} \mid \boldsymbol{U}, \boldsymbol{\Sigma}, \Phi $ then reads:
 \begin{align*}
--2 \ln \pi \left(\mathrm{vec} \, \boldsymbol{Z} \mid \boldsymbol{U}, \Sigma, \phi \right) =\\
+-2 \ln \pi \left(\mathrm{vec} \, \boldsymbol{Z} \mid \boldsymbol{U}, \boldsymbol{\Sigma}, \phi \right) =\\
  %
 =(\mathrm{vec}\,\boldsymbol{Z})^{\top}
 \left[ \left(
@@ -690,7 +711,7 @@ Now, for brevity let us define the following $p \times p$ matrices:
 \end{align*}
 Hence 
 \begin{align*}
--2 \ln \pi \left(\mathrm{vec}\,\boldsymbol{z} \mid \boldsymbol{U}, \Sigma, \Phi \right) 
+-2 \ln \pi \left(\mathrm{vec}\,\boldsymbol{z} \mid \boldsymbol{U}, \boldsymbol{\Sigma}, \Phi \right) 
 = C + \mathrm{vec}(\boldsymbol{z})^{\top}
 \left(\boldsymbol{q}_{11} \otimes \boldsymbol{I}_n \right) 
 \mathrm{vec}\,\boldsymbol{z} +\\
@@ -704,7 +725,7 @@ Hence
 \end{align*}
 And
 \begin{align*}
--2 \ln \pi \left(\mathrm{vec} \,\boldsymbol{z}, \mathrm{vec}\,\boldsymbol{U} \mid \Sigma, \phi \right)  
+-2 \ln \pi \left(\mathrm{vec} \,\boldsymbol{z}, \mathrm{vec}\,\boldsymbol{U} \mid \boldsymbol{\Sigma}, \phi \right)  
 = C + (\mathrm{vec}\,\boldsymbol{z})^{\top}
 \left(\boldsymbol{q}_{11} \otimes \boldsymbol{I}_n \right) 
 \mathrm{vec}\,\boldsymbol{z} +\\ 
@@ -737,6 +758,8 @@ Which consists of four blocks; three are diagonal and the lower-right one has th
 %
 %
 
+\subsubsection{TBD: Spatial+}
+\subsubsection{TBD: Spatial+2.0}
 %
 %% ------------------------------------------------------------------------------ %%
 %% --------                   Second Chapter                 --------------------- %%
@@ -751,9 +774,15 @@ In the context of Bayesian inference, integrating out analytically the posterior
 
 The most popular way to overcome non-conjugacy in the posteriors is the approximation of posteriors by simulation using Markov Chain Monte Carlo (MCMC hereinafter) methods. MCMC methods are a true institution in Bayesian statistics due to their rigorous background and the capability of balancing computational speed and accuracy.
 
-Nevertheless, an alternative approach has emerged in the last twenty years, the Integrated Nested Laplace Approximation . The core idea behind INLA is to directly apply a deterministic approximation to the posteriors of interest, and dates back to the proposal by \cite{tierney1986accurate} to approximate the first and second moments of the parameters. The Laplace approximation leverages on the convergence of the full posterior to a Gaussian distribution when parameters are Gaussian \textit{a priori}, the approximation error being in $\mathcal{O}(n^{-1})$ where $n$ is the length of the target variable. 
+Nevertheless, an alternative approach has emerged in the last twenty years in the context of additive models and hierarchical regression, the Integrated Nested Laplace Approximation (INLA). The core idea behind INLA is to approximate the joint posterior distribution of the parameters of interest through the Laplace approximation, then to integrate numerically the marginal distributions of single parameters. The approximation is nested as it directly regards only the upstream joint posteriors, which in turn will undergo numerical integration to bring out the marginals, which are the typical inferential goal. 
 
-The most convenient area of application of INLA are the models for Gaussian Markov Random Fields \citep{GMRFs}, due to the computational properties we describe in Section \ref{section:GMRFs}. That being said, the remainder of this chapter will briefly summarise how the INLA works in Section \ref{section:inla} and the \texttt{R} software in which it is implemented in Section \ref{section:r_inla}
+The intuition of Laplace approximation in posterior inference dates back to the proposal by \cite{tierney1986accurate} to approximate the first and second moments of the parameters. The Laplace approximation leverages on the convergence of the full posterior to a Gaussian distribution when parameters are Gaussian \textit{a priori}, the approximation error being in $\mathcal{O}(n^{-1})$ where $n$ is the length of the target variable. 
+
+The INLA is implemented into a comprehensive and self-sufficient \texttt{R} environment, the \texttt{INLA} \texttt{R} package \citep{INLAbook, Wang}. It will be referred to as \texttt{R-INLA} hereinafter. Since most developers and maintainers of the package are also among the main developers of the INLA methodology, the distinction between the theory of INLA and the \texttt{R-INLA} functionalities is not always meaningful. 
+
+In literature, several handbooks have been devoted to \texttt{R-INLA}. \cite{Wang} and \cite{INLAbook} offer a general and thorough overview both on the INLA method and on the functionalities and application areas of the package. \cite{Blangiardo} describes in detail the use of \texttt{R-INLA} in spatial modelling, with focuses on zero inflation, spatio-temporal modelling and how to map continuously-indexed Matérn fields to discretely-index Gaussian Markov Random Field through the Stochastic Partial Difference Equation (SPDE) approach; we will return on this matter in Section \ref{subsection:SPDE}. \cite{INLASPDE}, lastly, deep-dives on the SPDE method with some thorough tutorials on its practical implementation in \texttt{R-INLA}.
+
+The most convenient area of application of INLA are the models for Gaussian Markov Random Fields \citep{GMRFs}, due to the computational properties we describe in Section \ref{section:GMRFs}. That being said, the remainder of this chapter will briefly summarise how the approximations work in Section \ref{section:inla}, how integration is carried out in section \ref{section:inla_int} and the \texttt{R} software in which it is implemented in Section \ref{section:r_inla}.
 
 
 
@@ -802,8 +831,7 @@ $$
 \end{array}
 \right)
 $$
- Where $\boldsymbol{\Sigma_{BB}} : =\boldsymbol{\Sigma_{AA}} - \boldsymbol{\Sigma_{AB}} \boldsymbol{\Sigma^{-1}_{BB}} \boldsymbol{\Sigma_{BA}}$ is the Schur complement of $\boldsymbol{\Sigma_{BB}}$ in $\boldsymbol{\Sigma}$
-\citep[][paragraph 0.7.3]{HornJohnson}. Then the precision reads as:
+ Where $\boldsymbol{\Sigma_{BB}} : =\boldsymbol{\Sigma_{AA}} - \boldsymbol{\Sigma_{AB}} \boldsymbol{\Sigma^{-1}_{BB}} \boldsymbol{\Sigma_{BA}}$ is the Schur complement of $\boldsymbol{\Sigma_{BB}}$ in $\boldsymbol{\Sigma}$. Then the precision reads as:
 \begin{equation}
 	\boldsymbol{Q} = 
 	\left( \begin{array}{ll} 
@@ -836,34 +864,11 @@ $$
 \end{array} \right)
 $$
 %
-As for $\boldsymbol{S_{BB}}$, we may define: $\boldsymbol{S_{AA}} : =\boldsymbol{\Sigma_{BB}} - \boldsymbol{\Sigma_{BA}} \boldsymbol{\Sigma^{-1}_{AA}} \boldsymbol{\Sigma_{AB}}$ and notice that
+As for $\boldsymbol{S_{BB}}$, we may define: $\boldsymbol{S_{AA}} : =\boldsymbol{\Sigma_{BB}} - \boldsymbol{\Sigma_{BA}} \boldsymbol{\Sigma^{-1}_{AA}} \boldsymbol{\Sigma_{AB}}$ and notice with some passages that
 $$
 \left(\boldsymbol{\Sigma_{BB}^{-1}} + \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}} \boldsymbol{S_{BB}^{-1}}
 \boldsymbol{\Sigma_{AB}} \boldsymbol{\Sigma_{BB}^{-1}} \right) \, \, 
-\left(\boldsymbol{\Sigma_{BB}} - \boldsymbol{\Sigma_{BA}} \boldsymbol{\Sigma^{-1}_{AA}} \boldsymbol{\Sigma_{AB}} \right) =
-$$
-$$
-= \boldsymbol{I} 
-- \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}} \boldsymbol{\Sigma_{AA}^{-1}} \boldsymbol{\Sigma_{AB}}
-+ \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}} \boldsymbol{S_{BB}^{-1}}
-  \boldsymbol{\Sigma_{AB}} +$$
-$$
-- \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}}      \boldsymbol{S_{BB}^{-1}}
-  \boldsymbol{\Sigma_{AB}}      \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}}
-  \boldsymbol{\Sigma^{-1}_{AA}} \boldsymbol{\Sigma_{AB}} = 
-$$
-$$
-= \boldsymbol{I} - \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}} \,
-\left( \boldsymbol{S_{BB}^{-1}}  - \boldsymbol{S_{BB}^{-1}}  \boldsymbol{\Sigma_{AB}}      \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}}
-\boldsymbol{\Sigma^{-1}_{AA}} - \boldsymbol{\Sigma^{-1}_{AA}} \right) \,
-\boldsymbol{\Sigma_{AB}} =
-$$ 
-$$
-\boldsymbol{I} - \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}} \,
-\left[
-\boldsymbol{S_{BB}^{-1}} - \boldsymbol{S_{BB}^{-1}} \left(\boldsymbol{\Sigma_{AA}} - \boldsymbol{S_{BB}} 
- \right)\boldsymbol{\Sigma^{-1}_{AA}} - \boldsymbol{\Sigma^{-1}_{AA}}
-\right] \, \boldsymbol{\Sigma_{AB}} = \boldsymbol{I}
+\left(\boldsymbol{\Sigma_{BB}} - \boldsymbol{\Sigma_{BA}} \boldsymbol{\Sigma^{-1}_{AA}} \boldsymbol{\Sigma_{AB}} \right)  = \boldsymbol{I}
 $$
 This enables us to write the precision matrix in compact form:
 \begin{equation}
@@ -923,103 +928,131 @@ Putting together the Markov property (Equation \ref{eq:gMarkov}) with the precis
 
 
 
-%% -------- INLA summary --------------------------------- %%
-\section{Introduction to the INLA}\label{section:inla}
+%% -------- Approximations ------------------------------- %%
+\section{INLA: the Approximations Framework}\label{section:inla}
 
 \subsection{Context: hierarchical regression}\label{subsection:INLA_LGM}
-The ideal yet not exclusive field of application of the INLA are hierarchical generalised linear regression models of this form:
+
+Throughout this thesis, we will extensively resort to the INLA in the hierarchical linear regression framework.  taking this form:
 %
 $$
 \left\{ \begin{array}{ll} 
-E[y\mid \eta, \Psi] = g^{-1}(\eta)\\
+E[y\mid \eta, \psi] = g^{-1}(\eta)\\
 \eta = \boldsymbol{A} \vartheta \\
-\vartheta \sim\mathcal{N}\left(0, \boldsymbol{Q_\Psi} \right)
+\vartheta \sim\mathcal{N}\left(0, \boldsymbol{Q_\psi} \right)
 \end{array} \right. 
 $$
 %
-Where $y$ is the dependent variable, $\eta$ is the linear predictor, $g()$ is a link function, $A$ is a known model matrix equivalent to the $A_1$ matrix defined in equation \ref{eq:LGM_y_theta}, $\vartheta$ is a latent Gaussian random field (GRF), and $\Psi$ are model hyperparameters.\footnote{In most of the INLA-related literature, the latent GRF is labelled as $X$ or $f$, and $\theta$ denotes hyperparameters. Throughout this thesis we chose to derogate to the $X, \theta $ or $f, \theta$ notation in favour of the $\vartheta, \Psi$ notation in order to avoid confusion with explanatory variables being already labelled as $X$. }.
+Where $y$ is the dependent variable, $\eta$ is the linear predictor, $g()$ is a link function, $A$ is a known model matrix equivalent to the $A_1$ matrix defined in equation \ref{eq:LGM_y_theta}, $\vartheta$ is a latent Gaussian random field (GRF), and $\psi$ are model hyperparameters.\footnote{In most of the INLA-related literature, the latent GRF is labelled as $X$ or $f$, and $\theta$ denotes hyperparameters. Throughout this thesis we chose to derogate to the $X, \theta $ or $f, \theta$ notation in favour of the $\vartheta, \psi$ notation in order to avoid confusion with explanatory variables being already labelled as $X$.}.
 
-This regression model is hierarchical as we are layering two arrays of unknown variables: the first layer $\vartheta$, which enters the linear predictor and whose prior distribution is Gaussian and may depend on $\Psi$, and $\Psi$, the second layer of unknown variables, from which either the likelihood or the prior of $\vartheta$ or both distributions depend; sometimes the prior distribution of $\Psi$ is referred to as the hyper-prior. In Gaussian regression, for instance, $\Psi$ includes the variance-covariances parameters of $y\mid \vartheta$ and $\vartheta$; in contrast, in Poisson regression, $\Psi$ only influences the prior of $\vartheta$. In thus regression framework, we can assume $\vartheta$ includes a set of covariate effects of size $p$ and a latent GRF of size $n$, hence $\mathrm{card}(\vartheta) = n+p$.
+This regression model is hierarchical as we are layering two arrays of unknown variables: the first layer $\vartheta$, which enters the linear predictor and whose prior distribution is Gaussian and may depend on $\psi$, and $\psi$, the second layer of unknown variables, from which either the likelihood or the prior of $\vartheta$ or both distributions depend; sometimes the prior distribution of $\psi$ is referred to as the hyper-prior. In Gaussian regression, for instance, $\psi$ includes the variance-covariances parameters of $y\mid \vartheta$ and $\vartheta$; in contrast, in Poisson regression, $\psi$ only influences the prior of $\vartheta$. In thus regression framework, we can assume $\vartheta$ includes a set of covariate effects of size $p$ and a latent GRF of size $n$, hence $\mathrm{card}(\vartheta) = n+p$.
 %%%%% THIS IS ONLY VALID IN THE CLASSIC MODE OF R-INLA; namely, if $m$ is the size of $\vartheta$ (in this case, $m = N + n + p$), then the number of nonzero entries in $\boldsymbol{Q}$ is in $\mathcal{\vartheta}(m)$, i.e. in the same order of magnitude of $m$. The linear predictor is included in $\vartheta$ for computational reasons; with the appropriate choice of the stochastic representation of $\eta$ (see e.g. \cite{INLA2017}) if all other parameters are GMRFs, then $\vartheta$ is a GMRF as a whole. \\
-What researchers are typically interested in are the posterior marginal distributions $\pi(\vartheta_i | y)$ and $\pi(\Psi_j | y)$  $\forall i \in [1, n+p]$ and $j \in [1, \mathrm{card}(\Psi)]$, which are obtained by solving the integrals:
+What researchers are typically interested in are the posterior marginal distributions $\pi(\vartheta_i | y)$ and $\pi(\psi_j | y)$  $\forall i \in [1, n+p]$ and $j \in [1, q]$ with $q$ being the number of hyperparameters. Posteriors are the solutions of the integrals:
+%
  \begin{equation}
  \label{eq:marginals}
  \begin{aligned}
  %\left\{ \begin{array}{ll}
- \pi(\vartheta_i | y) = \int_{\Psi} \pi(\vartheta_i | y, \Psi) \pi(\Psi | y) d \Psi\\
- \pi(\Psi_j|y) = \int_{\Psi_{-j}} \pi(\Psi | y) \, d\Psi_{-j}
+ \pi(\vartheta_i | y) = \int_{\psi} \pi(\vartheta_i | y, \psi) \pi(\psi | y) d \psi\\
+ \pi(\psi_j|y) = \int_{\psi_{-j}} \pi(\psi | y) \, d\psi_{-j}
  %\end{array} \right.
  \end{aligned}
  \end{equation}
-Integration is feasible provided that $\Psi$ has a small size. However, this operation can hardly be completed in closed form. This calls for the need of approximations, which we are going to discuss in the following.
+%
+Integration is feasible provided that $q$ is small (say, less than 20). However, this operation can hardly be completed in closed form. This calls for the need of approximations, which we are going to discuss in the following paragraphs.
+
+Despite our interest lies in linear models, we deem worthy of being recalled they are not the exclusive field of application of INLA. Nonlinear regression can be achieved through the \texttt{inlabru} framework, implemented in the homonym R package \citep{inlabru2019}. \texttt{inlabru} implements a linearisation algorithm to approximate the predictor with a linear one. The steps of the algorithm can be summarised in this way: first, the predictor is Taylor approximated up to the linear term around a linearisation point; given the new linear predictor the posteriors are evaluated; the next linearisation point is set at the mode of the posterior of $\vartheta$ \citep{inlabru2024}.
+
+
 
 \subsection{Approximating joint Hyperparameters Posterior} \label{par:inla_psi}
 Considering Equation \ref{eq:marginals}, the first task is computing
  $$
-\pi(\Psi | y) =  \frac{\pi(y | \eta, \Psi) \pi(\vartheta | \Psi) \pi(\Psi)}
-{\pi(\vartheta | y, \Psi)\pi(y)} 
+\pi(\psi | y) =  \frac{\pi(y | \eta, \psi) \pi(\vartheta | \psi) \pi(\psi)}
+{\pi(\vartheta | y, \psi)\pi(y)} 
  $$
  
- The numerator is known \textit{a priori}; $\pi(y)$ does not depend on the parameters of interest and can be treated here as a normalising constant. What is hard to find analytically, instead, is the full conditional $\pi(\vartheta \mid y, \Psi)$, as it is derived as:
+ The numerator is known \textit{a priori}; $\pi(y)$ does not depend on the parameters of interest and can be treated here as a normalising constant. What is hard to find analytically, instead, is the full conditional $\pi(\vartheta \mid y, \psi)$, as it is derived as:
  $$
- \pi(\vartheta \mid y, \Psi) = \frac{\pi(\vartheta, y \mid \Psi)}{\int \pi(\vartheta, y | \Psi) d \vartheta}
+ \pi(\vartheta \mid y, \psi) = \frac{\pi(\vartheta, y \mid \psi)}{\int \pi(\vartheta, y | \psi) d \vartheta}
  $$
- and the integral can only be solved in closed formula for conjugate priors on $\vartheta$. The intuition behind the INLA is, therefore, to replace the integrand function with its Gaussian approximation, which we denote as $\pi_G(\vartheta, y \mid \Psi)$
+ and the integral can only be solved in closed formula for conjugate priors on $\vartheta$. The intuition behind the INLA is, therefore, to replace the integrand function with its Gaussian approximation, which we denote as $\tilde{\pi}_\mathrm{_G}(\vartheta, y \mid \psi)$
+%
 \begin{equation}
 \label{eq:GaussianApprox}
-\pi(\vartheta | y, \Psi) \approx \pi_{G}(\vartheta | y, \Psi) = \frac{\pi(\vartheta, y | \Psi)}{\int \pi_G(\vartheta, y | \Psi) \, d\vartheta}
+\pi(\vartheta | y, \psi) \approx \tilde{\pi}_\mathrm{_G}(\vartheta | y, \psi) = \frac{\pi(\vartheta, y | \psi)}{\int \tilde{\pi}_\mathrm{_G}(\vartheta, y | \psi) \, d\vartheta}
 \end{equation}
-
-Here we describe more in detail how the Gaussian approximation works. For brevity, define $\gamma(\vartheta) := \ln \pi(\vartheta, y | \Psi)$. Then, a Taylor approximation truncated at the second order is applied:
+%
+Here we describe more in detail how the Gaussian approximation works. For brevity, define $\gamma(\vartheta) := \ln \pi(\vartheta, y | \psi)$. Then, a Taylor approximation truncated at the second order is applied:
 %
 \begin{align*}
-\gamma(\vartheta) \approx   \gamma(\vartheta_0) + \nabla   \gamma(\vartheta_0)^\top(\vartheta - \vartheta_0)+ \frac{1}{2}
-(\vartheta - \vartheta_0)^\top \boldsymbol{H_\gamma}(\vartheta_0)(\vartheta - \vartheta_0)
+\gamma(\vartheta) \approx   \gamma(\mu_0) + \nabla   \gamma(\mu_0)^\top(\vartheta - \mu_0)+ \frac{1}{2}
+(\vartheta - \mu_0)^\top \boldsymbol{H_\gamma}(\mu_0)(\vartheta - \mu_0)
 \end{align*}
 %
-Here, $\boldsymbol{H_f}(x_0)$ denotes the Hessian matrix of a generic scalar-valued function $f(\cdot)$ evaluated at $x_0$ \footnote{This expression can be further simplified. To see this, first recall that $$\boldsymbol{H_{\gamma(\vartheta)}} = \boldsymbol{H_{ \ln \pi (\vartheta \mid \Psi)}}  + \sum_{j=1}^{N}\boldsymbol{ H_{\ln \pi(y_j \mid \vartheta, \Psi)}}$$ The first addendum is the negative prior precision of $\vartheta$. Regarding the second term, notice that instead of $\vartheta$ inference can be made on the first $N$ elements of the vector $\theta:= ((\eta + \epsilon)^{\top}, \vartheta^{\top})^{\top}$, which is itself a GMRF \citep{INLA2017}. The term $\epsilon$ is a Gaussian error with arbitrarily small variance employed to make the distribution of the augmented predictor $\eta + \epsilon$ proper. We then have, $\forall\, i,r,c \in [1, N]$, that $\frac{\partial^2 \ln \pi(y_i \mid\theta_i, \Psi)}{\partial \theta_r \partial \theta_c}$ is nonzero only for $r = c = i$, hence under this parametrisation $\boldsymbol{ H_{\ln \pi(y_j \mid \vartheta, \Psi)}}$ is diagonal.}. The point $\vartheta_0$ is set as the mode of $\gamma(\vartheta)$,  denoted as $\vartheta_0(y, \Psi)$ to highlight its dependence on observed data and hyperparameters.  This choice implies that $\nabla \gamma(\theta_0)$ equals an array of zeroes, and it is straightforward to observe that $\pi_G(\vartheta \mid  y, \Psi)$ is proportional to a Gaussian density with mean $\vartheta_0(y, \Psi)$ and precision equal to the negative Hessian:
+Here, $\boldsymbol{H_f}(x_0)$ denotes the Hessian matrix of a generic scalar-valued function $f(\cdot)$ evaluated at $x_0$ \footnote{This expression can be further simplified. To see this, first recall that $$\boldsymbol{H_{\gamma(\vartheta)}} = \boldsymbol{H_{ \ln \pi (\vartheta \mid \psi)}}  + \sum_{j=1}^{N}\boldsymbol{ H_{\ln \pi(y_j \mid \vartheta, \psi)}}$$ The first addendum is the negative prior precision of $\vartheta$. Regarding the second term, notice that instead of $\vartheta$ inference can be made on the first $N$ elements of the vector $\theta:= ((\eta + \epsilon)^{\top}, \vartheta^{\top})^{\top}$, which is itself a GMRF \citep{INLA2017}. The term $\epsilon$ is a Gaussian error with arbitrarily small variance employed to make the distribution of the augmented predictor $\eta + \epsilon$ proper. We then have, $\forall\, i,r,c \in [1, N]$, that $\frac{\partial^2 \ln \pi(y_i \mid\theta_i, \psi)}{\partial \theta_r \partial \theta_c}$ is nonzero only for $r = c = i$, hence under this parametrisation $\boldsymbol{ H_{\ln \pi(y_j \mid \vartheta, \psi)}}$ is diagonal.}. 
+
+The point $\mu_0$ is set as the mode of $\gamma(\vartheta)$,  denoted as $\mu_0(y, \psi)$ to highlight its dependence on observed data and hyperparameters.  This choice implies that $\nabla \gamma(\theta_0)$ equals an array of zeroes, and it is straightforward to observe that $\pi_\mathrm{_G}(\vartheta \mid  y, \psi)$ is proportional to a Gaussian density with mean $\mu_0(y, \psi)$ and precision equal to the negative Hessian:
 \begin{equation}
-\pi_{G}(\vartheta, y | \Psi) =  \pi(\vartheta_0(y, \Psi), y | \Psi) \, e^{\displaystyle{
-\tfrac{1}{2}[\vartheta - \vartheta_0(y, \Psi)]^\top
-\boldsymbol{H_\gamma}(\vartheta_0(y, \Psi))
-[\vartheta - \vartheta_0(y, \Psi)]
+\tilde{\pi}_\mathrm{_G}(\vartheta, y | \psi) =
+\pi\left(\mu_0(y, \psi), y | \psi\right)  \,\,  e^{\displaystyle{
+\tfrac{1}{2}[\vartheta - \mu_0(y, \psi)]^\top
+\boldsymbol{H_\gamma}(\mu_0(y, \psi))
+[\vartheta - \mu_0(y, \psi)]
 }}
 \label{eq:apprG}
 \end{equation}
+More in detail, considering the latent Gaussian model defined in section \ref{subsection:INLA_LGM}, let us define, in a preliminary stance, for $j = 1, \dots, N$ :
+%
+$$
+\delta'_j :=\frac{\partial \ln \pi(y_j \mid \eta_j, \psi)}{\partial \eta_j} \quad \, \text{and} \, \quad
+\delta''_j :=\frac{\partial^2 \ln \pi(y_j \mid \eta_j, \psi)}{\partial \eta_j^2} 
+$$
+%
+and stack these values in the arrays $\Delta_1=\left(\delta'_1, \delta'_2, \dots, \delta'_N \right)^\top$ and $\boldsymbol{\Delta_2} = \mathrm{diag}\left( -\delta''_1, -\delta''_2, \dots,- \delta''_N \right)$. It follows that
+%
+$$
+\left \{ \begin{array}{ll}
+\nabla \gamma(\vartheta) = \boldsymbol{A}^\top\Delta_1 -\boldsymbol{Q_\psi} \vartheta \\
+\boldsymbol{H}_{\gamma(\vartheta)} = -\boldsymbol{A}^\top \boldsymbol{\Delta_2 A} - \boldsymbol{Q_\psi}
+\end{array} \right.
+$$
+%
+The mode of $\mu_0 \left( y, \psi \right)$, i.e. the zero of the gradient, can be computed iteratively. 
 
-\begin{example}[Gaussian approximation in GLMs] \label{ex:GLM_INLA}
+%\begin{example}[Gaussian approximation in GLMs] \label{ex:GLM_INLA}
 
-Let us view more in detail how Gaussian Approximation works in the context of Generalised Linear Models \citep{GLM,HGLM} In this case, the likelihood function can be reduced to the form
-$$
-\ln \pi(y \mid \vartheta, \Psi) = \alpha(\Psi) \left[ y_i \eta_i - b(\eta_i) + h(y_i)\right] + \beta(y_i, \Psi)
-$$
-With appropriately chosen $\alpha(\cdot), b(\cdot), h(\cdot)$ and $\beta(\cdot)$ functions. Recalling the model defined in section \ref{subsection:INLA_LGM}, where $\eta = A \vartheta$, we obtain 
-$$
-\nabla \gamma(\vartheta) = \alpha(\Psi) \left( A^\top y - A^\top \Delta_1 \right) - \frac{1}{2}\boldsymbol{Q}_\Psi \vartheta
-$$
-for the gradient, where $\Delta_1 = \left(\frac{db}{d\eta_1},\frac{db}{d\eta_2}, \cdots, \frac{db}{d\eta_N} \right)^\top$ and
-$$
-\boldsymbol{H}_{\gamma(\vartheta)} =- \alpha(\Psi) \boldsymbol{A}^\top \boldsymbol{\Delta_2} \boldsymbol{A} - \boldsymbol{Q_\Psi}
-$$
-where $\boldsymbol{\Delta_2}= \mathrm{diag}{\left(\frac{d^2b}{d\eta_1^2},\frac{d^2b}{d\eta_2^2}, \cdots, \frac{d^2b}{d\eta_N^2} \right)}$. The Gaussian model in section \ref{subsection:LGM} would have $\Delta_1 \equiv \eta$ and $\boldsymbol{\Delta_2} \equiv \boldsymbol{I}$ (cfr. section \ref{subsection:LGM}), and $\alpha(\Psi) = \sigma_{\varepsilon}^{-2}$ a Poisson model would have $h(\eta) = e^{\eta}$ and $\alpha(\Psi) = 1$, and so on.
+%Let us view more in detail how Gaussian Approximation works in the context of Generalised Linear Models \citep{GLM,HGLM} In this case, the likelihood function can be reduced to the form
+%$$
+%\ln \pi(y \mid \vartheta, \psi) = \alpha(\psi) \left[ y_i \eta_i - b(\eta_i) + h(y_i)\right] + \beta(y_i, \psi)
+%$$
+%With appropriately chosen $\alpha(\cdot), b(\cdot), h(\cdot)$ and $\beta(\cdot)$ functions. Recalling the model defined in section \ref{subsection:INLA_LGM}, where $\eta = A \vartheta$, we obtain 
+%$$
+%\nabla \gamma(\vartheta) = \alpha(\psi) \left( A^\top y - A^\top \Delta_1 \right) -  \boldsymbol{Q}_\psi \vartheta
+%$$
+%for the gradient, where $\Delta_1 = \left(\frac{db}{d\eta_1},\frac{db}{d\eta_2}, \cdots, \frac{db}{d\eta_N} \right)^\top$ and
+%$$
+%\boldsymbol{H}_{\gamma(\vartheta)} =- \alpha(\psi) \boldsymbol{A}^\top \boldsymbol{\Delta_2} \boldsymbol{A} - \boldsymbol{Q_\psi}
+%$$
+%where $\boldsymbol{\Delta_2}= \mathrm{diag}{\left(\frac{d^2b}{d\eta_1^2},\frac{d^2b}{d\eta_2^2}, \cdots, \frac{d^2b}{d\eta_N^2} \right)}$. The Gaussian model in section \ref{subsection:LGM} would have $\Delta_1 \equiv \eta$ and %$\boldsymbol{\Delta_2} \equiv \boldsymbol{I}$ (cfr. section \ref{subsection:LGM}) and $\alpha(\psi) = \sigma_{\varepsilon}^{-2}$, while a Poisson model would have $h(\eta) = e^{\eta}$ and $\alpha(\psi) = 1$, and so on.\\
 
-\end{example}
+%\end{example}
 
 \noindent
-The remaining problem in the formula for $\pi(\Psi | y)$ is that it still depends on $\vartheta$. The joint posterior distribution of hyperparameters is thus approximated via Laplace approximation, locating $\vartheta$ at its mode conditional on $\Psi$ and $y$:
-$$
-\pi(\Psi |y) \approx \pi_{LA}(\Psi | y) \propto  \left. \frac{\pi(y | \eta, \Psi) \pi(\vartheta | \Psi) \pi(\Psi)}{\pi_G(\vartheta | y, \Psi)} 
-\right \vert_{\vartheta = \vartheta_0(\Psi, y)}
-$$
-we have seen in the example \ref{ex:GLM_INLA} that computing such Gaussian approximation and locating the relevant mode is a simple task \textit{per se}. The Laplace approximation on hyperparameter posterior follows straightforwardly.
+The remaining problem in the formula for $\pi(\psi | y)$ is that it still depends on $\vartheta$. The joint posterior distribution of hyperparameters is thus approximated via Laplace approximation, locating $\vartheta$ at its mode conditional on $\psi$ and $y$:
+\begin{equation}
+\pi(\psi |y) \approx \tilde{\pi}_\mathrm{_{LA}}(\psi | y) \propto  \left. \frac{\pi(y | \eta, \psi) \pi(\vartheta | \psi) \pi(\psi)}{\pi_\mathrm{_G}(\vartheta | y, \psi)} 
+\right \vert_{\vartheta = \mu_0(\psi, y)}
+\label{eq:hyper_laplace}
+\end{equation}
 
 
 \subsection{Approximating joint Gaussian field Posterior}\label{par:inla_theta}
 
-To approximate the marginals $\pi(\vartheta_i \mid y, \Psi) \forall i$, several solutions are possible. 
+To approximate the marginals $\pi(\vartheta_i \mid y, \psi) \forall i$, several solutions are possible. We provide an overview of the four methods developed so far, distinguishing between the original methods proposed in the seminal paper of \cite{INLA}, and the latest alternative method developed by \cite{VBINLA2024}.
 
 \subsubsection{The original framework} \label{subsection:inla_original}
-\cite{INLA}, in their seminal work, proposed a set of three alternative strategies, following a trade-off in accuracy and computational cost.
+The original INLA framework relied on a set of three alternative strategies, following a trade-off in accuracy and computational cost. We will not focus in depth on these strategies as in this thesis we mainly rely on the novel approach.
 
 \paragraph{Gaussian approximation} 
 
@@ -1027,95 +1060,145 @@ A rough solution would be using the Gaussian approximation in equation \ref{eq:G
 
 \paragraph{Full Laplace approximation}
 
-This strategy consists in reiterating the Laplace approximation for each element of $\vartheta$, i.e. marginalising $\vartheta_i$ out from $\pi(\vartheta | y, \Psi)$ by using a Gaussian approximation to $\pi(\vartheta_{-i} | \vartheta_i, y, \Psi)$ and setting $\vartheta_{-i}$ equal to the mode of $\pi(\vartheta_{-i}|\vartheta_i, \Psi)$. This is the most rigorous choice, but is computationally demanding.
+This strategy consists in reiterating the Laplace approximation for each element of $\vartheta$, i.e. marginalising $\vartheta_i$ out from $\pi(\vartheta | y, \psi)$ by using a Gaussian approximation to $\pi(\vartheta_{-i} | \vartheta_i, y, \psi)$ and setting $\vartheta_{-i}$ equal to the mode of $\pi(\vartheta_{-i}|\vartheta_i, y, \psi)$. This is the most rigorous choice but is computationally demanding.
 
 \paragraph{Simplified Laplace approximation}
 
-The third approach is known as "simplified Laplace" approximation, representing a compromise between the former two approaches in terms of accuracy and computational cost; it basically consists in truncating the Taylor approximation of $\gamma(\vartheta)$ at the third order term, while still locating the approximation at $\vartheta_0(y, \Psi)$. This allows to fit a Skew-Normal density to $\gamma(\vartheta)$. 
+The third approach is known as "simplified Laplace" approximation, representing a compromise between the former two approaches in terms of accuracy and computational cost; it basically consists in truncating the Taylor approximation of $\ln\pi(\vartheta, y \mid \psi)$ at the third order term, while still locating the approximation at the mode of $\vartheta$. This allows to fit a Skew-Normal density to the full conditional.
 
-For more details on how the parameters vector is defined, see \cite{INLA2017}. 
+In the original framework, inference was originally made, rather than on $\vartheta$, on $\eta$, by leveraging on the fact that if $\vartheta$ is a GMRF, so is $\eta$ (though with a singular precision). For more details on inference is made on $\eta$, see \cite{INLA2017}. 
 
 \subsubsection{The Variational Bayes method}
 
-A recent strand of literature introduced a different approach to approximating the joint conditional posterior of the latent Gaussian field. While the former methods consisted in three proposed functional forms of this approximation, the new strategy takes a further step in the field of optimisation. In this context, optimisation must be read as proposing an approximation as close as possible to the true joint posterior, i.e. $\pi(\vartheta \mid y, \Psi)$. To this aim, the simplest Gaussian approximation $\pi_G(\theta \mid y, \Psi)$ remains \textit{per se} a rigorous proposal as a functional form, while the element on which attention is drawn are now its moments. 
+A recent strand of literature introduced a different approach to approximating the joint conditional posterior of the latent Gaussian field. While the former methods consisted of three proposed functional forms of this approximation, the new strategy takes a further step in the field of optimisation. In this context, optimisation must be read as proposing an approximation as close as possible to the true joint posterior $\pi(\vartheta \mid y, \psi)$. To this aim, the simplest Gaussian approximation $\pi_\mathrm{_G}(\theta \mid y, \psi)$ remains \textit{per se} a rigorous proposal as a functional form, while the elements on which attention is drawn are now its moments. 
 
-Intuitively, approximating the true but unknown density $\pi(\vartheta \mid y, \Psi)$ with a known density $\pi_G(\vartheta \mid y, \Psi)$ implies a loss in information. As argued by \cite{Zellner1988}, statistical inference consists in its very essence in the processing of two prior assumptions, the likelihood and parameter prior density, into two outputs, the marginal likelihood and the posterior distribution of parameters. The Bayes rule itself implies that no loss of information occurs when the output quantities are computed exactly. But prior conjugacy is a fortunate case, and if it held in general, humanity would have never bothered inventing the science of approximate inference, and this whole chapter would not even have any reason to be at all. 
+Intuitively, approximating the true but unknown density $\pi(\vartheta \mid y, \psi)$ with a known density $\pi_\mathrm{_G}(\vartheta \mid y, \psi)$ implies a loss in information. As argued by \cite{Zellner1988}, statistical inference consists, in its very essence, in the processing of two prior assumptions, the likelihood and parameter prior density, into two outputs, the marginal likelihood and the posterior distribution of parameters. The Bayes rule itself implies that no loss of information occurs when the output quantities are computed exactly. But prior conjugacy is a fortunate case, and if it held in general, humanity would have never bothered inventing the science of approximate inference, and this whole chapter would not even have any reason to be at all. 
 
-Since at this very stage all inferential interest lies in $\vartheta$, we will omit the conditioning on $\Psi$ throughout the remainder of this paragraph. In mathematical terms, a statistical model yielding the posterior $\pi^*(\vartheta \mid y)$, prior or \textit{pre-data} inputs \citep{Zellner1988} are given by
+Since at this very stage all inferential interest lies in $\vartheta$, we will omit the conditioning on $\psi$ throughout the remainder of this paragraph. In mathematical terms, a statistical model yielding the posterior $\pi^*(\vartheta \mid y)$, prior or \textit{pre-data} inputs \citep{Zellner1988} are given by
 $$
-\mathcal{\Pi}_\mathrm{IN} = \int_{-\infty}^{+\infty} \left[ \ln \pi (\theta) + \ln \pi(y \mid \theta)  \right] \pi^*(\vartheta \mid y) d \vartheta
+\Pi_\mathrm{IN} = \int_{-\infty}^{+\infty} \left[ \ln \pi (\theta) + \ln \pi(y \mid \theta)  \right] \pi^*(\vartheta \mid y) d \vartheta
 $$
 while the model output is:
 $$
-\mathcal{\Pi}_\mathrm{OUT} = \int_{-\infty}^{+\infty} \left[ \ln \pi(y) + \ln \pi^*(\vartheta \mid y) \right] \pi^*(\vartheta \mid y) d \vartheta
+\Pi_\mathrm{OUT} = \int_{-\infty}^{+\infty} \left[ \ln \pi(y) + \ln \pi^*(\vartheta \mid y) \right] \pi^*(\vartheta \mid y) d \vartheta
 = \ln \pi(y) + \int_{-\infty}^{+\infty} \ln \pi^*(\vartheta \mid y)  \pi^*(\vartheta \mid y) d \vartheta
 $$
 
-Where $\pi(y)$ is the marginal likelihood, obtained by integrating out $\vartheta$ from $\pi(y,\vartheta)$. The metric \cite{Zellner1988} proposed to measure information loss through the information processing scheme is the difference between output and input information. If the statistical model allowed to compute $\pi^*(\vartheta \mid y) \equiv \pi(\vartheta \mid y)$, the difference between output and input information would be zero. Otherwise, a loss in information would arise, and the optimisation problem shaping this novel approximation scheme in INLA consists precisely in minimising such an information loss. In particular, if the posterior of $\vartheta$ is approximated via a known functional form like the Gaussian approximation, $\pi_\mathrm{VB}(\vartheta \mid y)$, where the VB subscript stands for Variational Bayes, the loss in information is measured as:
+Where $\pi(y)$ is the marginal likelihood, obtained by integrating out $\vartheta$ from $\pi(y,\vartheta)$. The metric \cite{Zellner1988} proposed to measure information loss through the information processing scheme is the difference between output and input information. If the statistical model allowed to compute $\pi^*(\vartheta \mid y) \equiv \pi(\vartheta \mid y)$, the difference between output and input information would be zero. Otherwise, a loss in information would arise, and the optimisation problem shaping this novel approximation scheme in INLA consists precisely in minimising such an information loss. In particular, if the posterior of $\vartheta$ is approximated via a known functional form like the Gaussian approximation, $\pi_\mathrm{_{VB}}(\vartheta \mid y)$, where the VB subscript stands for Variational Bayes, the loss in information is measured as:
 $$
-\mathcal{\Pi}_\mathrm{OUT} - \mathcal{\Pi}_\mathrm{IN} = 
+\Pi_\mathrm{OUT} - \Pi_\mathrm{IN} = 
 -\mathbb{E}_{\pi_\mathrm{VB}(\vartheta\mid y)}\left[ \ln\pi(y \mid \vartheta)\right]+
-\int_{-\infty}^{+\infty} \ln\frac{\pi_\mathrm{VB}(\vartheta \mid y)}{\pi(\vartheta)} \pi_\mathrm{VB}(\vartheta \mid y) d\vartheta + C =
+\int_{-\infty}^{+\infty} \ln\frac{\pi_\mathrm{_{VB}}(\vartheta \mid y)}{\pi(\vartheta)} \pi_\mathrm{_{VB}}(\vartheta \mid y) d\vartheta + C =
 $$
 $$
-= -\mathbb{E}_{\pi_\mathrm{VB}(\vartheta\mid y)}\left[ \ln\pi(y \mid \vartheta)\right]+
-\mathrm{KLD} \left( \pi_\mathrm{VB}(\vartheta \mid y) \mid \mid \pi(\vartheta) \right)  + C =
+= -\mathbb{E}_{\pi_\mathrm{_{VB}}(\vartheta\mid y)}\left[ \ln\pi(y \mid \vartheta)\right]+
+\mathrm{KLD} \left( \pi_\mathrm{_{VB}}(\vartheta \mid y) \mid \mid \pi(\vartheta) \right)  + C =
 $$
 Where $\mathrm{KLD}\left(f(x)||g(x)\right) = \int_{\mathcal{X}}\ln \frac{f(x)}{g(x)}f(x)dx$ denotes the Kullback-Leibler divergence between two densities $f(x)$ and $g(x)$, and $C = \ln \pi(y)$ does not depend on $\vartheta$ and is thus of no interest in this optimisation scheme. Specifically, \cite{VBINLA2024} propose to employ
 %
-$$
-\pi_\mathrm{VB}(\vartheta \mid y, \Psi) := \varphi\left(\vartheta \mid \vartheta_1, \left(-\boldsymbol{H_\gamma}\right)^{-1}\right)
-$$
+\begin{equation}
+\pi_\mathrm{_{VB}}(\vartheta \mid y, \psi) := \varphi\left(\vartheta \mid \mu_1, 
+\left(-\boldsymbol{H_\gamma}\right)^{-1}\right)
+\label{eq:VBNorm}
+\end{equation}
 %
 where $-\boldsymbol{H_\gamma}$ is the precision matrix of the Gaussian approximation $\pi_G(\vartheta \mid y)$, as seen in section \ref{subsection:inla_original}, and 
 $$
-\vartheta_1:  \vartheta_0(y,\Psi) + \Sigma_I \lambda
+\mu_1:=  \mu_0(y,\psi) + \Sigma_I \lambda
 $$
 %
 where $\Sigma_I$ is a projection matrix determined from a subset of the columns of the covariance $\left(-\boldsymbol{H_\gamma}\right)^{-1}$ and $\lambda$ is the correction factor whose only nonzero elements are those belonging to the index set $I$. Then, $\lambda$ is determined as the minimiser to the following objective function:
 \begin{equation}
 \begin{aligned}
 \lambda := \arg \min_{\lambda} \Bigg{\lbrace}
-KLD\left( \pi_{VB}(\vartheta | y, \Psi) \mid \mid \pi(\vartheta | \Psi)\right) + \\
--\int_{-\infty}^{+\infty}  \sum_{i=1}^{N} \ln\pi(y_i | \eta_i, \Psi) \pi_{VB}(\vartheta \mid y, \Psi)\, d \vartheta \Bigg{\rbrace}
+KLD\left( \pi_{_{VB}}(\vartheta | y, \psi) \mid \mid \pi(\vartheta | \psi)\right) + \\
+-\int_{-\infty}^{+\infty}  \sum_{i=1}^{N} \ln\pi(y_i | \eta_i, \psi) \pi_{_{VB}}(\vartheta \mid y, \psi)\, d \vartheta \Bigg{\rbrace}
 \label{VBINLA}
 \end{aligned}
 \end{equation}
 To improve computation efficiency, \cite{VBINLA2024} suggest to choose $I$ as a small subset of the column indexes of the precision; for this reason, this methodology is referred to as low-rank correction. Since $\lambda$ is multiplied by a square matrix, it is straightforward to figure that any nonzero element in $\lambda$ will be propagated across multiple values of $\vartheta$.
 
 The integral can be computed via Gauss-Hermite quadrature and Taylor approximated at the second order, as shown by \cite{VBINLA2024}. Regarding the KLD, we have two Gaussian densities with the same mean and different precision: it is then available in closed formula using the result in Appendix \ref{appendix:KLDNorm}.
-%This latter approach consists fitting the Gaussian approximation, then correcting $\vartheta_0$ (as in eq. \ref{eq:apprG}) by an additive vector, say $\lambda$, whose entries are nonzero only for a subset $I$ drawn from the total set of indices of $\vartheta$, namely $I \subset \left\{ 1, 2, ... n\right \}$:
-%$$
-%\pi_{VB}(\vartheta | y, \Psi) \propto e^{\displaystyle{
-% - \frac{1}{2}\left[\vartheta - \vartheta_0(y,\Psi)- \Sigma_I \lambda\right]^\top
-% \boldsymbol{H_\gamma}(\theta_0(y,\Psi))
-% \left[\vartheta - \vartheta_0 (y, \Psi)- \Sigma_I \lambda\right]
-%}}
-%$$
-This methodology appears promising, as it attempts to face the essential issue of approximate inference, i.e. the very fact that the output information is an approximate function. However, it bears two limits. First, only the mean of the posterior is corrected. Second, the posterior functional form is assumed rigidly. To this aim, some refinements are being carried forward \citep{dutta2025scalable}. On the first issue, a Variational Bayes additive correction has been proposed for the precision matrix, and it is seen to improve the accuracy of the posterior approximation for some selected likelihoods.
 
-\subsection{Numerical integration} \label{par:inla_int}
+Once the VB correction terms are computed, deriving the marginal conditionals $\pi_\mathrm{_{VB}}(\vartheta_i \mid y, \psi)$ from the joint distribution as defined in equation \ref{eq:VBNorm} is straightforward, as computing the marginal distributions of a multivariate Gaussian only requires the diagonal entries of the inverse precision matrix.
 
-Once the integrand functions in \ref{eq:marginals} are defined, integration is carried out numerically. This requires to compute $\tilde{\pi}(\Psi \mid y)$ across a given set of points, which in this case is a multidimensional grid. In particular, this grid exploration will not regard $\Psi$ itself, but a transformation defined over $\mathbb{R}$, whereas many hyperparameters usually range on a subset of $\mathbb{R}$ (think of variance and precision parameters which are defined on the nonnegative axis, or correlations which range -1 to 1). 
+This methodology appears promising, as it attempts to face the essential issue of approximate inference, i.e. the very fact that the output information is an approximate function. However, it bears two limits. First, only the mean of the posterior is corrected. Second, the posterior functional form is assumed rigidly. To this aim, some refinements are being carried forward \citep{dutta2025scalable}. On the first issue, a Variational Bayes additive correction has been proposed for the precision matrix, and it is seen to improve the accuracy of the posterior approximation for some likelihoods, such as the t-Student and the generalised Pareto in small samples. For the Poisson likelihood with a moderate-size sample (300 observations), instead, authors observed that the variance correction did not yield substantive improvements. 
 
-The fundamental assumption to make is that $\tilde{\pi}(\Psi \mid y)$ is unimodal. In a first stance, unimodality implies that the hyperparameter posterior tends to zero as $\Psi$ departs from its mode. Thus, numerical integration can be carried out within a neighbourhood of hyperparameter mode and not on its entire domain. In a second stance, under this assumption only one value for the local maximum of the hyperparameter posterior needs being found. Locating the mode of $\tilde{\pi}(\Psi \mid y)$ is the most computationally demanding step of the INLA procedure and, at least in my personal experience, the most delicate by far.
+Additionally, imposing the Gaussian functional form to the posterior forces the third moment to zero. We have seen that the "old" INLA framework allowed to fit a Skew-Normal distribution to the joint posterior. \citep{dutta2025scalable} propose to integrate the Variational Bayes approach with a third-order correction. The full joint becomes thus a product of Normal and Skew-Normal marginals and a Gaussian copula taking into account the posterior correlations among the elements of $\vartheta$. Partitioning the posterior precision and variance-covariance matrices allows to fit skew-Normal marginals with a scalable computational cost.
 
-\cite{INLA} proposed a quasi-Newthon methodology to locate the mode. As we shall see in the next paragraph, this approach is still valid today in practical implementations. Then, starting from the mode, the authors propose some alternative integration schemes.
-The cheapest solution possible in theory relies on the so-called empirical Bayes methods, and consists in assuming that hyperparameter posterior is sharply peaked around its mode, hence the integrals in equation \ref{eq:marginals} are replaced by the integrand functions evaluated at the mode of $\Psi$. This solution rules out all the uncertainty on the joint distribution of hyperparameters.
+Though these two developments may improve the accuracy of INLA in several scenarios, e.g. with small sample size or with heavy-tails likelihoods, they lie beyond the scope of this work, and we limit the analyses in forthcoming chapters to the VB correction to the mean.
+
+%% -------- Integration ---------------------------------- %%
+\section{INLA: The Integration Scheme} \label{section:inla_int}
+
+Once the integrand functions in equation \ref{eq:marginals} are defined, integration is carried out numerically. This requires to compute $\tilde{\pi}(\psi \mid y)$ across a given set of points, which in this case is a multidimensional grid. In particular, this grid exploration will not regard $\psi$ itself, but a transformation defined over $\mathbb{R}$, whereas many hyperparameters usually range on a subset of $\mathbb{R}$ (think of variance and precision parameters which are defined on the nonnegative axis, or correlations which range -1 to 1). 
+
+The fundamental assumption to make is that $\tilde{\pi}(\psi \mid y)$ is unimodal. In a first stance, unimodality implies that the hyperparameter posterior tends to zero as $\psi$ departs from its mode. Thus, numerical integration can be carried out within a neighbourhood of hyperparameter mode and not on its entire domain. In a second stance, under this assumption only one value for the local maximum of the hyperparameter posterior needs to be found. 
+
+The output of the previous steps of the INLA procedure have been functions. Now, we are looking for for a numerical array, i.e. the posterior mode of $\psi$. This is clearly an optimisation problem, which requires to explore the hyperparameter space with an iterative scheme, in which at each iteration $t$, the directions of $\psi^{(t)}$ are typically proportional either to $\nabla \tilde{\pi}\left(\psi^{(t)} \mid y \right)$ (gradient descent) or to $\boldsymbol{H}_{\tilde{\pi}(\psi^{(t)} \mid y)}^{-1}\nabla \tilde{\pi}(\psi^{(t)} \mid y)$ (Newton-Raphson).
+The most intuitive way to define the numerical gradient is using a canonical basis, i.e considering that $\nabla \tilde{\pi}(\psi|y) = \sum_{j=1}^q \frac{\partial\tilde{\pi}(\psi|y)}{\partial \psi_j}\, e_j
+$ where $q=\mathrm{card}(\psi)$ and $e_j$ is the $j$-th vector of the canonical basis in $q$ dimensions. Due to the intractable form of the hyperparameter posterior, derivatives must be computed numerically, with either forward or central differences. \cite{SmartGrad} proposed to define directions with a non-canonical basis which, conceptually, "learns" from the previous iterations of the algorithm. In this framework, the gradient takes the form:
+$$
+\tilde{\nabla}_{\boldsymbol{\tilde{d}}} \tilde{\pi}\left( \psi^{(t)}\mid y\right) = \boldsymbol{\tilde{G}}^{{(t)^{-1}}^\top}
+\tilde{\nabla}_{\boldsymbol{e}} \tilde{\pi}\left( \psi^{(t)} + \boldsymbol{\tilde{G}} \delta \mid y\right) \vert_{\delta=0}
+$$
+Where notation $\tilde{\nabla}_{\boldsymbol{v}}f(x)$ stands for the approximate gradient of the function $f(x)$ using directions $\boldsymbol{v}$; $\boldsymbol{e}$ denotes the canonical basis. The matrix $\boldsymbol{\tilde{G}}^{(t)}$ whose columns form the orthonormal basis $\boldsymbol{\tilde{d}}$ is constructed by modified Gram-Schmidt orthogonalisation\footnote{Even though the original paper uses the notation $\boldsymbol{\tilde{G}}^{{-1}^\top}$, it should be noticed that since $\boldsymbol{\tilde{G}}$ is constructed on an orthonormal basis $\boldsymbol{\tilde{G}}^{-1} \equiv \boldsymbol{\tilde{G}}^\top$, so this notation could be simplified to $\boldsymbol{\tilde{G}}^{{-1}^\top} \equiv \boldsymbol{\tilde{G}}$.} of the matrix $\boldsymbol{G^{(t)}}:=\left( \psi^{(t)}-\psi^{(t-1)}, \,  d_1^{(t-1)}, \, \cdots, d_{q-1}^{(t-1)} \right)$, where columns $\left( d_1^{(t-1)}, \cdots, d_{q-1}^{(t-1)} \right)$ depend on the previous $q-1$ iterations. Taking second derivatives clearly allows to approximate the Hessian matrix as well. 
+
+Authors labelled this methodology "smart gradient approach" and assess it to be more accurate than the approximation built on the canonical basis (the case for $\boldsymbol{\tilde{G}}=\boldsymbol{I_q}$).
+
+Now, expliciting equation \ref{eq:hyper_laplace} and omitting the argument from $\mu_0(y, \psi)$ for brevity, we obtain that
+$$
+\tilde{\pi}_\mathrm{LA}\left(\psi \mid y \right) \propto \pi(\psi) \times
+\prod_{j=1}^N \pi \left( y_j \mid\psi,  \eta_j=\boldsymbol{A}\mu_0\right)  \times
+e^{-\frac{1}{2} \mu_0 ^\top \boldsymbol{Q_\psi} \mu_0} \times
+\frac{\sqrt{\lvert \boldsymbol{Q_\psi} \rvert}}{\sqrt{\lvert -\boldsymbol{H_\gamma} \rvert}}
+$$
+Where $\boldsymbol{H_\gamma} = -\boldsymbol{A}^\top \boldsymbol{\Delta_2 A} - \boldsymbol{Q_\psi}$ is the precision of $\vartheta \mid y, \psi$. To compute the gradient with finite differences, the posterior must be evaluated $2q$ times, where $q$ is the length of $\psi$, and to compute the Hessian, which is required in Newton-Raphson schemes, $q^2  + 2$ iterations are required. Since the gradient (and the Hessian if required) must be evaluated, in turn, at each iteration of the optimisation algorithm, the computational cost of $\tilde{\pi}_\mathrm{_{LA}}(\psi \mid y)$ is crucial for the efficiency of INLA. We discuss the cost of each factor. In doing so, we can treat $1/\pi(y)$ as a proportionality constant, in that it does not depend on $\psi$. We define $n'$ as the size of $\vartheta$ and $N$ as the size of $y$.
+\begin{itemize}
+\item The cost of the joint prior $\pi(\psi)$ strictly depends on how it is defined. Except for the unfrequent case of distributions requiring e.g. the eigendecomposition or the inversion of dense matrices such as in non-irreducible KLD structures \textcolor{red}{(TBD section)}, this is a negligible cost when the size of $\psi$ is in the order of $10^1$.
+\item $\prod_{j=1}^N \pi \left( y_j \mid\psi,  \eta_j=\boldsymbol{A}\mu_0\right)$ is the product of $N$ scalars. It can be noticed that the cost of each $\pi(y_j \mid \eta_j, \psi)$ is driven by $\eta_j = \boldsymbol{A_{j\cdot}} \vartheta$. In hierarchical regression, only $ {\Theta}(1)$ elements in each row of $\boldsymbol{A}$ are nonzero, and we do not actually need to perform as many operations as the values of $\vartheta$. This is possible by treating $\boldsymbol{A}$ as a sparse matrix, i.e. only storing in the internal memory the position of its nonzero entries. Due to sparse matrix algebra, the cost of computing the likelihood is $ {\Theta}(N)$, i.e. the procedure is scalable.
+\item $\mu_0^\top \boldsymbol{Q_\psi} \mu_0$. Two products occur. The first is between a vector and a square matrix. Again, the sparsity pattern of $\boldsymbol{Q_\psi}$ plays a crucial role. If $\boldsymbol{Q_\psi}$ has $\Theta(n')$ entries, i.e. it is a sparse matrix, the number of operations is in $\Theta(n')$; for dense matrices the cost is in $\mathcal{O}(n'^2)$, which is prohibitive. Then, the cross-product of the two vectors has $\Theta(n')$ operations. This operation is scalable as long as $\boldsymbol{Q}_\psi$ is sparse.
+\item The two determinants are usually the most complex operations in hierarchical regression. In a context where $\boldsymbol{A} = (\boldsymbol{X}, \boldsymbol{\xi})$ where $\boldsymbol{X}$ is the matrix of explanatory variables and $\boldsymbol{\xi}$ is the model matrix for a latent Gaussian random field, the matrix $\boldsymbol{A}^\top \boldsymbol{\Delta_2A}$ is block-diagonal, with a dense upper-left block of order equal to the column of $\boldsymbol{X}$, and a sparse bottom-right block (for instance, it is diagonal in the model used in chapter \ref{Chapter:Invalsi}). So, if the number of explanatory variables has a lower dimensional order than the size of the latent Gaussian field, the computational cost of both determinants depends on the sparsity pattern of $\boldsymbol{Q_\psi}$. The determinant of a matrix can be computed as the square product of the diagonal of its Cholesky factor. It turns out that Cholesky factorisation for sparse precision matrices implies significant computational advantages, considering that in the most general case the determinant of a matrix has a cubic cost. As pointed out by \cite{GMRFs} and \cite{INLA}, the factorisation has a cost in the order of $n'$ for time series (one-dimensional dependency structure), $n'^{3/2}$ for spatial models (two dimensions), and $n'^2$ for three-dimensional structures. With sparse precision matrices, this procedure is efficient, but not scalable, ezxcept for one-dimensional structures.
+\end{itemize}
+
+As can be seen, the sparsity pattern in $\boldsymbol{Q_\psi}$ is a crucial requirement for the efficiency of INLA. This motivates the emphasis we have given to this matter in section \ref{section:GMRFs}. 
+
+Once hyperparameter posterior mode is located, numerical integration can be carried out to approximate the solution to equation \ref{eq:marginals} as:
+$$
+\left \{ \begin{array}{ll}
+\tilde{\pi}_\mathrm{_G}\left(\vartheta_i \mid y\right)=
+\sum_{k=1}^{K} \tilde{\pi} \left( \vartheta_i\mid y, \psi^{(k)}\right)
+ \tilde{\pi}_{_\mathrm{LA}}\left( \psi^{(k)} \mid y\right)  \Delta \psi^{(k)}
+\\
+\tilde{\pi}_{_\mathrm{LA}}\left(\psi_j \mid y \right) = 
+\sum_{k=1}^{K} \tilde{\pi}_{_\mathrm{LA}}\left( \psi^{(k)} \mid y\right) \Delta \psi_{-j}^{(k)}
+\end{array} \right.
+$$
+For all $i$ and all $j$. $\Delta \psi_{-j}^{(k)}$ are the integration weights and $\psi^{(k)}$ are the integration points chosen along the parameter space of $\psi$. $\tilde{\pi} \left( \vartheta_i\mid y, \psi^{(k)}\right)$ denotes any of the four approximations introduced in section \ref{par:inla_theta}. In the case of Gaussian approximations to the full posterior, marginalising from a joint Gaussian only requires the diagonal of the inverse Hessian, which can be computed efficiently through sparse Cholesky factorisation, and is only required once for all $\vartheta_i$. The cost of this operation has thus the same order as $\tilde{\pi}_\mathrm{_{LA}}(\psi)$, implying that the evaluation of the "integrand" functions in the formulae above is comparable to a single iteration of the optimisation algorithm to locate the mode of hyperparameters. This highlights that the number $K$ of integration points is a crucial matter. While the number of iterations of the optimisation algorithm is not always easy to control, the number of integration points depends the user choice among three alternative integration schemes proposed by \cite{INLA}. We sort them in order of complexity.
+
+\paragraph{Empirical Bayes}
+The cheapest among possible solutions relies on the so-called empirical Bayes method, and consists in assuming that hyperparameter posterior is sharply peaked around its mode, hence the integrals in equation \ref{eq:marginals} are replaced by the integrand functions evaluated at the mode of $\psi$. In practice, the integration point is only one. This rather extreme solution rules out all the uncertainty on the joint distribution of hyperparameters, but has a negligible computation cost.
+
+\paragraph{Central Composite Design}
+A more accurate integration scheme consists in employing $\mathcal{O}\left(2^{q} \right)$ integration points, where $q=\mathrm{card}(\psi)$. These points are determined through the composite central design method and lie on the surface of the $q$-dimensional sphere of radius $\sqrt{q}$. Specifically, the set of points includes, net of a subsequent scaling, some vertices of the hypercube inscribed in the sphere, i.e. an embedded fractional factorial design, and $2m+1$ star points, i.e. vectors lying on axes having a form $ \sqrt{q} \, e_j$ where $e_j$ is the $j$-th basis vector in the $q$-dimensional space. In full factorial design, the number of points would be $2^m$; the term \textit{fractional} comes from the feature of reducing the exponent for $m\geq5$. For instance, for $m \in \lbrace 9, 10, 11\rbrace$ the fractional factorial design includes only $2^7$ points, to which $2 m+1$ points have to be added from the intersection of the sphere with the axes. Detail on how fractional design simplifies the number of points are thoroughly explained in \cite{Sanchez_FFD}.
+
+\paragraph{Multidimensional grid}
+The most rigorous approach consists in locating integration point along a regular $q$-dimensional grid. If $m$ points are explored in each dimension, a total of $q^m$ evaluations of the integrand functions is needed. In practice, this strategy may imply a computational cost comparable to the optimisation algorithm when the number of hyperparameters is moderate. In the current R package version, this option can only be acrivated with 2 or less hyperparameters. 
+
 
 
 %% -------- R-INLA --------------------------------------- %% 
 \section{The \texttt{R-INLA} package} \label{section:r_inla}
 
-The INLA is implemented into a comprehensive and self-sufficient \texttt{R} environment, the \texttt{INLA} \texttt{R} package \citep{INLAbook, Wang}. It will be referred to as \texttt{R-INLA} hereinafter. 
+The complex architecture of the INLA methodology finds its practical implementation in the \texttt{R-INLA} library. While \texttt{R} provides the user interface and the wrapper functions, the core of calculations is carried out through a system of inner \texttt{.dll} libraries. Due to the size of such libraries, the package is not available on CRAN, but only in the dedicated repository \url{https://inla.r-inla-download.org/R/}.
 
-A notable feature of this software is operational flexibility. Firstly, it is worth noticing the user-friendliness of regression models syntax, being it analogous to the \texttt{glm()} environment in \texttt{R}. Aditionally, a high number of likelihood functions has been implemented so far, covering not only most of the exponential family but also distributions such as the Skew-Normal \citep{SN} or the Skew-t. While many prior distributions for latent effects are ready-made as well (the list can be consulted with function \texttt{inla.list.models()}), the system also allows users to define custom models through the function \texttt{inla.rgeneric.define()}. 
+The main \texttt{R-INLA} functionality the user relies on is to run a regression model. This is done with the \texttt{INLA::inla()} function, whose first argument is the predictor formula and follows the standard syntax of \texttt{stats::lm()} and \texttt{stats::glm()}. As we have seen in section \ref{section:inla}, the joint posterior of the first layer of parameters can be retrieved analytically if the likelihood comes from a finite set of functions. For this reason, it is preferable to choose it from the models already implemented within the software. In the package version \texttt{2025.06.22-1}, the total number of available likelihoods is 105. They can be consulted using the command \texttt{INLA::inla.list.models("likelihood")}. Each likelihood model has a default hyperprior associated, but the user can specify a different one; for instance, the Gaussian likelihood has, by default, a $\mathrm{Gamma}(1, 10^{-5})$ default prior.
 
-%\texttt{%R-INLA} locates the model of $\pi(\Psi \mid y)$ via Newton-Raphson optimisation; algorithm convergence is obviously crucial. 
+If the regression model is hierarchical, the prior model for the latent Gaussian field ($z$ in our notation) can be passed to the function through the \texttt{INLA::f()} argument. The first argument of this function is an array of indexes of the same length as $y$ mapping each element $z_i$ with $i = 1, \dots, n_z$ to $\eta_j$ with $j=1,\dots,n_y$. Another crucial argument to this function is \texttt{model}, specifying the prior model for $z$. Some models are automatically implemented in \texttt{R-INLA} and the user simply needs to call them by name; the full list can be scanned using \texttt{INLA::inla.list.models("latent")}. As for the likelihood specification, though each model has its default hyperpriors, the user free to deviate from the default.
 
-Due to the size of the complex \texttt{.dll} libraries on which this software relies for model computation, it is not available on CRAN, but only in the dedicated repository \url{https://inla.r-inla-download.org/R/}. Unless otherwise stated, throughout this thesis the \texttt{2024.10.13} testing version of the software is employed.
+Differently from the likelihood function, since $z$ is treated as a Gaussian variable, the software is required no extra effort if the user specifies manually a customised model. This can be done in two ways. For a precise subset of simple precision structures, a user-friendly solution is specifying the model as one of \texttt{"generic0", "generic1", "generic2", "generic3"}. Otherwise, more generic latent Gaussian models can be defined with the function \texttt{INLA::inla.rgeneric.define()}, which requires the user to provide the precision matrix, the graph structure, the prior distribution of hyperparameters on which $z$ depends (e.g. for the PCAR model, the autocorrelation $\rho$ and either the scale or precision parameter), and the initial values for the optimisation algorithm. Multivariate models must be stacked columnwise. Chapter 11 of \cite{INLAbook} provides a step-by-step explanation of how models must be defined internally. The high degree of operational flexibility allowed for by the \texttt{inla.rgeneric.define()} has played a crucial role in establishing the popularity of \texttt{R-INLA}. In the context of areal modelling, the univariate ICAR, LCAR and BYM are already implemented in the package and can be fitted by choosing as model \texttt{"besag", "besagproper2"}, and \texttt{bym2} respectively; notably, the LCAR model features, by default, a Normal prior on $\mathrm{logit}\lambda$. The PCAR is not implemented, but chapter 11 of \cite{INLAbook} uses it as an instructional example. Regarding multivariate models, due to the high number of parameters and the more complex hyperprior combinations, no ready-made model is implemented, but some helper \texttt{R} packages have been developed to fit them automatically. In particular, \texttt{INLAMSM} \citep{INLAMSM} implements multivariate ICAR, PCAR and M-model PCAR models, with a Wishart prior on the precision in the former two cases and a Wishart prior on the scale in the latter, and a Uniform prior on the PCAR autocorrelation; package \texttt{bigDM} \citep{Vicente2023}, which is also available on CRAN (\url{https://CRAN.R-project.org/package=bigDM}), instead, implements ICAR, PCAR, and LCAR M-models using a Wishart prior on the scale parameter through the Bartlett decomposition; also in this case, the PCAR autocorrelation and the LCAR precision mixing are assigned a Uniform prior. 
 
-\textcolor{red}{Ampliare: descrivere la sequenza di operazioni nella function call \texttt{inla(...)}}
+Except for the case of one-dimensional GMRFs, we have seen that the optimisation algorithm is not scalable. This fact may become problematic in the case of large latent structures. A solution to this more-than-linear cost problem is in parallelising computations across multiple cores of the local machine of the user \cite{Parallel, VBINLA2023}.
 
 The four approaches described in Section \ref{par:inla_theta} to approximate $\pi(\vartheta_i \mid y)$ are available within the software, which can run either in "classic" (old) or "compact" (new) mode. The former supports the Gaussian, Simplified Laplace and Full Laplace approximations, and needs to be activated with the command: \texttt{inla(... , inla.mode = "classic", ...)}). The latter mode, supporting the VB mean correction to the Gaussian approximation, is implemented by default (or can be equivalently set with the command \texttt{inla(..., inla.mode = "compact", ...)}). Unless differently stated, we rely on the VB approximation. 
 
@@ -1287,7 +1370,7 @@ The remainder of this chapter is structured as follows. In Section \ref{section:
 \section{School infrastructure in Italy} \label{section:SchoolDataIT:Overview}
 
 
-In this section, we briefly assess the current state of public school infrastructure in Italy using data provided by the Ministry of Education and processed through the \texttt{SchoolDataIT} package. For the sake of brevity, throughout the chapter we only comment on the main findings that can be inferred from the original data, while more detailed information is resumed in the tables reported in Appendix \ref{Appendix1}.
+In this section, we briefly assess the current state of public school infrastructure in Italy using data provided by the Ministry of Education and processed through the present \texttt{SchoolDataIT} package. For the sake of brevity, throughout the chapter we only comment on the main findings that can be inferred from the original data, while more detailed information is resumed in the tables reported in Appendix \ref{Appendix1}.
 
 The first dimension we take into consideration is school size. According to \cite{BDI}, in the Italian context, Northern regions leverage on a marked advantage in terms of school surface per student, particularly for kindergarten and primary schools. This result is particularly interesting if we consider how Northern schools are more crowded than Southern ones and have a lower teachers/students ratio (in this regard, see also Section \ref{par:nstud}). On the one side, the number of municipalities hosting a primary or a middle school is relatively high. Indeed, according to the National School Registry \ref{par:registry}, for school year 2021/2022, roughly 6748 ($85.38\%$ of the national total) and 5258 municipalities ($66.52\%$ of the total) host at least one primary and one middle school respectively. Conversely, high schools are located in only $1473$ municipalities ($18.64\%$ of the total), thus having a more sparse distribution, especially in the peripheral inland. However, \cite{BDI} showed that only in 139 municipalities ($1.76\%$ of the total) the travel time to the nearest school exceeds the threshold of 30 minutes. This finding is consistent with the smaller size of schools in such territories, which allows for a relatively widespread distribution of school buildings. If we move our focus to access to full-time schooling in primary schools, the North-South divide becomes an obvious cross-regional phenomenon. As reported in Table \ref{tab:fulltime} in Appendix \ref{Appendix1}, among the 18 regions for which data are available, 8 out of the 9 regions with the lowest values are located in the South (except Umbria), while 8 out of the 9 regions with the highest values are in the Center-North (except Basilicata).
 
@@ -1339,6 +1422,7 @@ Lastly, the \texttt{\detokenize{Map_}} functions render aggregated data with sta
 
  
 
+\section{TBD: the CRAN package}
 %% -------- Data ---------------------------------------- %%
 \section{The Italian Education System Data} \label{section:Data}
 This section describes the main datasets currently retrieved and handled by the package. For the school infrastructure system evaluation, the most valuable public source of information is the Unique School Data Portal \citep{MIUR}, an open data portal managed by the Italian Ministry of Education according to Law 107/2015 \citep{law2}. The National Schools Registry (Section \ref{par:registry}), the school buildings database (\ref{par:buildings}) and the counts of students and teachers (\ref{par:nstud}) are all provided through this website. Another relevant aspect of school infrastructure assessment is the implementation of ultra-broadband connection, whose timeline, available through the ultra-broadband activation dashboard, provided by \cite{BB} has been included in the package as well.
@@ -1497,7 +1581,6 @@ y(s) = \beta_0 + \beta_\mathrm{nstud} X_\mathrm{nstud}(s) + \beta_{I} X_{I}(s) +
 \end{equation}
 %
 where $\beta_0$ is the intercept, $X_\mathrm{nstud}$ is classroom size, $X_I$ is the dummy for the inner areas taxonomy ($1$: inner area, $0$: central area), $\ell$ is the longitude of municipality centroids, $\phi$ is the latitude; $\beta$ terms are covariates effects; $\varepsilon$ is a Gaussian IID error such that $\varepsilon \sim \mathcal{N}  (0, \sigma_{\varepsilon}^2 I_n)$. $u$ follows \textit{a priori} a Normal distribution with mean zero and covariance matrix whose elements depend on the distance between the two corresponding points, but not on the direction of their link (isotropy); second-order stationarity is additionally assumed for $u$ \citep[][ Section 2.1]{Banerjee}. Based on these two assumptions, we assign $u$ the Matérn covariance function, which depends on a global variance $\sigma^2$ and a range parameter $r$. In detail, the Matérn covariance function between two generic sites $i$ and $j$ is given by:
-
 %
 \begin{equation}
 \sigma_{ij} =\sigma^2 \frac{1}{2^{\nu-1}\Gamma(\nu)} \left(\kappa  d_{ij}\right)^{\nu}
@@ -1505,8 +1588,6 @@ K_{\nu}(\kappa d_{ij})
 \label{eq:matern}
 \end{equation}
 %
-
-
 where $d_{ij}$ is the Euclidean distance between the $i$-th and $j$-th location, $\sigma^2$ is the global (common across locations) variance, %$\tau_0$ is the inverse nugget effect;
 $\kappa$ is a scale parameter and $\nu$ controls smoothness. These parameters are linked to the range $r$ since in this model $r = \frac{\sqrt{8\nu}}{\kappa}$. In this example, we keep fixed $\nu = 1$.  $K_{\nu}(x)$ denotes the modified Bessel function of the second kind \citep[][Section 9.6]{AS}:
 
@@ -1541,8 +1622,7 @@ A potential solution is offered by the Stochastic Partial Differential Equation 
 
 The point-referenced field $u(s)$ is replaced by $A z$ where $A$ is an $n \times N$ matrix to project observation locations onto the mesh, and $z$ is a Gaussian Markov random field of length $N$ defined on the mesh which, in our case, has $N = 1384$ nodes. Markov properties, together with the Normal distribution, ensure the precision matrix of $z$ has a number of nonzero entries in the order of $N$ \citep{GMRFs}, as seen in Section \ref{section:GMRFs}. 
 
-Mapping the Matérn field onto a GMRF shrinks the computational cost to $\boldsymbol{\theta}(N^{3/2})$. \textcolor{red}{TBD: AGGIUNGERE FONTE O DIMOSTRARE}
-
+Mapping the Matérn field onto a GMRF shrinks the computational cost to $\boldsymbol{\theta}(N^{3/2})$, due to the sparse precision structure of processes defined on bi-dimensional domains.
 
 For model fitting, we firstly need to define the mesh and index all its nodes; in our case the mesh is chosen to have more nodes than the observation points. This procedure can be entirely handled internally to \texttt{R-INLA}.
 
@@ -1566,7 +1646,7 @@ Based on prior knowledge and ignoring the information available from exploratory
  & mean & s.d. & $\boldsymbol{q}_{0.025}$ & $\boldsymbol{q}_{0.975}$ \\
  \hline
  $\beta_0$ (Intercept) & 195.103 & 1.080 & 192.918 & 197.211 \\  
- $\beta_{nstud}$ 0.192 & 0.317 & -0.429 & 0.813 \\ 
+ $\beta_{nstud}$ &0.192 & 0.317 & -0.429 & 0.813 \\ 
  $\beta_I$ & -2.329 & 0.719 & -3.743 & -0.920 \\ 
  $\beta_{\phi}$ & 8.997 & 1.044 & 6.928 & 11.061 \\ 
  $\beta_{\ell}$ &  1.865 & 1.038 & -0.174 & 3.934 \\ 
@@ -2029,21 +2109,29 @@ y =  \boldsymbol{\tilde{X}}  \, \beta \,  +
 \end{equation}
 
 
-where $\boldsymbol{\tilde{X}} := I_2 \otimes \boldsymbol{X}$, $\tilde{\xi} := I_2 \otimes \xi$ and $\boldsymbol{\tilde{C}} := I_2 \otimes \boldsymbol{C}$. $\boldsymbol{X}$ is the $N \times 4$ matrix of auxiliary variables (see Section \ref{Covariates}), and $\beta$ is a vector of fixed effects of length $8$. The $N \times n$ matrix $\xi$ is binary and maps the $n$ macro-areas onto $N$ municipalities. The $n \times 3$ matrix $\boldsymbol{C}$ is also binary and denotes which connected component (continent, Sicilia, Sardinia) each macro-area belongs to, $\beta_C$ is the vector of component-specific intercepts of length $6$. The bivariate latent spatial field $z = (z_1^{\top}, \, z_2^{\top})^{\top}$ is defined at the macro-area level and accounts for both the spatial variation and the correlation between Mathematics and Italian scores. Finally $\varepsilon = (\varepsilon_1^{\top} , \, \varepsilon_2^{\top})^{\top}$ is the matrix-valued random error, following the distribution:
+where $\boldsymbol{\tilde{X}} := \boldsymbol{I}_2 \otimes \boldsymbol{X}$, $\tilde{\boldsymbol{\xi}} := I_2 \otimes \boldsymbol{\xi}$ and $\boldsymbol{\tilde{C}} := \boldsymbol{ I}_2 \otimes \boldsymbol{C}$. $\boldsymbol{X}$ is the $N \times 4$ matrix of auxiliary variables (see Section \ref{Covariates}), and $\beta$ is a vector of fixed effects of length $8$. The $N \times n$ matrix $\xi$ is binary and maps the $n$ macro-areas onto $N$ municipalities. The $n \times 3$ matrix $\boldsymbol{C}$ is also binary and denotes which connected component (continent, Sicilia, Sardinia) each macro-area belongs to, $\beta_C$ is the vector of component-specific intercepts of length $6$. The bivariate latent spatial field $z = (z_1^{\top}, \, z_2^{\top})^{\top}$ is defined at the macro-area level and accounts for both the spatial variation and the correlation between Mathematics and Italian scores. Finally $\varepsilon = (\varepsilon_1^{\top} , \, \varepsilon_2^{\top})^{\top}$ is the matrix-valued random error, following the distribution:
 
 
 \begin{equation}
 \left\{
 \begin{array}{ll}
 \varepsilon_{1} \mid \omega_1 \overset{\text{iid}}{\sim}
-N(\boldsymbol{0}, \omega_1)\\
+\mathcal{N}(\boldsymbol{0}, \omega_1)\\
 \varepsilon_{2} \mid \omega_2, \alpha 
 \overset{\text{iid}}{\sim} SN(m_{\omega_2, \alpha}, s_{\omega_2, \alpha}, \alpha)  
 \end{array}
 \right.
 \label{eq:errors}
 \end{equation} \\
-$SN(\cdot)$ in \ref{eq:errors} denotes the Skew-Normal distribution \citep{SN} with location and scale parameters $m_{\alpha, \omega_2}$ and $ s_{\alpha, \omega_2}$ defined to ensure that $\mathbb{E}[\varepsilon_2 | \alpha] = 0 $ and $VAR[\varepsilon_2 | \alpha] = \omega_2$, and $\alpha$ is the shape parameter. This choice is due to the negative skewness in municipality-level Italian scores that neither auxiliary variables or spatial effects can explain (see Fig. \ref{fig:kernel} below). For interpretation reasons, in the remainder of this paper, we consider a transformation of $\alpha$, namely the skewness parameter $\gamma_1$, that has the property of lying approximately in the interval $]-1, 1[$:
+$SN(\cdot)$ in \ref{eq:errors} denotes the Skew-Normal distribution \citep{SN} with location and scale parameters $m_{\alpha, \omega_2}$ and $ s_{\alpha, \omega_2}$ defined to ensure that $\mathbb{E}[\varepsilon_2 | \alpha] = 0 $ and $VAR[\varepsilon_2 | \alpha] = \omega_2$, and $\alpha$ is the shape parameter., i.e.
+$$
+\pi(\varepsilon_2 \mid \omega_2, \alpha) = \frac{2}{\omega_2}
+\varphi\left(\frac{\varepsilon_2 - m_{\omega_2,\alpha}}{\omega_2}
+\right) \Phi \left( 
+\alpha \frac{\varepsilon_2 - m_{\omega_2,\alpha}}{\omega_2}
+\right)
+$$
+This choice is due to the negative skewness in municipality-level Italian scores that neither auxiliary variables or spatial effects can explain (see Fig. \ref{fig:kernel} below). For interpretation reasons, in the remainder of this paper, we consider a transformation of $\alpha$, namely the skewness parameter $\gamma_1$, that has the property of lying approximately in the interval $]-1, 1[$:
 $$
 \gamma_{1} := \frac{4-\pi}{2}
 \left(  \frac{2 \alpha^2}{\pi(1 + \alpha^2)} \right)^{\frac{3}{2}}
@@ -2059,20 +2147,20 @@ Precision parameters for the error terms, namely $\omega_{1}$ and $\omega_2$, ha
 Considering the neighbourhood structure outlined in Section \ref{par:graph}, $z$ is modelled as a bivariate ICAR defined on the graph $\mathcal{G}$, following the prior defined in equation \ref{eq:icarconditional}
 In this case, considering the graph structure, the joint prior distribution of the ICAR field becomes
 \begin{equation}
-\pi\left(z\mid \boldsymbol{T} \right) =
+\pi\left(z\mid \boldsymbol{\Lambda} \right) =
 \left( \frac{1}{2 \pi} \right)^{n-3}
-\sqrt{\mid \boldsymbol{T} \otimes\boldsymbol{L}  \mid_{+}} \, \, 
+\sqrt{\mid \boldsymbol{\Lambda} \otimes\boldsymbol{L}  \mid_{+}} \, \, 
  e^{\displaystyle{-\tfrac{1}{2}
-(\mathrm{vec} \, \boldsymbol{z})^\top(\boldsymbol{T} \otimes \boldsymbol{L} ) \mathrm{vec}\, \boldsymbol{z}}}
+(\mathrm{vec} \, \boldsymbol{z})^\top(\boldsymbol{\Lambda} \otimes \boldsymbol{L} ) \mathrm{vec}\, \boldsymbol{z}}}
 \label{eq:ICAR}
 \end{equation}
 
-where $\boldsymbol{L} := \boldsymbol{D} - \boldsymbol{W}$ is the Laplacian matrix of the graph $\mathcal{G}$ with $3$ connected components and $\boldsymbol{D} = \mathrm{diag}(d_1, d_2 \ldots d_n)$ is the degree matrix of $\mathcal{G}$ (as discussed more in detail in Chapter \ref{chapter:theory}). The matrix $\boldsymbol{T} = \Sigma^{-1}$ is the $2 \times 2$ precision parameter. 
+where $\boldsymbol{L} := \boldsymbol{D} - \boldsymbol{W}$ is the Laplacian matrix of the graph $\mathcal{G}$ with $3$ connected components and $\boldsymbol{D} = \mathrm{diag}(d_1, d_2 \ldots d_n)$ is the degree matrix of $\mathcal{G}$ (as discussed more in detail in Chapter \ref{chapter:theory}). The matrix $\boldsymbol{\Lambda} =\boldsymbol{ \Sigma}^{-1}$ is the $2 \times 2$ precision parameter. 
 Since $\boldsymbol{L}$ is singular with rank deficiency $3$ \citep{Hodges2003}, it is necessary to constrain $z$ to sum to zero within each connected graph component \citep{ICAR}. 
 This is the reason for adopting component-specific intercepts $\beta_C$ in equation \ref{eq:model}.
 
-To ease the interpretation of $T$ as the precision parameter of $z$, it is possible to cleanse it from the effect of the neighbourhood structure by defining a scaled version of $\boldsymbol{L}$ \cite{Sorbye} and reparametrising the precision of $z$ accordingly. The scaling procedure is described in subsection \ref{subsection:scaling}.
-Since $\mathcal{G}$ is disconnected, each component-specific block of $\boldsymbol{L}$ is multiplied by the relevant typical variance, namely the geometric mean of the diagonal of the corresponding block of its pseudoinverse, following the methodology proposed by \cite{Freni}. It is therefore possible to define a precision parameter $T_\mathrm{scaled}$ which is not confounded with graph-induced effects. The scaled precision is assigned a Wishart prior \citep{Gelman} with $2k+1$ degrees of freedom and scale parameter equal to the identity matrix, i.e. $T_\mathrm{scaled} \sim \mathrm{Wishart}_{k}( I_k, 2k+1)$, with $k=2$ \citep{INLAMSM}.
+To ease the interpretation of $\boldsymbol{\Lambda}$ as the precision parameter of $z$, it is possible to cleanse it from the effect of the neighbourhood structure by defining a scaled version of $\boldsymbol{L}$ \cite{Sorbye} and reparametrising the precision of $z$ accordingly. The scaling procedure is described in subsection \ref{subsection:scaling}.
+Since $\mathcal{G}$ is disconnected, each component-specific block of $\boldsymbol{L}$ is multiplied by the relevant typical variance, namely the geometric mean of the diagonal of the corresponding block of its pseudoinverse, following the methodology proposed by \cite{Freni}. It is therefore possible to define a precision parameter $\boldsymbol{\Lambda}_\mathrm{scaled}$ which is not confounded with graph-induced effects. The scaled precision is assigned a Wishart prior \citep{Gelman} with $2k+1$ degrees of freedom and scale parameter equal to the identity matrix, i.e. $\boldsymbol{\Lambda}_\mathrm{scaled} \sim \mathrm{Wishart}_{k}( I_k, 2k+1)$, with $k=2$ \citep{INLAMSM}.
 
 In \texttt{R-INLA}, precision scaling is implemented automatically for intrinsic models, like the univariate ICAR, through the option \texttt{scale.model} within the \texttt{inla()} function call; otherwise the scaled structure matrix for each component can be computed as a standalone object with \texttt{inla.scale.model()}. In the multivariate case, \texttt{INLAMSM} provides readily-defined models for which the user is required to provide the neighbourhood matrix $\boldsymbol{W}$ instead of the Laplacian (as different models with the same neighbourhood matrix have different structure matrices). Hence, to scale a multivariate ICAR model we derive $\boldsymbol{W}$ from the scaled Laplacian.
 
@@ -2195,16 +2283,16 @@ Low CPO values denote "surprising" observations and, hence, possible outliers. D
 
 The Deviance Information Criterion (DIC, \cite{DIC}) is given by:
 $$
-\mathrm{DIC} := P_D + \mathbb{E}[D(\vartheta, \Psi) \mid y]
+\mathrm{DIC} := P_D + \mathbb{E}[D(\vartheta, \psi) \mid y]
 $$
-Where $$P_D = \mathbb{E}[D(\vartheta, \Psi)] - D(\hat{\vartheta}, \hat{\Psi})$$ denotes the effective number of parameters or unconstrained parameters and measures model complexity, $D(\vartheta, \Psi) = -2 \ln \pi(y \mid \vartheta, \Psi)$ being the model deviance, whose expectation measures the goodness of fit. Following \cite{INLA} we define $\hat{\vartheta}$ as $\mathbb{E}[\vartheta | y]$ and $\hat{\Psi}$  as the posterior mode of $\Psi$, this latter choice being due to the skewness in $\pi(\Psi | y)$. We show both the effective number of parameters and the expected deviance alongside the DIC.
+Where $$P_D = \mathbb{E}[D(\vartheta, \psi)] - D(\hat{\vartheta}, \hat{\psi})$$ denotes the effective number of parameters or unconstrained parameters and measures model complexity, $D(\vartheta, \psi) = -2 \ln \pi(y \mid \vartheta, \psi)$ being the model deviance, whose expectation measures the goodness of fit. Following \cite{INLA} we define $\hat{\vartheta}$ as $\mathbb{E}[\vartheta | y]$ and $\hat{\psi}$  as the posterior mode of $\psi$, this latter choice being due to the skewness in $\pi(\psi | y)$. We show both the effective number of parameters and the expected deviance alongside the DIC.
  
-The Watanabe-Akaike Information Criterion \cite{WAIC}, also known as Widely Applicable Information Criterion, is also useful in balancing model complexity and goodness of fit, the former being measured as $\mathrm{Var}[\mathrm{ln} \pi(y |\vartheta, \Psi)]$. An interesting feature of the WAIC is given by its averaging the likelihood over $\vartheta$ and $\Phi$ rather than using point estimates (\cite{GelmanWAIC}). We use the formulation provided by \cite{GelmanWAIC}. \\
+The Watanabe-Akaike Information Criterion \cite{WAIC}, also known as Widely Applicable Information Criterion, is also useful in balancing model complexity and goodness of fit, the former being measured as $\mathrm{Var}[\mathrm{ln} \pi(y |\vartheta, \psi)]$. An interesting feature of the WAIC is given by its averaging the likelihood over $\vartheta$ and $\Phi$ rather than using point estimates (\cite{GelmanWAIC}). We use the formulation provided by \cite{GelmanWAIC}. \\
  
 
 $$
-WAIC = 2 \sum_{j=1}^N VAR[\ln \pi(y_j |\vartheta, \Psi)]
-- 2 \sum_{j=1}^N  \ln \mathbb{E}[\pi(y_j | \vartheta, \Psi)]
+WAIC = 2 \sum_{j=1}^N VAR[\ln \pi(y_j |\vartheta, \psi)]
+- 2 \sum_{j=1}^N  \ln \mathbb{E}[\pi(y_j | \vartheta, \psi)]
 $$
 
 %%Lastly we compute the Mean Square Error (MSE) of the expected value of linear predictors, a purely goodness-of-fit metric, only informative for point estimates.
@@ -2308,7 +2396,7 @@ Lowest scores in Mathematics are estimated in the municipalities of La Maddalena
   \label{fig:yhatmun}
 \end{figure}
 
-Finally, in Table \ref{tab:hyperpar} the posterior summaries for hyperparameters $\Psi$ are displayed. Please notice that the precision of $z$ has been scaled, hence variances $\sigma_1^2$ and $\sigma_2^2$ do not depend on the graph-induced effect. The variance of spatial effects is higher in Mathematics scores ($\sigma_1^2$), while Italian scores have a higher amount of unexplained noise ($\omega_2$). Correlation between the two scores is taken into account through the correlation between the two ICAR fields $\rho$, which turns out to be high, consistent with Figure \ref{fig:zprov}.
+Finally, in Table \ref{tab:hyperpar} the posterior summaries for hyperparameters $\psi$ are displayed. Please notice that the precision of $z$ has been scaled, hence variances $\sigma_1^2$ and $\sigma_2^2$ do not depend on the graph-induced effect. The variance of spatial effects is higher in Mathematics scores ($\sigma_1^2$), while Italian scores have a higher amount of unexplained noise ($\omega_2$). Correlation between the two scores is taken into account through the correlation between the two ICAR fields $\rho$, which turns out to be high, consistent with Figure \ref{fig:zprov}.
 Lastly, the choice of modelling Italian scores as a Skew-Normal variable is corroborated by the posterior distribution of $\gamma_1$, whose credible interval ranges far from zero. Kernel density estimation of residuals in Italian scores % \textcolor{gray}{i.e. the difference between observed and predicted scores (SERVE SPECIFICARE?)} 
 is shown in Figure \ref{fig:kernel}. Negative skewness is easily noticeable. Density is estimated by the Gaussian kernel, using the Silverman's thumb rule to define the bandwidth \citep[][Section 3.4.2]{Silverman}
 \begin{figure}
@@ -2370,7 +2458,7 @@ Overall, the mapping of infrastructure access and social vulnerability requires 
 \begin{appendices}
 
 \section{Extensive model comparison} \label{Appendix:B}
-In Table \ref{tab:ICAR} all the models run throughout this analysis are compared. Two alternative strategies to approximate the full posterior of $\vartheta$ have been tested, namely the Variational Bayes and the Simplified Laplace approximations (respectively VB and SL, hereinafter). The former is implemented in the latest \texttt{R-INLA} framework and has been used to estimate the models whose results are summarised in Sections \ref{par:criteria} and \ref{section:results}. The latter allows to preserve information about skewness in the full conditional and is implemented in an older software framework. Due to the difficulties in locating the mode of $\Psi$, $y$ required to be centered at zero in the models approximated with the SL method.
+In Table \ref{tab:ICAR} all the models run throughout this analysis are compared. Two alternative strategies to approximate the full posterior of $\vartheta$ have been tested, namely the Variational Bayes and the Simplified Laplace approximations (respectively VB and SL, hereinafter). The former is implemented in the latest \texttt{R-INLA} framework and has been used to estimate the models whose results are summarised in Sections \ref{par:criteria} and \ref{section:results}. The latter allows to preserve information about skewness in the full conditional and is implemented in an older software framework. Due to the difficulties in locating the mode of $\psi$, $y$ required to be centered at zero in the models approximated with the SL method.
 
 Some additional model formulations are also compared: "NULL" denotes the model with no spatial effect (component-specific intercepts are still used); "IID" denotes the model with IID macroarea-level effects; "Ind. ICAR" denotes the model with two independent ICAR priors. The random intercept and the ICAR effect in the IID and independent ICAR models have an improper Uniform prior on the standard deviation. Models  S+(1), S+(2), S+(3), and S+(4)  are defined as in Appendix \ref{Appendix:A}. Alongside the selection criteria mentioned in Section \ref{par:criteria}, the two components of the DIC are shown, namely the expected deviance (Exp. Dev) and the effective number of parameters ($P_D$). The computational time of each model is shown as well, expressed in seconds. \\
 
