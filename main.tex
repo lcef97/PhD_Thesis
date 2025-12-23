@@ -35,7 +35,7 @@
 %%
 
 %%
-\title{Statistical areal methods to map territorial vulnerability}
+\title{Stochastic Spatial Areal Models for Mapping Territorial Vulnerability}
 \author{Leonardo Cefalo}
 
 \begin{document}
@@ -81,7 +81,7 @@ z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n_z} \frac{w_{ij}}{d_i}z
 %
 Where $\Sigma$ is a $k \times k$ variance-covariance matrix. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n_z} B_{ij} z_{i}, \frac{1}{d_i} \Sigma \right)$ and presented $B_{ij} = \frac{w_{ij}}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
 
-We prove in Appendix \ref{appendix:icar} that the joint distribution of a multivariate ICAR field is:
+We show in Appendix \ref{appendix:icar} that the joint distribution of a multivariate ICAR field is:
 %
 \begin{equation}
 z|\Sigma \sim \mathcal{N}_{kn_z} \left( 0, \Sigma^{-1} \otimes \boldsymbol{L}^{+}\right)
@@ -93,19 +93,19 @@ Here, the $^{+}$ superscript here denotes the Moore-Penrose pseudoinverse.
 \subsection{Precision scaling} \label{subsection:scaling}
 
 As can be seen in the previous equations, the ICAR precision is the product of two terms, the global precision (inverse scale) and a structure matrix. This hinders parameter interpretation at the global level; to start discussing it, let us first consider the case of a connected graph. Denoting with $\boldsymbol{S} : = \boldsymbol{L}^{+}$, the marginal variance of a generic $i$-th realisation of the latent effect for the $h$-th variable is: 
+%
 $$
 \mathrm{VAR}[z_{ih} \mid \Sigma] = \sigma_{h}^2 s_{ii}
 $$
 Where $\sigma_h^2$ is the marginal variance of the $h$-th variable, corresponding to the $h$-th diagonal element of of $\Sigma$; in other words, $s_{ii}$ would be the marginal variance of $z_i$ if the relevant global precision was equal to 1.
-
+%
 Hence, by definition, ICAR variance incorporates a factor determined by the neighbourhood structure. At the global level, this consideration implies that process variability is not described by the precision parameter alone, since a deterministic scale factor concurs as well. The intuitive solution to this issue is to scale the ICAR model, as shown by \cite{Sorbye}. Following their operational proposal, we take the geometric mean of the diagonal of $\boldsymbol{S}$ as scaling factor - or, in other words, the geometric mean of marginal variances if all global precision parameters (diagonal entries of $\Sigma$) were equal to 1, namely
 $$
-\bar{\sigma}^{2} = \prod_{i=1}^{n} \sigma_{ii}^{2/n_z}
+\bar{\sigma}^{2} = \prod_{i=1}^{n_z} \sigma_{ii}^{2/n_z}
 $$
 this scaling factor is sometimes referred to as reference variance (or generalised variance, 
 %\textcolor{red}{(though this phrase generally denotes a determinant, hence taking into account also off-diagonal elements)}, 
 or typical marginal variance). We are thus able to separate the parameter $\Sigma$ from the effect on variance induced by the graph structure. To do so, the scaled model does not employ $\boldsymbol{L}$ as the structure matrix, but the scaled matrix $\boldsymbol{L}_\mathrm{s} := \bar{\sigma}^2 \boldsymbol{L} $. On the other hand, the covariance matrix becomes $\bar{\sigma}^2 \Sigma$, which actually expresses the variability of the process independently of how the graph is structured. 
-%$ \displaystyle{\frac{1}{\bar{\sigma}^2}} \Lambda$, and this is what actually expresses the precision of the process independently of how the graph is structured. 
 
 
 When the graph has $G >1$ connected components, its Laplacian matrix is (a permutation of) the direct sum of the Laplacian matrices of its components, as mentioned in the previous paragraph. The pseudo-inverses of these matrices may clearly have different typical marginal variances. In this case, it is necessary to scale the component-specific precisions separately, as shown in \cite{Freni}:
@@ -245,11 +245,9 @@ Lastly, in Appendix \ref{appendix:MMBYM} we show that sparse parametrisation is 
 Autoregressive models are usually employed as latent variables in spatial regression. This is partly motivated by the improper prior distribution of intrinsic processes, which however does not imply an improper posterior \citep{Banerjee}. On the other hand, the reason to employ a spatially structured latent random variable is the presence of an unmeasured covariate following a spatial pattern and entering the model predictor. When a spatial effect is included in a regression model to account for unmeasured covariates, it may happen that the latter is correlated with some observed covariates. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in almost two decades of literature (\citep{Urdangarin23}, \citep{DupontArXiv}), starting from the intuitive solution of constraining random effects to be linearly independent on observed explanatory variables (\citep{RHZ}, \cite{Hodges}), which goes under the name of restricted spatial regression (RSR); this is done by projecting the spatial field onto the orthogonal subspace to the covariates matrix.
 
 
-\subsection{Preliminary: Latent Gaussian model outline}\label{subsection:LGM}
+\subsection{Preliminary: Latent Gaussian model outline} \label{subsection:LGM}
 
 %Spatial confounding can occur when a regression model includes a spatially structured latent random variable, say $z$, correlated with some explanatory variables, say $\boldsymbol{X}$. This issue implies a competition between $\boldsymbol{X}$ and $z$ in explaining $y$, introducing bias in the estimation of $\beta$. Several approaches have been developed in almost two decades of literature \citep{Urdangarin23, DupontArXiv}, starting from the intuitive solution of constraining spatial random effects to be linearly independent of covariates \citep{RHZ, Hodges}, which goes under the name of restricted spatial regression (RSR hereinafter). This is done by projecting random effects onto the subspace orthogonal to the design matrix $\boldsymbol{X_\mathrm{tot}} = (\xi\boldsymbol{C}, \boldsymbol{X})$, i.e. conditioning $z$ to the constraint $\boldsymbol{X_\mathrm{tot}}(\boldsymbol{X_\mathrm{tot}}^{\top}\boldsymbol{X_\mathrm{tot}})^{-1}\boldsymbol{X_\mathrm{tot}}^{\top} \, \xi z = \boldsymbol{0}$. The idea behind RSR is to rule out confounding bias when estimating the effects of covariates. RSR can be extended to the multilevel case \citep{Nobre}, where spatial effects are defined at a higher scale than observations, as we do in the present framework. Nevertheless, under RSR the posterior means of covariate effects tend to approximate those of the nonspatial model \citep{Khan}, which leads to biased estimates of $\beta$ by ignoring the presence of a latent spatial field and assuming independent errors \citep{DupontArXiv}.This suggests exploring further methodologies to deal with spatial confounding.
-
-%The Spatial+ approach \citep{Dupont} involves the adjustment of covariates, instead of constraining spatial effects, by decomposing the former as the sum of a spatial and a nonspatial component. Here a variant of the Spatial+ method, developed by \cite{Urdangarin24}, is applied while working in a multilevel framework. This innovative methodology consists in extracting the spatial component of covariates without requiring an explicit spatial model on $\boldsymbol{X}$. Following \cite{Lamouroux}, we label this methodology as Spatial+ 2.0. 
 
 
 To gain more insight on restricted regression, let us briefly outline a general latent Gaussian linear model, which will be useful to explain the current section, and consider:
@@ -507,9 +505,15 @@ I_{\boldsymbol{X}}(\boldsymbol{W}) =  \frac{n_z}{\boldsymbol{1^\top W 1}} \frac{
 $$
 %
 Where $\boldsymbol{P_\bot}$ is the orthogonal complement to the projection matrix of $\boldsymbol{X}$, i.e. $\boldsymbol{P_\bot} = \boldsymbol{I_{n_y}}-\boldsymbol{X}(\boldsymbol{X}^\top \boldsymbol{X})^{-1}\boldsymbol{X}^\top$ As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_Eigenvectors.gif}{this gif} shows the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the rook criterion (neighbours must share an edge).
-%A different approach to deal with spatial confounding, introduced by \cite{Dupont}, is based on adjusting the covariates rather than constraining spatial effects by representing the former as the sum of a spatial and a nonspatial component; it is known in the literature as Spatial+.% While Spatial+ was originally proposed for thin plate spline regression, 
 
- 
+
+\subsubsection{Spatial+: Filtering out spatial variability from covariates}
+
+We can recall that, in concept, spatial confounding arises when one or more observed covariates are linearly dependent with an unmeasured covariate, which needs being estimated with a latent spatial model. Both restricted regression and the methodology from \cite{HughesHaran} set some conditions on the latent spatial field. The copernican revolution of treating spatial confounding came from \cite{Dupont}, who proposed, on the contrary, to remove the spatial trend from observed covariates. Authors labelled this methodology as \textit{Spatial+}. The original application of Spatial+ regarded thin plate (TP) splines; authors fitted a TP-spline on the covariate and employed the resulting residual as the new explanatory variable. However, the method can be extended with no effort to areal models, provided the appropriate prior model specification \citep{BayesianSpatial+}.
+
+In Bayesian inference, Spatial+ requires to assume a prior spatial model on covariates. On the one side, this tends to propagate uncertainty \citep{BayesianSpatial+} and complicate the probabilistic structure of the model, as the covariate itself is now treated as a stochastic process. On the other side, modelling assumptions are needed. 
+
+An variant of Spatial+ has recently been proposed to circumvent the specification of a nested parametric model on covariates. In line with \citep{Lamouroux}, we label this method as \textit{Spatial+2.0}.
 
 
 \begin{appendices}
@@ -639,7 +643,7 @@ z \mid \boldsymbol{\Sigma} \sim \mathcal{N}_{kn_z} \left(0, \boldsymbol{\Sigma} 
 $$
 Where the $^+$ sign denotes the Moore-Penrose pseudoinverse of the Laplacian matrix $\boldsymbol{L}$. Pseudoinversion is needed due to Laplacian singularity.
 
-
+ \label{appendix:icar}
 \section{Sparse parametrisation for M-model BYM extension}\label{appendix:MMBYM}
 
 Here we generalise the sparse-precision parametrisation of \cite{BYM2}.
@@ -755,11 +759,10 @@ Which consists of four blocks; three are diagonal and the lower-right one has th
  
 \end{appendices}
 
-%
-%
 
-\subsubsection{TBD: Spatial+}
-\subsubsection{TBD: Spatial+2.0}
+
+%
+%
 %
 %% ------------------------------------------------------------------------------ %%
 %% --------                   Second Chapter                 --------------------- %%
@@ -1198,9 +1201,11 @@ If the regression model is hierarchical, the prior model for the latent Gaussian
 
 Differently from the likelihood function, since $z$ is treated as a Gaussian variable, the software is required no extra effort if the user specifies manually a customised model. This can be done in two ways. For a precise subset of simple precision structures, a user-friendly solution is specifying the model as one of \texttt{"generic0", "generic1", "generic2", "generic3"}. Otherwise, more generic latent Gaussian models can be defined with the function \texttt{INLA::inla.rgeneric.define()}, which requires the user to provide the precision matrix, the graph structure, the prior distribution of hyperparameters on which $z$ depends (e.g. for the PCAR model, the autocorrelation $\rho$ and either the scale or precision parameter), and the initial values for the optimisation algorithm. Multivariate models must be stacked columnwise. Chapter 11 of \cite{INLAbook} provides a step-by-step explanation of how models must be defined internally. The high degree of operational flexibility allowed for by the \texttt{inla.rgeneric.define()} has played a crucial role in establishing the popularity of \texttt{R-INLA}. In the context of areal modelling, the univariate ICAR, LCAR and BYM are already implemented in the package and can be fitted by choosing as model \texttt{"besag", "besagproper2"}, and \texttt{bym2} respectively; notably, the LCAR model features, by default, a Normal prior on $\mathrm{logit}\lambda$. The PCAR is not implemented, but chapter 11 of \cite{INLAbook} uses it as an instructional example. Regarding multivariate models, due to the high number of parameters and the more complex hyperprior combinations, no ready-made model is implemented, but some helper \texttt{R} packages have been developed to fit them automatically. In particular, \texttt{INLAMSM} \citep{INLAMSM} implements multivariate ICAR, PCAR and M-model PCAR models, with a Wishart prior on the precision in the former two cases and a Wishart prior on the scale in the latter, and a Uniform prior on the PCAR autocorrelation; package \texttt{bigDM} \citep{Vicente2023}, which is also available on CRAN (\url{https://CRAN.R-project.org/package=bigDM}), instead, implements ICAR, PCAR, and LCAR M-models using a Wishart prior on the scale parameter through the Bartlett decomposition; also in this case, the PCAR autocorrelation and the LCAR precision mixing are assigned a Uniform prior. 
 
-Except for the case of one-dimensional GMRFs, we have seen that the optimisation algorithm is not scalable. This fact may become problematic in the case of large latent structures. A solution to this more-than-linear cost problem is in parallelising computations across multiple cores of the local machine of the user \cite{Parallel, VBINLA2023}.
+INLA can compute internally some information criteria and preserve the hyperparameter configurations at all integration points, which can be useful but may require a high storage space. The user can ask the system what to compute in addition to posteriors with argument \texttt{control.compute()}. Options regarding the optimisation algorithm, the numerical integration scheme and other more technical issues can be specified with the argument \texttt{control.inla()}.
 
-The four approaches described in Section \ref{par:inla_theta} to approximate $\pi(\vartheta_i \mid y)$ are available within the software, which can run either in "classic" (old) or "compact" (new) mode. The former supports the Gaussian, Simplified Laplace and Full Laplace approximations, and needs to be activated with the command: \texttt{inla(... , inla.mode = "classic", ...)}). The latter mode, supporting the VB mean correction to the Gaussian approximation, is implemented by default (or can be equivalently set with the command \texttt{inla(..., inla.mode = "compact", ...)}). Unless differently stated, we rely on the VB approximation. 
+Except for the case of one-dimensional GMRFs, we have seen that the optimisation algorithm is not scalable. This fact may become problematic in the case of large latent structures. A solution to this more-than-linear cost problem is in parallelising computations across multiple cores of the local machine of the user \cite{Parallel, VBINLA2023}. This higher efficiency, however, comes at the cost of losing exact replicability of results, which stems from the algorithm being run on several cores. To achieve results that are perfectly replicable using the same operating system and the same package version, it is necessary to force the number of cores to 1. This can be done with argument \texttt{num.threads = 1}, and setting \texttt{control.inla = list(..., internal.opt = FALSE} \cite{Wang}.
+
+The four approaches described in Section \ref{par:inla_theta} to approximate $\pi(\vartheta_i \mid y)$ are available within the software, which can run either in "classic" (old) or "compact" (new) mode. The former supports the Gaussian, Simplified Laplace and Full Laplace approximations, and needs to be activated with the command: \texttt{inla(... , inla.mode = "classic", ...)}). The latter mode, supporting the VB mean correction to the Gaussian approximation, is implemented by default (or can be equivalently set with the command \texttt{inla(..., inla.mode = "compact", ...)}). Unless differently stated, we rely on the VB approximation. Using the new package setup also implies that the hyperparameters posterior is integrated with points defined with the regular grid for $n_\psi \leq 2$ and with the CCD otherwise. 
 
 
 
@@ -2022,7 +2027,6 @@ In Figure \ref{fig:Xprov} auxiliary variables are mapped from municipalities to 
 Concerning the ultra-broadband activation status, it is possible to observe a slight disadvantage in the mountainous inland regions and a strong disadvantage in the Sardinia region. The availability of public transport hubs shows a weak advantage for Central and Northwestern Italy.
 In Table \ref{tab:MoranProv} the Moran's $I$ values is computed across provinces for the covariates. The standardised index $I_\mathrm{std}$ is obtained assuming the values $-1/104$ and $0.00459$ for the mean and the variance under the null hypothesis of no spatial autocorrelation \citep{Cliff_Ord}. For the first three variables the values of $I_\mathrm{std}$, suggesting a strong spatial autocorrelation, while the evidence of autocorrelation is weaker for the percentage of schools served by urban public transport.
 The values of $I$ and $I_\mathrm{std}$ are computed with the \texttt{spdep} \texttt{R} package \citep{spdep}. 
-
 %
 \begin{figure}[htbp]
     \centering
@@ -2045,8 +2049,6 @@ The values of $I$ and $I_\mathrm{std}$ are computed with the \texttt{spdep} \tex
   %\label{fig:Xprov2}
 %\end{figure}
 %
-
-
 \begin{table}[ht]
 \centering
 \begin{tabular}{lrr}
@@ -2216,8 +2218,7 @@ The Spatial+ procedure requires the choice of the number $K$ of eigenvectors to 
 
 When $z$ is defined at the province level (91 areas in the continent, 9 in Sicily, 5 in Sardinia), we remove a maximum of 9 eigenvectors in the continent, and 1 for each of the two islands, whereas when $z$ is defined at the level of infrastructural catchment areas (186 macro-areas in the continent, 13 in Sicily, 7 in Sardinia) we remove up to 18 eigenvectors from the continent, 2 from Sicily and 1 from Sardinia.
 
-As an alternative strategy, we removed the smallest number of eigenvectors for $\boldsymbol{\bar{X}^{(NS)}}$ not to display evidence of autocorrelation according to Moran's $I$ index. %\textcolor{red}{, whose use is encouraged by its robustness to non-Normality \cite{Griffith} in datasets with at least $100$ observations.%} 
-For the first three variables at the province level, removing the last $4$ eigenvectors leads to small standardized $I$ values ($0.79697$, $1.3854$, $1.2397$), suggesting that spatial structure in these variables is driven by a linear trend over the continent, as seen in Figure \ref{fig:Xprov}. For infrastructural catchment areas, doing the same thing with the proportion of central and peripheral municipalities would lead to standardized $I$ values of $1.2522$ and $0.4598$ respectively; again, this can be interpreted as the presence of a linear trend. For the last two covariates, instead, it is necessary to remove a higher amount of eigenvectors, which suggests the presence of spatial variation on a smaller scale before accepting the hypothesis of no spatial autocorrelation.
+As an alternative strategy, we removed the smallest number of eigenvectors for $\boldsymbol{\bar{X}^{(NS)}}$ not to display evidence of autocorrelation according to Moran's $I$ index, whose use is encouraged by its robustness to non-Normality \cite{Griffith2010} in datasets with at least $100$ observations. For the first three variables at the province level, removing the last $4$ eigenvectors leads to small standardized $I$ values ($0.79697$, $1.3854$, $1.2397$), suggesting that spatial structure in these variables is driven by a linear trend over the continent, as seen in Figure \ref{fig:Xprov}. For infrastructural catchment areas, doing the same thing with the proportion of central and peripheral municipalities would lead to standardized $I$ values of $1.2522$ and $0.4598$ respectively; again, this can be interpreted as the presence of a linear trend. For the last two covariates, instead, it is necessary to remove a higher amount of eigenvectors, which suggests the presence of spatial variation on a smaller scale before accepting the hypothesis of no spatial autocorrelation.
 
 Details on the removal patterns are shown. The continent has 91 provinces and 186 infrastructural catchment areas; Sicily has 9 provinces and 13 infrastructural catchment areas; Sardinia has 5 provinces and 7 infrastructural catchment areas. The last eigenvector is constant within each component.
 Patterns S+(1) and S+(3) are the simplest ones allowing to shrink the value of the standardised Moran's index below the $95$-th percentile of the Standard Normal distribution. At the province level, it is sufficient to remove the last 4 eigenvectors; at the level of infrastructural catchment areas this is only sufficient for the first two covariates, while more eigenvectors, corresponding to higher order trends, need to be removed for what concerns the other two variables. Pattern S+(2) allows, to the best of our findings, for the best ICAR fitting at the province level; S+(4) does the same at the level of infrastructural catchment areas; S+(5) and S+(6) serve the same purposes but for the PCAR model. In Figure \ref{fig:X_prov_nosp_1} the first two columns of $\boldsymbol{\bar{X}^{(NS)}}$ are shown, i.e. the province-level proportion of central and peripheral municipalities, using the S+(2) correction. Original values of these variables are in the upper panel of Figure \ref{fig:Xprov}.
