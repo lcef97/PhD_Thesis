@@ -10,6 +10,7 @@
 \usepackage{multirow}           % For, as you can guess, multirows
 \usepackage{natbib}             % For bibliography
 \usepackage{pdfpages}           % To include compiled pdf in project folder
+\usepackage[caption = false]{subfig} % For floating figures
 \usepackage{url}                % For bare url links
 \usepackage[svgnames]{xcolor}   % For colouring text
 \usepackage{xfrac}              % For inline fractions, advised by: https://tex.stackexchange.com/questions/128496
@@ -56,11 +57,16 @@
 \chapter{Elements of areal data modelling} \label{chapter:theory}
 %% -------- Introduction --------------------------------- %%
 \section{Introduction}
-In this chapter, we provide an overview on the statistical methodology followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox in areal data modelling, with specific application in chapter \ref{Chapter:Invalsi}. Since the application regards multivariate data, here we describe multivariate models directly, although the univariate case is perhaps more frequent in application literature. However, once the multivariate model is defined, the univariate one follows straightforwardly. 
 
-We start by introducing the simplest and most intuitive autoregressive model, namely the Intrinsic Conditional Autoregressive \citep{Mardia}, which generalises to the multivariate case the seminal paper of \cite{CAR}. We then introduce some simple extensions of the ICAR which may be needful to handle random noise. 
+In this chapter, we provide an overview of the statistical methodology followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox of spatial autoregressive modelling, with specific applications in chapter \ref{Chapter:Invalsi} \textcolor{red}{and 5}. Since multivariate applications are frequent in practice, and the context of chapter \ref{Chapter:Invalsi} is multivariate as well, most of the attention of this chapter is devoted to multivariate models, keeping in mind that once the multivariate model is defined, the univariate one follows straightforwardly. 
 
-Lastly, we introduce a typical and frequently discussed issue not only in areal data modelling but in spatial statistic literature as a whole, i.e. spatial confounding. 
+We start by introducing the simplest and most intuitive model, the Intrinsic Conditional Autoregressive \citep{Mardia}, which generalises to the multivariate case the seminal paper of \cite{CAR}. We then introduce some simple extensions of the ICAR which may be needful to handle random noise. 
+
+Autoregressive models are usually employed as latent variables in spatial regression. This is partly motivated by the improper prior distribution of intrinsic processes, which however does not imply an improper posterior \citep{Banerjee}. On the other hand, the reason to employ a spatially structured latent random variable is the presence of an unmeasured covariate following a spatial pattern and entering the model predictor. When a spatial effect is included in a regression model to account for unmeasured covariates, it may happen that the latter is correlated with some observed covariates. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in two decades of literature (\citep{Urdangarin23}, \citep{DupontArXiv}), starting from the intuitive solution of constraining random effects to be linearly independent on observed explanatory variables (\citep{RHZ}, \cite{Hodges}), which goes under the name of restricted spatial regression (RSR); this is done by projecting the spatial field onto the orthogonal subspace to the covariates matrix.
+
+ 
+
+
 
 %% -------- ICAR ----------------------------------------- %%
 \section{The intrinsic CAR model} \label{section:icar}
@@ -75,16 +81,16 @@ Consider a $k$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})
 Following \cite{Mardia}, see also chapter 10 of \cite{Banerjee}, we suppose that $z_i$ follows this prior conditional distribution:
 %
 \begin{equation}
-z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n_z} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \Sigma\right)
+z_i | z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \boldsymbol{\Sigma}\right)
 \label{eq:icarconditional}
 \end{equation}
 %
-Where $\Sigma$ is a $k \times k$ variance-covariance matrix. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \Sigma \sim \mathcal{N} \left(\sum_{j=1}^{n_z} B_{ij} z_{i}, \frac{1}{d_i} \Sigma \right)$ and presented $B_{ij} = \frac{w_{ij}}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
+Where $\boldsymbol{\Sigma}$ is a $k \times k$ variance-covariance matrix. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} B_{ij} z_{i}, \frac{1}{d_i} \boldsymbol{\Sigma} \right)$ and presented $B_{ij} = \frac{w_{ij}}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
 
 We show in Appendix \ref{appendix:icar} that the joint distribution of a multivariate ICAR field is:
 %
 \begin{equation}
-z|\Sigma \sim \mathcal{N}_{kn_z} \left( 0, \Sigma^{-1} \otimes \boldsymbol{L}^{+}\right)
+z|\boldsymbol{\Sigma} \sim \mathcal{N}_{kn_z} \left( 0, \boldsymbol{\Sigma}^{-1} \otimes \boldsymbol{L}^{+}\right)
 \label{eq:icarjoint}
 \end{equation}
 %
@@ -95,9 +101,9 @@ Here, the $^{+}$ superscript here denotes the Moore-Penrose pseudoinverse.
 As can be seen in the previous equations, the ICAR precision is the product of two terms, the global precision (inverse scale) and a structure matrix. This hinders parameter interpretation at the global level; to start discussing it, let us first consider the case of a connected graph. Denoting with $\boldsymbol{S} : = \boldsymbol{L}^{+}$, the marginal variance of a generic $i$-th realisation of the latent effect for the $h$-th variable is: 
 %
 $$
-\mathrm{VAR}[z_{ih} \mid \Sigma] = \sigma_{h}^2 s_{ii}
+\mathrm{VAR}[z_{ih} \mid \boldsymbol{\Sigma}] = \sigma_{h}^2 s_{ii}
 $$
-Where $\sigma_h^2$ is the marginal variance of the $h$-th variable, corresponding to the $h$-th diagonal element of of $\Sigma$; in other words, $s_{ii}$ would be the marginal variance of $z_i$ if the relevant global precision was equal to 1.
+Where $\sigma_h^2$ is the marginal variance of the $h$-th variable, corresponding to the $h$-th diagonal element of of $\boldsymbol{\Sigma}$; in other words, $s_{ii}$ would be the marginal variance of $z_i$ if the relevant global precision was equal to 1.
 %
 Hence, by definition, ICAR variance incorporates a factor determined by the neighbourhood structure. At the global level, this consideration implies that process variability is not described by the precision parameter alone, since a deterministic scale factor concurs as well. The intuitive solution to this issue is to scale the ICAR model, as shown by \cite{Sorbye}. Following their operational proposal, we take the geometric mean of the diagonal of $\boldsymbol{S}$ as scaling factor - or, in other words, the geometric mean of marginal variances if all global precision parameters (diagonal entries of $\Sigma$) were equal to 1, namely
 $$
@@ -197,7 +203,7 @@ The core idea is defining $\boldsymbol{z} := \boldsymbol{z}^{(0)} \boldsymbol{M}
 
 Even though the $\boldsymbol{M}$ matrix does not have to be squared, if the number of variables is not prohibitive, models with squared $\boldsymbol{M}$, i.e. $p=k$, are easier to interpret and allow for exactly one spatial association parameter for each variable. 
 
-Take the PCAR model as an example. With $p=k$, equation \ref{eq:pcar} can be generalised as $\mathrm{Var}[z | \Sigma, \boldsymbol{\rho}] = \Sigma \otimes(\boldsymbol{I_k} \otimes \boldsymbol{D} - \boldsymbol{\rho} \otimes \boldsymbol{W})^{-1}$, where $\boldsymbol{\rho} = \mathrm{diag}(\rho_1, \rho_2, \dots, \rho_k)$, and in the block-factorisable case seen in subsection \ref{subsection:pcar} it was $\boldsymbol{\rho} = \rho \boldsymbol{I_k}$. When the autocorrelation parameter is multivariate, the variance becomes
+Take the PCAR model as an example. With $p=k$, equation \ref{eq:pcar} can be generalised as $\mathrm{Var}[z | \Sigma, \boldsymbol{\rho}] = \boldsymbol{\Sigma} \otimes(\boldsymbol{I_k} \otimes \boldsymbol{D} - \boldsymbol{\rho} \otimes \boldsymbol{W})^{-1}$, where $\boldsymbol{\rho} = \mathrm{diag}(\rho_1, \rho_2, \dots, \rho_k)$, and in the block-factorisable case seen in subsection \ref{subsection:pcar} it was $\boldsymbol{\rho} = \rho \boldsymbol{I_k}$. When the autocorrelation parameter is multivariate, the variance becomes
 %
 \begin{equation}
 \text{PCAR:} \quad \quad 
@@ -242,15 +248,14 @@ Lastly, in Appendix \ref{appendix:MMBYM} we show that sparse parametrisation is 
 %% -------- Spatial confounding --------------------------- %%
 \section{Spatial Confounding} \label{section:confounding}
 
-Autoregressive models are usually employed as latent variables in spatial regression. This is partly motivated by the improper prior distribution of intrinsic processes, which however does not imply an improper posterior \citep{Banerjee}. On the other hand, the reason to employ a spatially structured latent random variable is the presence of an unmeasured covariate following a spatial pattern and entering the model predictor. When a spatial effect is included in a regression model to account for unmeasured covariates, it may happen that the latter is correlated with some observed covariates. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in almost two decades of literature (\citep{Urdangarin23}, \citep{DupontArXiv}), starting from the intuitive solution of constraining random effects to be linearly independent on observed explanatory variables (\citep{RHZ}, \cite{Hodges}), which goes under the name of restricted spatial regression (RSR); this is done by projecting the spatial field onto the orthogonal subspace to the covariates matrix.
-
+Spatial confounding can occur when a regression model includes a spatially structured latent random variable, say $z$, correlated with some explanatory variables, say $\boldsymbol{X}$. This issue implies a competition between $\boldsymbol{X}$ and $z$ in explaining $y$, introducing bias in the estimation of $\beta$. The consideration that $\boldsymbol{X}$ is directly observed and is part of the available information and the estimation $\beta$ is frequently the main inferential target may encourage the analyst to restrict $z$ to a subspace in which it cannot be confounded with observed covariates. Restricted regression serves this issue precisely. The following paragraphs explain how restricted regression works. 
 
 \subsection{Preliminary: Latent Gaussian model outline} \label{subsection:LGM}
 
-%Spatial confounding can occur when a regression model includes a spatially structured latent random variable, say $z$, correlated with some explanatory variables, say $\boldsymbol{X}$. This issue implies a competition between $\boldsymbol{X}$ and $z$ in explaining $y$, introducing bias in the estimation of $\beta$. Several approaches have been developed in almost two decades of literature \citep{Urdangarin23, DupontArXiv}, starting from the intuitive solution of constraining spatial random effects to be linearly independent of covariates \citep{RHZ, Hodges}, which goes under the name of restricted spatial regression (RSR hereinafter). This is done by projecting random effects onto the subspace orthogonal to the design matrix $\boldsymbol{X_\mathrm{tot}} = (\xi\boldsymbol{C}, \boldsymbol{X})$, i.e. conditioning $z$ to the constraint $\boldsymbol{X_\mathrm{tot}}(\boldsymbol{X_\mathrm{tot}}^{\top}\boldsymbol{X_\mathrm{tot}})^{-1}\boldsymbol{X_\mathrm{tot}}^{\top} \, \xi z = \boldsymbol{0}$. The idea behind RSR is to rule out confounding bias when estimating the effects of covariates. RSR can be extended to the multilevel case \citep{Nobre}, where spatial effects are defined at a higher scale than observations, as we do in the present framework. Nevertheless, under RSR the posterior means of covariate effects tend to approximate those of the nonspatial model \citep{Khan}, which leads to biased estimates of $\beta$ by ignoring the presence of a latent spatial field and assuming independent errors \citep{DupontArXiv}.This suggests exploring further methodologies to deal with spatial confounding.
+% Several approaches have been developed in almost two decades of literature \citep{Urdangarin23, DupontArXiv}, starting from the intuitive solution of constraining spatial random effects to be linearly independent of covariates \citep{RHZ, Hodges}, which goes under the name of restricted spatial regression (RSR hereinafter). This is done by projecting random effects onto the subspace orthogonal to the design matrix $\boldsymbol{X_\mathrm{tot}} = (\xi\boldsymbol{C}, \boldsymbol{X})$, i.e. conditioning $z$ to the constraint $\boldsymbol{X_\mathrm{tot}}(\boldsymbol{X_\mathrm{tot}}^{\top}\boldsymbol{X_\mathrm{tot}})^{-1}\boldsymbol{X_\mathrm{tot}}^{\top} \, \xi z = \boldsymbol{0}$. The idea behind RSR is to rule out confounding bias when estimating the effects of covariates.
 
-
-To gain more insight on restricted regression, let us briefly outline a general latent Gaussian linear model, which will be useful to explain the current section, and consider:
+To understand restricted regression, let us briefly outline a general latent Gaussian linear model and assume:
+%
 $$
 \left\{ \begin{array}{ll} 
 \mathbb{E}\left[y \mid \eta, \psi \right] = g^{-1}(\eta) \\
@@ -258,6 +263,7 @@ $$
 \vartheta | \psi \sim \mathcal{N}(0, \boldsymbol{Q_{\psi}}^{-1})
 \end{array} \right. 
 $$
+%
 where $y$ denotes the response variable consisting of $n_y$ observations; $\eta$ is the linear predictor linked with a function $g$ to the expected value of $y$; $\vartheta$ is a generic vector of latent variables of interest; $\sigma_{\varepsilon}^2 := \mathrm{Var}[\varepsilon]$ is the variance of the IID Gaussian error $\varepsilon$, $\boldsymbol{A}$ is a known design matrix; $\psi$ is the array of hyperparameters, and $\boldsymbol{Q_{\psi}}$ is the prior precision matrix of $\vartheta$. Let us assume that the linear predictor, only depends on an array of effects of explanatory variables, say $\beta \in \mathbb{R}^p$ and  an array of spatial latent effects \footnote{Labelling $\beta$ as "fixed" and $z$ as "random" effects is quite frequent in hierarchical regression applications, but due to the polysemic nature of these terms we will tend to avoid them. In a strictly probability perspective, there is no conceptual distinction between them: they are both unknown random variables entering the linear predictor through a known design matrix (either $\boldsymbol{X}$ or $\boldsymbol{\xi}$), are typically assumed to be Gaussian \textit{a priori} and their posterior distribution is the primary aim of statistical inference. We keep them separated due to how they are interpreted: $\beta$ represents the association between a set of known variables ($\boldsymbol{X}$) and $y$, while $z$ is an unobserved process shaping the structure of $y$ itself.}, say $z \in \mathbb{R}^{n_z}$. The design matrix and the vector of latent variables can be then written as
 $$  
 \boldsymbol{A} := 
@@ -285,63 +291,20 @@ $$
 %\end{aligned}
 \end{equation}
 %
-Where $\tau_\varepsilon \in \psi$ is the error precision parameter and $N$ is an arbitrarily large scalar.
-
-This model can be parametrised in a more general way \citep[see e.g.][]{DIC}:
+Where $\tau_\varepsilon \in \psi$ is the error precision parameter and $N$ is an arbitrarily large scalar. Let us firstly define the following quantities to make formulas more tractable:
 %
 \begin{equation}
-\begin{aligned}
-y \sim \mathcal{N}_{n_y}
-\left(\boldsymbol{A_1} \vartheta_1, \,
-\tau_{\varepsilon}^{-1} \boldsymbol{I_{n_y}} \right) \\
-\vartheta_1 \sim \mathcal{N}_{n_\vartheta} \left(\boldsymbol{A_2 } \vartheta_2,\,
-\tau_{\varepsilon}^{-1} \boldsymbol{C}\right)
-\end{aligned}
-\label{eq:LGM_y_theta}
+\left\{ \begin{array}{ll}
+\bar{r} := \frac{\tau}{\tau_\varepsilon} \\
+r_\varepsilon := \frac{1}{\tau_\varepsilon N} = \frac{\sigma_\varepsilon^2}{N} \\
+\boldsymbol{G} := (\boldsymbol{X}^{\top}\boldsymbol{X} + r_{\varepsilon}\boldsymbol{I_p})\\
+\boldsymbol{S_{11}} := (\boldsymbol{\xi} ^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R} - \boldsymbol{\xi} ^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top}\boldsymbol{\xi})
+\end{array} \right.
+\label{eq:auxiliary}
 \end{equation}
 %
-Where  $\boldsymbol{A_1} = \left(\boldsymbol{X} \, \boldsymbol{\xi} \right)$, $\vartheta_1 = (\beta^{\top} z^{\top})^{\top}$ is the vector of parameters, and $n_\vartheta = n_z + p$. The term $\boldsymbol{A_2} \vartheta_2$ has by construction both mean and variance zero. Moreover,
-$$ 
-\boldsymbol{C}^{-1} = \tfrac{\tau}{\tau_{\varepsilon}} \begin{pmatrix}
- \frac{1}{\tau N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\
- \boldsymbol{0_{n_z \times p}} & \boldsymbol{R}
-\end{pmatrix}
-$$
-
-Since the error term $\varepsilon$ and the latent effects $z$ have different precision parameters, the matrix $\boldsymbol{C}^{-1}$ cannot be considered known. To see this, consider the prior precision of the spatial effects defined as $\tau \boldsymbol{R}$; $\tau_{\varepsilon} \boldsymbol{C}^{-1}$ must thus be structured as $\begin{pmatrix} \frac{1}{N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\ \boldsymbol{0_{n_z \times p}} & \tau \boldsymbol{R} \end{pmatrix}$ where $N$ is the known variance parameter of $\beta$, but $\tau$ is unknown and isolating $\tau$ to express $\tau_{\varepsilon} \boldsymbol{C}^{-1} = \tau \begin{pmatrix}
- \frac{1}{\tau N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\ \boldsymbol{0_{n_z \times p}}& \boldsymbol{R}
-\end{pmatrix}$ would leave it dependent on an unknown parameter.
-
-
-Now, it is possible to show \citep{LindleySmith} that the posterior mean of $\vartheta_1$, conditional on the model hyperparameters, is
+Then, the posterior expectation of $\beta$ and $z$, conditional on hyperparameters, can be derived analytically. The proof is left in Appendix \ref{appendix:LGM}. For the covariate effects, we have:
 %
-\begin{equation}
-\mathbb{E}[\vartheta_1 | y, \tau, \tau_{\varepsilon}] =
-\left( \boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C^{-1}} \right)^{-1}\boldsymbol{A_{1}^{\top}}y
-\end{equation}
-%
-We can thus define the hat matrix as:
-$$
-\boldsymbol{H}:=\boldsymbol{A_1} \left(\boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C^{-1}} \right)^{-1}\boldsymbol{A_{1}}
-$$
-Based on how we defined $\boldsymbol{A_1}$ and $\boldsymbol{C}$, notice that
-\begin{equation}
-\begin{aligned}
-\left( \boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C}^{-1} \right)^{-1} = 
-\begin{pmatrix}
- \boldsymbol{X ^\top X} + r_{\varepsilon} \boldsymbol{I_p} & \boldsymbol{X}^{\top} \boldsymbol{\xi} \\
- \boldsymbol{\xi} ^{\top} \boldsymbol{X} & \boldsymbol{\xi}^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R}
-\end{pmatrix}^{-1} = \\ = 
-\begin{pmatrix}
-\boldsymbol{G^{-1}} + \boldsymbol{G^{-1}} \boldsymbol{X}^{\top} \boldsymbol{\xi} \boldsymbol{S_{11}}^{-1} \boldsymbol{\xi} ^{\top} \boldsymbol{XG}^{-1} & 
--\boldsymbol{G}^{-1} \boldsymbol{X}^{\top} \boldsymbol{\xi} \boldsymbol{S_{11}}^{-1}\\
--  \boldsymbol{S_{11}}^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} & 
- \boldsymbol{S_{11}}^{-1}
-\end{pmatrix}
-\end{aligned}
-\end{equation}
-Where $\boldsymbol{S_{11}} := (\boldsymbol{\xi} ^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R} - \boldsymbol{\xi} ^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top}\boldsymbol{\xi})$ is the Schur complement of the upper-left block in $\left(\boldsymbol{A_1}^\top \boldsymbol{A_1} + \boldsymbol{C}^{-1}\right)^{-1}$ \citep[][paragraph 0.7.3]{HornJohnson}, $\bar{r} := \dfrac{\tau}{\tau_{\varepsilon}}$ and $\boldsymbol{G} := (\boldsymbol{X}^{\top}\boldsymbol{X} + r_{\varepsilon}\boldsymbol{I_p})$, where $r_{\varepsilon} := \dfrac{1}{\tau_{\varepsilon}N} = \dfrac{\sigma_{\varepsilon}^{2}}{N}$.
-It can thus be shown that:
 \begin{equation}
 \begin{aligned}
 \mathbb{E}[\beta | y, \tau_{\varepsilon}, \bar{r}] = \boldsymbol{G}^{-1} \lbrace 
@@ -352,26 +315,17 @@ It can thus be shown that:
 \end{aligned}
 \label{eq:expbeta}
 \end{equation}
-And
+And for the spatial field, we have:
 \begin{equation}
 \mathbb{E}[z | y, \tau_{\varepsilon}, \bar{r}] =  \boldsymbol{S_{11}} ^{-1}
 \left(\boldsymbol{\xi}^{\top} - \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top}\right) \, y
 \label{eq:expzeta}
 \end{equation}
+%
+Moreover, if a flat prior is defined on $\beta$, we have $M \longrightarrow \infty$, with $\boldsymbol{G} \longrightarrow \boldsymbol{X^{\top}X}$. In this case, it is possible to show that the limits for equations \ref{eq:expbeta} and \ref{eq:expzeta} are the results stated by \cite[][page 1199]{RHZ} and the hat matrix (see Appendix \ref{appendix:LGM}) does not depend on $\tau_{\varepsilon}$ but only on $\bar{r}$.
 
-Equivalently, if for brevity we define $\boldsymbol{\Gamma}= \boldsymbol{\xi} ^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R} - \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top} \boldsymbol{\xi}$ this means that the hat matrix equals:
-\begin{equation}
-\begin{aligned}
-\boldsymbol{H_{\tau_{\varepsilon}, \bar{r}}} =
-\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} +
-\boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} -
-\boldsymbol{XG}^{-1}X^{\top} \boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} -
-\boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top}\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} +\\
-+\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} \boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{XG}^{-1}\boldsymbol{X}^{\top}
-\end{aligned}
-\label{eq:projmat}
-\end{equation}
-Where the subscript $\tau_e, r$ denotes the dependence on the two precision parameters. If a flat prior is defined on $\beta$, we have $M \longrightarrow \infty$, with $G \longrightarrow X^{\top}X$. In this case, it is possible to show that the limits for equations \ref{eq:expbeta} and \ref{eq:expzeta} are the results stated by \cite[][page 1199]{RHZ} and the hat matrix does not depend on $\tau_{\varepsilon}$ but only on $\bar{r}$.
+
+
 
  \subsection{Restricted Regression} \label{subsection:RSR}
 We now consider the projection matrix of $y$ onto its least squares fitted values, and its orthogonal complement, respectively:
@@ -379,49 +333,59 @@ $$
 \boldsymbol{P} := \boldsymbol{X}(\boldsymbol{X}^{\top}\boldsymbol{X})^{-1}X^{\top} \quad \quad \text{and} \quad \quad \boldsymbol{P_{\bot}} := \boldsymbol{I_{n_y}} - \boldsymbol{X}(\boldsymbol{X}^{\top}\boldsymbol{X})\boldsymbol{X}^{\top} = \boldsymbol{I_{n_y}} - \boldsymbol{P}
 $$
 
-The crucial step of all the forthcoming analysis is the eigendecomposition of $P_{\bot}$. Firstly, consider that its first $n-p$ eigenvalues are ones, and the latter $p$ are zeroes.
+The crucial step of all the forthcoming analysis is the eigendecomposition of $\boldsymbol{P_{\bot}}$. Firstly, consider that its first $n_y-p$ eigenvalues are ones, and the latter $p$ are zeroes.
 
-To see that the eigenvalues of $P_{\bot}$ are either zeros or ones, first consider that $P_{\bot} = P_{\bot} P_{\bot}$. Then for a generic eigenvalue-eigenvector pair $\lambda, v$ it holds that $P_{\bot} v = \lambda v$. With no loss of generality it is also true that $P_{\bot} P_{\bot} v = \lambda P_{\bot} v$, which equals to the identity $P_{\bot} v = \lambda^2 $, hence $\lambda = \lambda^2$. The number of nonzero eigenvalues is the rank of $P_{\bot}$, which is in turn $n - rk(P)$, hence $n-p$. 
+To see that the eigenvalues of $P_{\bot}$ are either zeros or ones, first consider that $\boldsymbol{P_{\bot}} = \boldsymbol{P_{\bot} P_{\bot}}$. Then for a generic eigenvalue-eigenvector pair $\lambda, v$ it holds that $\boldsymbol{P_{\bot}} v = \lambda v$. With no loss of generality it is also true that $\boldsymbol{P_{\bot} P_{\bot}} v = \lambda \boldsymbol{P_{\bot}} v$, which implies $\boldsymbol{P_{\bot}} v = \lambda^2 $, hence $\lambda = \lambda^2$. The number of nonzero eigenvalues is the rank of $\boldsymbol{P_{\bot}}$, which is in turn $n_y - \mathrm{rk}(\boldsymbol{P})$, hence $n-p$. 
 
-Let us partition the eigenvector matrix of $P_{\bot}$ into $(E \, K)$; $E$ are the first $n-p$ eigenvectors corresponding to nonzero eigenvalues, while $K$ belongs to the null space of $P_{\bot}$. Thus, the decomposition of $P_{\bot}$ is:
-
+Let us partition the eigenvector matrix of $\boldsymbol{P_{\bot}}$ into the matrices $(\boldsymbol{E} \, \boldsymbol{K})$; $\boldsymbol{E}$ are the first $n_y-p$ eigenvectors corresponding to nonzero eigenvalues, while $\boldsymbol{K}$ belongs to the null space of $\boldsymbol{P_{\bot}}$. Thus, the decomposition of $\boldsymbol{P_{\bot}}$ is:
+%
 $$
-P_{\bot} =  \begin{pmatrix}E & K \end{pmatrix} 
-\begin{pmatrix} I_{n-p} & 0_{(n-p) \times p } \\ 0_{p \times (n-p)} & 0_{p \times p} \end{pmatrix}
- \begin{pmatrix} E^{\top} \\ K^{\top} \end{pmatrix} = E E^{\top}
+\boldsymbol{P_{\bot}} =  \begin{pmatrix}\boldsymbol{E} & \boldsymbol{K} \end{pmatrix} 
+\begin{pmatrix} \boldsymbol{I_{n_y-p}} & \boldsymbol{0_{(n_y-p) \times p }} \\
+  \boldsymbol{0_{p \times (n_y-p)}} & \boldsymbol{0_{p \times p}} \end{pmatrix}
+ \begin{pmatrix} \boldsymbol{E}^{\top} \\ \boldsymbol{K}^{\top} \end{pmatrix} 
+ = \boldsymbol{E E}^{\top}
 $$
-
+%
 Notice that:
 $$
-\begin{pmatrix} E^{\top} \\ K^{\top}\end{pmatrix} (E \, K) = (E \, K) \begin{pmatrix} E^{\top} \\ K^{\top}\end{pmatrix} = I_n \, , \quad KK^{\top} = P, \, \quad K^{\top}E = 0 
+\begin{pmatrix} \boldsymbol{E}^{\top} \\ \boldsymbol{K}^{\top}\end{pmatrix}
+\left(\boldsymbol{E} \, \boldsymbol{K}\right) = \left(\boldsymbol{E} \, \boldsymbol{K} \right) 
+\begin{pmatrix} \boldsymbol{E}^{\top} \\ \boldsymbol{K}^{\top}\end{pmatrix}
+= \boldsymbol{I_{n_y}} \, , \quad \boldsymbol{KK}^{\top} = \boldsymbol{P}, \, \quad \boldsymbol{K^{\top}E} = 0 
 $$
 
 Without loss of generality, it holds that
 $$
 \ln \pi(z | \tau) = C -\dfrac{\tau}{2} z^{\top} \boldsymbol{R} z  = 
-C -\dfrac{\tau}{2} z^{\top} (E \, K) \begin{pmatrix} E^{\top} \\ K^{\top}\end{pmatrix} 
-\boldsymbol{R} (E \, K) \begin{pmatrix} E^{\top} \\ K^{\top}\end{pmatrix} z 
+C -\dfrac{\tau}{2} z^{\top} \left(\boldsymbol{E \, K}\right)
+\begin{pmatrix} \boldsymbol{E}^{\top} \\ \boldsymbol{K}^{\top}\end{pmatrix} 
+\, \boldsymbol{R} \, \left(\boldsymbol{E \, K}\right) 
+\begin{pmatrix} \boldsymbol{E}^{\top} \\ \boldsymbol{K}^{\top}\end{pmatrix}  z 
 $$
 
-Where $C$ is, as usual, an additive constant. Let us now define $\zeta = \begin{pmatrix} E^{\top} \\ K^{\top} \end{pmatrix} z$, such that $z = (E \, K) \zeta$ and decompose the newly defined spatial effect $\zeta$ as
+Where $C$ is, as usual, an additive constant. Let us now define $\zeta = \begin{pmatrix} \boldsymbol{E}^{\top} \\ \boldsymbol{K}^{\top} \end{pmatrix} z$, such that $z = \left(\boldsymbol{E \, K}\right) \zeta$ and decompose the newly defined spatial effect $\zeta$ as
 $$
-\zeta = \begin{pmatrix} \zeta_1 \\ \zeta_0 \end{pmatrix} \quad \text{where} \quad  \zeta_1 := E^{\top}z \quad \text{and} \quad \zeta_0 := K^{\top}z
+\zeta = \begin{pmatrix} \zeta_1 \\ \zeta_0 \end{pmatrix} \quad \text{where} \quad  \zeta_1 := \boldsymbol{E}^{\top}z \quad \text{and} \quad \zeta_0 := \boldsymbol{K}^{\top}z
 $$ 
 The distribution of the constrained latent field then reads as:
 $$
-\zeta \sim \mathcal{N} \left(\begin{pmatrix} 0 \\ 0 \end{pmatrix}, \, \tau^{-1} \begin{pmatrix} E^{\top}\boldsymbol{R}E & E^{\top}\boldsymbol{R}K \\ K^{\top}\boldsymbol{R}E & K^{\top}\boldsymbol{R}K \end{pmatrix}^{-1} \right)
+\zeta \sim \mathcal{N} \left(\begin{pmatrix} 0 \\ 0 \end{pmatrix}, \, \tau^{-1} 
+\begin{pmatrix} \boldsymbol{E}^{\top}\boldsymbol{R E} & \boldsymbol{E}^{\top}\boldsymbol{R K} \\
+\boldsymbol{K}^{\top}\boldsymbol{R E} & \boldsymbol{K}^{\top}\boldsymbol{R K} \end{pmatrix}^{-1} \right)
 $$
-
-If the random effect $z$ displays multicollinearity with the covariates $X$, we are in presence of spatial confounding. Restricted spatial regression, then, works by constraining $z$ onto the null space of $P$, which is orthogonal to $X$: 
+%
+If the spatial effect $z$ displays multicollinearity with the covariates $\boldsymbol{X}$, we are in presence of spatial confounding. Restricted spatial regression, then, works by constraining $z$ onto the null space of $\boldsymbol{P}$, which is orthogonal to $\boldsymbol{X}$: 
 $$
-\mathrm{RSR}: \zeta_0 = K^{\top}z = 0
+\mathrm{RSR}: \zeta_0 = \boldsymbol{K}^{\top}z = 0
 $$
 Specifically, the regression model under RSR reads as:
-
+%
 \begin{equation} \label{eq:RSR}
-\mathrm{RSR}: \quad y = X \beta + P_{\bot}z + \varepsilon = X \beta + E \zeta + \varepsilon
+\mathrm{RSR}: \quad y = \boldsymbol{X} \beta + \boldsymbol{P_{\bot}}z + \varepsilon 
+= \boldsymbol{X} \beta + \boldsymbol{E} \zeta + \varepsilon
 \end{equation}
-
+%
 
 %Under the unrestricted model, we have $\mathrm{Prec}[\zeta_1 | \tau, K^{\top}z = 0] = E^{\top}\boldsymbol{R}E$, as in \citep[eq. 16-17 at p. 1201][]{RHZ}. To see this, recall:
 %$$
@@ -430,25 +394,11 @@ Specifically, the regression model under RSR reads as:
 %\boldsymbol{R} (E \, K)  \begin{pmatrix} \zeta_1 \\ 0_{p} \end{pmatrix} = -\dfrac{\tau}{2} \zeta_1^{\top} \, E^{\top}\boldsymbol{R}E \, %\zeta_1
 %$$
 
-With respect to equation \ref{eq:RSR}, if we consider $\xi = E$ and $\vartheta_1^{\top} = (\beta^{\top}, (E^{\top}z)^{\top})$, it is straightforward to see that $\mathbb{E}[\beta|y, \tau_{\varepsilon}, \bar{r}] = G^{-1} X^{\top}y$; if $p(\beta)$ is flat, its posterior expectation reduces to $X^{\top}(X^{\top}X)^{-1}y$, which is the ordinary least squares estimator.
+With respect to equation \ref{eq:RSR}, if we consider $\boldsymbol{\xi} = \boldsymbol{E}$ and $\vartheta_1 = \begin{pmatrix} \beta \\ \boldsymbol{E}^{\top}z \end{pmatrix}$, it is straightforward to see that $\mathbb{E}[\beta|y, \tau_{\varepsilon}, \bar{r}] = \boldsymbol{G}^{-1} \boldsymbol{X}^{\top}y$; if $\pi(\beta)$ is flat, its posterior expectation reduces to $X^{\top}(X^{\top}X)^{-1}y$, which is the ordinary least squares estimator.
 
-As a side effect of deconfounding $z$, it may be worth noticing that the the size of the new precision matrix is $(n-p) \times (n-p)$ and its rank is $ \leq \mathrm{min} \lbrace rk(E), rk(\boldsymbol{R}) \rbrace = \mathrm{min} \lbrace (n-p), rk(\boldsymbol{R}) \rbrace$. Hence, if the rank deficiency of $\boldsymbol{R}$ is less than $p$, the new spatial effect has a proper distribution even if $z$ is an ICAR process. If the underlying graph is disconnected and $p(z)$ can be factorised in a factor for each connected component (CC) then the rank deficiency of $\boldsymbol{R}$ is equal to the number of CCs, but it is necessary to impose a sum to zero constraint for each CC, hence the same number of intercepts would be required; thus, also in this case $n-p$ is smaller than $rk(\boldsymbol{R})$ and $E^{\top}\boldsymbol{R}E$ is still proper. However, there are still some possible situations in which this inconvenience can arise, e.g. in multilevel models, like in Chapter \ref{Chapter:Invalsi}.
+%As a side effect of deconfounding $z$, it may be worth noticing that the the size of the new precision matrix is $(n-p) \times (n-p)$ and its rank is $ \leq \mathrm{min} \lbrace   \mathrm{rk}(\boldsymbol{E}), \mathrm{rk}(\boldsymbol{R}) \rbrace = \mathrm{min} \lbrace (n-p), \mathrm{rk}(\boldsymbol{R}) \rbrace$. Hence, if the rank deficiency of $\boldsymbol{R}$ is less than $p$, the new spatial effect has a proper distribution even if $z$ is an ICAR process. If the underlying graph is disconnected and $p(z)$ can be factorised in a factor for each connected component (CC) then the rank deficiency of $\boldsymbol{R}$ is equal to the number of CCs, but it is necessary to impose a sum to zero constraint for each CC, hence the same number of intercepts would be required; thus, also in this case $n_y-p$ is smaller than $rk(\boldsymbol{R})$ and $\boldsymbol{E}^{\top}\boldsymbol{R E}$ is still proper. However, there are still some possible situations in which this inconvenience can arise, e.g. in multilevel models, like in Chapter \ref{Chapter:Invalsi}.
 
 
-%We consider that if $\beta$ is given a Gaussian prior with zero mean and known variance $M = \dfrac{\sigma_{\varepsilon}^{2}}{r_{\varepsilon}} $, the posterior distribution of $\beta$, conditioned on the random effects and the hyperparameters, takes the form
-%\begin{align*}
-%p(\beta| y, \tau_{\varepsilon}, z, \tau) = \frac{p(\beta) p (y|\beta, z, \tau_{\varepsilon}, \tau)}{p(y| \tau_{\varepsilon}, \tau)} \propto \\
-%\propto exp\lbrace-\tau_{\varepsilon} \left[\beta^{\top} (X^{\top}X + r_{\varepsilon}I_p) \beta - 2 (y - z)^{\top} X %\beta + (y-z)^{\top}(y-z)  \right] \rbrace
-%\end{align*}
-%\textcolor{blue}{Which in turn is proportional to (terms not depending on $\beta$ are considered constants)}
-%\begin{align*}
-%exp\lbrace-\tau_{\varepsilon} \left[\beta^{\top} (X^{\top}X + r_{\varepsilon}I_p)  \beta 
-%- 2 (y - z)^{\top} X (X^{\top}X + r_{\varepsilon}I_p) rI_p)(X^{\top}X + r_{\varepsilon}I_p)^{-1} \beta  \right] + \\
-%- \tau_{\varepsilon} \left[+(y-z)^{\top} X(X^{\top}X + r_{\varepsilon} I_p)^{-1} X^{\top}(y-z)  \right] 
-%\end{align*}
-%This implies that $E[\beta | y, z, \tau, \tau_{\varepsilon}] = (X^{\top}X + r_{\varepsilon}I_p)^{-1} X^{\top}(y-z)$. The limit case for $r \longrightarrow \infty$ being $E[\beta | y, z, \tau, \tau_{\varepsilon}] = \beta_{OLS} - (X^{\top}X)^{-1} X^{\top}z$, which derives indeed from the choice of a flat prior on $\beta$.
-
-%In the following, for brevity we will refer to the set of hyperparameters as $\psi = \lbrace \tau, \tau_{\varepsilon}, r \rbrace$.\\
 Referring to the flat prior on $\beta$, under the restricted model it holds that:
 $$
 \mathrm{E}[\beta_\mathrm{RSR} | y, z, \tau_{\varepsilon}, \bar{r}] = \beta_\mathrm{OLS} - (X^{\top}X)^{-1} X^{\top}(I - X(X^{\top}X)^{-1}X^{\top})z = \beta_\mathrm{OLS}
@@ -467,12 +417,13 @@ H_{\tau_{\varepsilon}, \bar{r}}
 = P + E (\bar{r} E^{\top}QE + I_{n-p})^{-1} E^{\top}
 $$
  
-
 RSR can be extended to the multilevel case \cite{Nobre}, in which e.g. spatial effects are defined at a higher scale than observations. This is precisely what we refer to in Chapter \ref{Chapter:Invalsi}.
 
 \subsection{Beyond Restricted Regression}
 
-We have just seen that under RSR the posterior means of covariate effects approximate those of a non-spatial model, and even more so when $y$ is Gaussian and $\beta$ has a flat prior the two estimates are equal. Interestingly, \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta |y]$ if confounding occurs: intuitively, the expectation would be approximately the same of a model ignoring the existence of the spatial component. In terms of interpretation, adding a spatial effect forced to be orthogonal to covariates would not significantly alter the point estimation of covariate effects.
+We have just seen that under RSR the posterior means of covariate effects approximate those of a non-spatial model, and even more so when $y$ is Gaussian and $\beta$ has a flat prior the two estimates are equal. Interestingly, \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta |y]$ if confounding occurs: intuitively, the expectation would be approximately the same of a model ignoring the existence of the spatial component. In terms of interpretation, adding a spatial effect forced to be orthogonal to covariates would not significantly alter the point estimation of covariate effects. 
+
+For this reason, alternative approaches have been sought for in recent year. To our aims, the most useful one is represented by filtering out spatial trends from the explanatory variables. Using a non-parametric correction \citep{Urdangarin24} is particularly convenient to our aims. Before diving into details, we find it useful to discuss another method proposed by \cite{HughesHaran} with the same purpose as RSR, which leverages on the spectral properties of the graph.
 
 A more recent strand of literature criticising RSR has therefore begun developing, starting from \cite{Khan} who proved analytically how RSR yields similar coefficient estimates as nonspatial regression, yet it underestimates coefficient variability, resulting in reduced coverage with respect to nonspatial regression. 
 
@@ -507,15 +458,34 @@ $$
 Where $\boldsymbol{P_\bot}$ is the orthogonal complement to the projection matrix of $\boldsymbol{X}$, i.e. $\boldsymbol{P_\bot} = \boldsymbol{I_{n_y}}-\boldsymbol{X}(\boldsymbol{X}^\top \boldsymbol{X})^{-1}\boldsymbol{X}^\top$ As an example, \href{https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Moran_Eigenvectors.gif}{this gif} shows the structure of the 30 eigenvectors associated with the largest eigenvalues of a Moran operator defined on a set of 4 randomly generated Uniform variables over a $30 \times 30$ regular lattice; the neighbourhood matrix in this case follows the rook criterion (neighbours must share an edge).
 
 
-\subsubsection{Spatial+: Filtering out spatial variability from covariates}
+\subsubsection{Spatial+ and its variants} \label{subsection:Spatial+}
 
-We can recall that, in concept, spatial confounding arises when one or more observed covariates are linearly dependent with an unmeasured covariate, which needs being estimated with a latent spatial model. Both restricted regression and the methodology from \cite{HughesHaran} set some conditions on the latent spatial field. The copernican revolution of treating spatial confounding came from \cite{Dupont}, who proposed, on the contrary, to remove the spatial trend from observed covariates. Authors labelled this methodology as \textit{Spatial+}. The original application of Spatial+ regarded thin plate (TP) splines; authors fitted a TP-spline on the covariate and employed the resulting residual as the new explanatory variable. However, the method can be extended with no effort to areal models, provided the appropriate prior model specification \citep{BayesianSpatial+}.
+We can recall that, in concept, spatial confounding arises when one or more observed covariates are linearly dependent with an unmeasured covariate, which needs being estimated with a latent spatial model. Both restricted regression and the methodology from \cite{HughesHaran} set some conditions on the latent spatial field. The copernican revolution of treating spatial confounding came from \cite{Dupont}, who proposed, on the contrary, to remove the spatial trend from observed covariates. Authors labelled this methodology as \textit{Spatial+}. The original application of Spatial+ regarded thin plate (TP) splines; authors fitted a TP-spline on the covariate and employed the resulting residual as the new explanatory variable. However, the method can be extended with no effort to areal models, provided the appropriate prior model specification \citep{BayesianSpatial+}. 
 
 In Bayesian inference, Spatial+ requires to assume a prior spatial model on covariates. On the one side, this tends to propagate uncertainty \citep{BayesianSpatial+} and complicate the probabilistic structure of the model, as the covariate itself is now treated as a stochastic process. On the other side, modelling assumptions are needed. 
 
-An variant of Spatial+ has recently been proposed to circumvent the specification of a nested parametric model on covariates. In line with \citep{Lamouroux}, we label this method as \textit{Spatial+2.0}.
+A variant of Spatial+ has recently been proposed by \cite{Urdangarin24} to circumvent the specification of a nested parametric model on covariates, though in the specific context of graph-based models. In line with \citep{Lamouroux}, we label this method as \textit{Spatial+2.0}. As we have seen in the previous paragraph, the graph itself can be informative about the spatial structure of a variable defined over it. The Spatial+2.0 method provides a non-parametric solution to spatial confounding which does not add any layer of uncertainty to covariates. The concept of this methodology is based on the spatial trends generated by the smoothest eigenvectors of the Laplacian matrix. 
+
+The intuition that spatial confounding arises when covariates are not independent on the smoothest Laplacian eigenvectors can be traced back to \cite{RHZ} and is also briefly discussed by \cite{Khan}. The use of Laplacian eigenvectors, on the other hand, is a milestone in the spatial clustering culture, as thoroughly discussed by \cite{SpectralClust}. 
+
+A property of the Laplacian matrix is that for any vector $V$ with length $n$ equal to the order of $\boldsymbol{L}$, it holds that $V^\top \boldsymbol{L}V = \sum_{i}^{n} \sum_{j \in \partial_i}\left(v_i - v_j \right)^2$ where $\partial_i$ is the set of neighbours of the $i$-th site. Specifically, if $V$ is chosen as an eigenvector of $\boldsymbol{L}$, this equality implies that 
+\begin{equation}
+\ell = \sum_{i}^{n} \sum_{j \in \partial_i}\left(v_i - v_j \right)^2
+\label{eq:Laplacian_eigenvalue}
+\end{equation}
+where $\ell$ is the Laplacian eigenvalue associated with $V$. Equation \ref{eq:Laplacian_eigenvalue} implies, in turn, that each Laplacian eigenvalue equals the sum of squares of the deviations of each value of the corresponding eigenvector from the average value of its neighbours. Intuitively, small eigenvalues are associated to eigenvectors in which local deviation is small, hence smoother eigenvectors. More specifically, it is possible to observe that the number of oscillations of eigenvectors grows as eigenvalue size grows.
+
+Therefore, in the case $\boldsymbol{\xi} = \boldsymbol{I_n}$, with $n=n_z = n_y$, it is possible to express $\boldsymbol{X}$ as a linear combination of Laplacian eigenvectors, i.e. $\boldsymbol{X} = \boldsymbol{V B}$ for a $n\times p$ matrix $\boldsymbol{B}$. By convention, eigenvalues are sorted in descending order, and associated eigenvectors are ordered consequently. To filter out spatial trends from $\boldsymbol{X}$, let us label the rank deficiency of $\boldsymbol{L}$ as $G$, and consider a value $K$ strictly smaller than $n-G$. Then, we can partition the eigenvector matrix as $\boldsymbol{V} = \left(\boldsymbol{V^{(NS)}}\,\boldsymbol{V^{(S)}}\,\boldsymbol{V^{(0)}} \right)$ where the non-spatial component $\boldsymbol{V^{(NS)}}$ includes the first $n-K-G$ eigenvectors, the spatial component $\boldsymbol{V}^{(S)}$ includes the eigenvectors indexed $\left] n-K-G, n-G\right]$, i.e. the $K$ smallest-frequency non-constant ones, and $\boldsymbol{V^{(0)}}$ is constant across each connected component. Likewise, we can partition the rows of $\boldsymbol{B}$ into $\left( \boldsymbol{{B^{(NS)}}^\top \, {B^{(S)}}^\top \, {B^{(0)}}^\top} \right)^\top$. This partitioning allows us to rewrite the covariate matrix as
+$$
+\boldsymbol{X} = \boldsymbol{X ^{(NS) }} +  \boldsymbol{X ^{(S) }} + \boldsymbol{X ^{(0) }}
+$$
+with $\boldsymbol{X^{(NS)}}=\boldsymbol{V^{(NS)} B^{(NS)}}$, $\boldsymbol{X^{(S)}}=\boldsymbol{V^{(S)} B^{(S)}}$ and $\boldsymbol{X^{(0)}}=\boldsymbol{V^{(0)} B^{(0)}}$. In the regression model, the dependent variable is regressed on $\boldsymbol{X ^{(NS) }} + \boldsymbol{X ^{(0) }}$ or, as in \cite{Urdangarin24}, on $\boldsymbol{X ^{(NS) }}$ alone. If the graph  is connected, no difference arises between the effects of these two covariate matrices as they only differ by an additive constant. 
+
+If $\boldsymbol{\xi} \neq \boldsymbol{I}$, and the observation length of covariates is not the same as $z$, $\boldsymbol{X}$ can be mapped onto the spatial domain of $z$ and this procedure can thus be applied on $\left( \boldsymbol{\xi^\top \xi} \right)^{-1} \boldsymbol{\xi^\top X} $. An application for this case is offered by Chapter \ref{Chapter:Invalsi}. A simpler application in a single-level regression model is shown in Chapter \textcolor{red}{5}.
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{appendices}
 
 \section{Jont distribution of multivariate ICAR}
@@ -542,7 +512,7 @@ z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n_z} \frac{w_ik}{
 Where $C_0$ is an additive constant. Now, with no loss of generality, let us assume $x_i = 0 \,   \forall \, i \in [1,n_z]$, so that numerator elements in equation \ref{eq:brookslemma} can be written as
 %
 \begin{align}
- \ln \pi \left(z_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) =
+ \ln \pi \left(z_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) =\\
  C_0 - \frac{d_i}{2 } \left(z_i   -\sum_{k=i+1}^{n_z} \frac{w_{ij}}{d_i}z_k  \right) ^{\top}
  \boldsymbol{\Sigma}^{-1}  \left(z_i   -\sum_{k=i+1}^{n_z} \frac{w_{ij}}{d_i}z_k  \right)=  \\
  = C_0- \frac{d_i}{2 } \left[ z^{\top}_i \boldsymbol{\Sigma}^{-1} z_i - 
@@ -756,7 +726,88 @@ Hence, with some straightforward algebra, it can be concluded that:
 Which consists of four blocks; three are diagonal and the lower-right one has the same zeroes pattern as $\boldsymbol{L}$.
 
 
+
+
+
+
  
+\section{Expectation of covariate effects and latent fields in Gaussian models} \label{appendix:LGM}
+
+The model in equation \ref{eq:LGM_eps} can be parametrised in a more general way \citep[see e.g.][]{DIC}:
+%
+\begin{equation}
+\begin{aligned}
+y \sim \mathcal{N}_{n_y}
+\left(\boldsymbol{A_1} \vartheta_1, \,
+\tau_{\varepsilon}^{-1} \boldsymbol{I_{n_y}} \right) \\
+\vartheta_1 \sim \mathcal{N}_{n_\vartheta} \left(\boldsymbol{A_2 } \vartheta_2,\,
+\tau_{\varepsilon}^{-1} \boldsymbol{C}\right)
+\end{aligned}
+\label{eq:LGM_y_theta}
+\end{equation}
+%
+Where  $\boldsymbol{A_1} = \left(\boldsymbol{X} \, \boldsymbol{\xi} \right)$ is the model matrix, $\vartheta_1 = (\beta^{\top} z^{\top})^{\top}$ is the vector of parameters, and $n_\vartheta = n_z + p$. The term $\boldsymbol{A_2} \vartheta_2$ has by construction both mean and variance zero. Moreover,
+$$ 
+\boldsymbol{C}^{-1} = \tfrac{\tau}{\tau_{\varepsilon}} \begin{pmatrix}
+ \frac{1}{\tau N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\
+ \boldsymbol{0_{n_z \times p}} & \boldsymbol{R}
+\end{pmatrix}
+$$
+
+Since the error term $\varepsilon$ and the latent effects $z$ have different precision parameters, the matrix $\boldsymbol{C}^{-1}$ cannot be considered known. To see this, consider the prior precision of the spatial effects defined as $\tau \boldsymbol{R}$; $\tau_{\varepsilon} \boldsymbol{C}^{-1}$ must thus be structured as $\begin{pmatrix} \frac{1}{N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\ \boldsymbol{0_{n_z \times p}} & \tau \boldsymbol{R} \end{pmatrix}$ where $N$ is the known variance parameter of $\beta$, but $\tau$ is unknown and isolating $\tau$ to express $\tau_{\varepsilon} \boldsymbol{C}^{-1} = \tau \begin{pmatrix}
+ \frac{1}{\tau N} \, \boldsymbol{I_p} & \boldsymbol{0_{p \times n_z}} \\ \boldsymbol{0_{n_z \times p}}& \boldsymbol{R}
+\end{pmatrix}$ would leave it dependent on an unknown parameter.
+
+
+Now, it is possible to show \citep{LindleySmith} that the posterior mean of $\vartheta_1$, conditional on the model hyperparameters, is
+%
+\begin{equation}
+\mathbb{E}[\vartheta_1 | y, \tau, \tau_{\varepsilon}] =
+\left( \boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C^{-1}} \right)^{-1}\boldsymbol{A_{1}^{\top}}y
+\label{eq:exp_theta}
+\end{equation}
+%
+We can thus define the hat matrix as:
+$$
+\boldsymbol{H}:=\boldsymbol{A_1} \left(\boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C^{-1}} \right)^{-1}\boldsymbol{A_{1}}
+$$
+Based on how we defined $\boldsymbol{A_1}$ and $\boldsymbol{C}$, notice that
+\begin{equation}
+\begin{aligned}
+\left( \boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C}^{-1} \right)^{-1} = 
+\begin{pmatrix}
+ \boldsymbol{X ^\top X} + r_{\varepsilon} \boldsymbol{I_p} & \boldsymbol{X}^{\top} \boldsymbol{\xi} \\
+ \boldsymbol{\xi} ^{\top} \boldsymbol{X} & \boldsymbol{\xi}^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R}
+\end{pmatrix}^{-1} = \\ = 
+\begin{pmatrix}
+\boldsymbol{G^{-1}} + \boldsymbol{G^{-1}} \boldsymbol{X}^{\top} \boldsymbol{\xi} \boldsymbol{S_{11}}^{-1} \boldsymbol{\xi} ^{\top} \boldsymbol{XG}^{-1} & 
+-\boldsymbol{G}^{-1} \boldsymbol{X}^{\top} \boldsymbol{\xi} \boldsymbol{S_{11}}^{-1}\\
+-  \boldsymbol{S_{11}}^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} & 
+ \boldsymbol{S_{11}}^{-1}
+\end{pmatrix}
+\end{aligned}
+\label{eq:invert_for_hat}
+\end{equation}
+%
+Where $\bar{r}$, $r_\varepsilon$, $\boldsymbol{G}$ and $\boldsymbol{S_{11}}$ have been defined in equation \ref{eq:auxiliary}; the matrix $\boldsymbol{S_{11}} := (\boldsymbol{\xi} ^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R} - \boldsymbol{\xi} ^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top}\boldsymbol{\xi})$ is the Schur complement \citep[][paragraph 0.7.3]{HornJohnson} of the upper-left block in $\left(\boldsymbol{A_1}^\top \boldsymbol{A_1} + \boldsymbol{C}^{-1}\right)^{-1}$, $\bar{r} := \dfrac{\tau}{\tau_{\varepsilon}}$.
+
+Putting equations \ref{eq:exp_theta} and \ref{eq:invert_for_hat}, the posterior expectation of $\vartheta_1$ conditional on hyperparameters, as detailed in equations \ref{eq:expbeta} and \ref{eq:expzeta} follows as a mere exercise of algebra. 
+
+We can equivalently obtain the projection matrix or hat matrix. For notation brevity, let us define $\boldsymbol{\Gamma}= \boldsymbol{\xi} ^{\top} \boldsymbol{\xi} + \bar{r} \boldsymbol{R} - \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top} \boldsymbol{\xi}$. Then, the hat matrix reads:
+\begin{equation}
+\begin{aligned}
+\boldsymbol{H_{\tau_{\varepsilon}, \bar{r}}} =
+\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} +
+\boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} -
+\boldsymbol{XG}^{-1}X^{\top} \boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} -
+\boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top}\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} +\\
++\boldsymbol{XG}^{-1}\boldsymbol{X}^{\top} \boldsymbol{\xi \Gamma}^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{XG}^{-1}\boldsymbol{X}^{\top}
+\end{aligned}
+\label{eq:projmat}
+\end{equation}
+Where the subscript $\tau_e, r$ denotes the dependence on the two precision parameters. 
+
+
 \end{appendices}
 
 
@@ -765,7 +816,7 @@ Which consists of four blocks; three are diagonal and the lower-right one has th
 %
 %
 %% ------------------------------------------------------------------------------ %%
-%% --------                   Second Chapter                 --------------------- %%
+%% --------                   Second Chapter                 -------------------- %%
 %% ------------------------------------------------------------------------------ %%
 \chapter[INLA]{The INLA and Gaussian Markov Random Fields} \label{chapter:INLA}
 %
@@ -1367,9 +1418,9 @@ The \texttt{SchoolDataIT} package is intended as a contribution to a broader rep
 
 Data providers are the Italian Ministry of Education (formerly MIUR, Ministry of Education, University and Research) \citep{MIUR}, the Institute for the Evaluation of the Education System (hereinafter Invalsi) \citep{Invalsi_IS}, the Italian National Institute of Statistics \citep[ISTAT,][]{InnerAreas, Situas, Shapefiles}, and the in-house company Infratel SPA on behalf of the Italian Ministry of Enterprises and Made in Italy \citep[MIMIT,][]{BB}, which is responsible of implementing and managing the ultra-broad band strategic plan. Since all of the data we take as input are open and publicly accessible, we retrieve them via web scraping, allowing for real-time updated inputs while requiring no storage space in the local machine of the user.
 
-The \texttt{SchoolDataIT} software is currently available under version 0.2.8, released on October 2nd 2025 on the Comprehensive R Archive Network \href{https://cran.r-project.org/web/packages/SchoolDataIT/index.html}{(CRAN)}. To ensure constant package maintenance, experimental versions are hosted on \href{https://github.com/lcef97/SchoolDataIT}{my GitHub webpage}.
+The \texttt{SchoolDataIT} software is currently available under version 0.2.12, released on December 17th 2025 on the Comprehensive R Archive Network \href{https://cran.r-project.org/web/packages/SchoolDataIT/index.html}{(CRAN)}. To ensure constant package maintenance, experimental versions are hosted on \href{https://github.com/lcef97/SchoolDataIT}{my GitHub webpage}.
 
-The remainder of this chapter is structured as follows. In Section \ref{section:SchoolDataIT:Overview}, we offer a concise yet comprehensive overview of the infrastructural state of Italian schools in light of the scientific literature on the national case and on official documents from the Ministry. In Section \ref{section:Workflow}, we describe in detail the structure of the library and the most relevant functions made available for the users. In Section \ref{section:Data}, we describe the datasets that can be accessed through the package, while including some relevant examples and potentiality. Finally, in Section \ref{section:Example}, an empirical exercise involving the implementation of Bayesian spatial regression models is presented to investigate the student outcomes across the Italian territory.
+The remainder of this chapter is structured as follows. In Section \ref{section:SchoolDataIT:Overview}, we offer a concise yet comprehensive overview of the infrastructural state of Italian schools in light of the scientific literature on the national case and on official documents from the Ministry. In Section \ref{section:Workflow}, we describe in detail the structure of the library and the most relevant functions made available for the users. Section \ref{section:Scraping} provides some usage notes and describes how web scraping is carried out. In Section \ref{section:Data}, we describe the datasets that can be accessed through the package, while including some relevant examples and potentiality. Finally, in Section \ref{section:Example}, an empirical exercise involving the implementation of Bayesian spatial regression models is presented to investigate the student outcomes across the Italian territory.
 
 
 \section{School infrastructure in Italy} \label{section:SchoolDataIT:Overview}
@@ -1426,8 +1477,25 @@ The function \texttt{\detokenize{Set_DB}} merges one or more datasets from any p
 Lastly, the \texttt{\detokenize{Map_}} functions render aggregated data with static or dynamic choropleth maps. Notice that the former employs the \texttt{ggplot2} \citep{ggplot} environment for graphical representation, allowing a simplified export. Interactive maps, obtained through the \texttt{leaflet} \citep{leaflet} and \texttt{mapview} \citep{mapview} libraries, preserve all the information of the dataset to be rendered. Spatial geometries used for mapping are provided by the Italian Institute of Statistics through specific shape files \citep{Shapefiles}.
 
  
+%% -------- CRAN ---------------------------------------- %%
+\section{Static web scraping} \label{section:Scraping}
+\textcolor{blue}{R packages can be easily distributed and made available to the general public. For instance, the integrated development environment (IDE) R-Studio \citep{RStudio}, which is frequently employed by R users, even provides a window dedicated to sharing working directories on GitHub, hence R packages can be posted on GitHub and downloaded via the R function \texttt{\detokenize{devtools::install_github(...)}}. While this is the most practical approach on the developer side, on the user side we deem more effective to employ the canonical repository of \texttt{R} extensions, namely the CRAN archive. \texttt{R} packages can be download from CRAN immediately and the fact of being hosted on CRAN guarantees user safety automatically. Since \texttt{R} is compatible with several operating systems, so must be all packages hosted on CRAN. This is ensured with the remote checks \citep[][Chapter 22]{RPackages} constantly run on 13 different operating systems; checks fail each time an exported function crashes or returns any error, or if the package exceeds the size of 5 megabytes. As soon as the package violates the checks on any operating system, an alert is sent to maintainers who are given 10-15 days to solve all issues, otherwise the package is removed from CRAN.} 
 
-\section{TBD: the CRAN package}
+\textcolor{blue}{Avoiding system crashes is a particularly sensible issue when \texttt{R} interferes with external programs or even more so with internet navigation. The present package relies on scraping static data objects from the web, hence it operates two requests. The first one consists in looking for the hyper-references in the data provider webpage. The second consists in downloading the relevant object including the data to retrieve. An insufficient but necessary condition to send web requests is the availability of a working internet connection. The \texttt{AutoAbort=TRUE} option of \texttt{\detokenize{Get_}} functions is used to abort the whole operation when connection lacks; otherwise the user will be asked to give the system some time to wait for a connection to be established by using the R command line. }
+%The message has this appearance:
+%\begin{verbatim}
+%There seems to be no internet connection. Would you wait or abort the operation? 
+%    - To hold on for any number of seconds, press the corresponding number 
+%    - To abort the operation, press `A`
+%\end{verbatim}
+%\tex
+
+
+\textcolor{blue}{In versions until \texttt{0.2.12}, the HTML structure of the source page is inspected using either \texttt{\detokenize{xml2::read_html()}}\footnote{The \texttt{rvest} package also features a function with the same name. It is basically a wrapper to the \texttt{xml2} function which is called internally} or \texttt{\detokenize{httr::GET()}}. In the experimental \texttt{0.2.13}, instead, we are switching towards the latter request handler in almost retrieval functions due to a slightly lower computational time. The only exception is \texttt{\detokenize{Get_BroadBand()}}, for which the \texttt{httr} function is less robust. Differences in functions performance are driven by specific factors of the web pages to be scraped. Due to several server-side problems (e.g. the web address has been changed or for any reason the website architecture has changed), the HTML may happen not to be read correctly; in this case, the software is left with a total of 10 attempts; after that, the operation is aborted. If the webpage has been inspected correctly, the data objects are found among the attributes with anchor tag \texttt{\detokenize{<a>}} \citep{munzert2015automated}. These elements are filtered through the function \texttt{\detokenize{rvest::html_nodes("a")}}. Among all anchored nodes, data objects can be accessed via a static link; therefore the next step is filtering hyper-references tags with \texttt{\detokenize{rvest::html_attr("href")}}. Some other filters may be necessary to locate the exact link to the data source. Once the data source is identified, if it is a \texttt{.csv} file it can be read automatically from \texttt{R} from the raw file; if it is compressed in a \texttt{.zip} archive, as e.g. the shapefiles, it needs being downloaded and hosted in a temporary repository on the user local machine, which is removed after the operation is done. If any error occurs during the input file reading, the user is informed and the operation is aborted. A feature of an \texttt{R} package eligible for CRAN is that aborted operations do not result in \texttt{ERROR}s, but the function returns a \texttt{NULL} output. In the \texttt{R} developers jargon, this "emergency landing" procedure is known as \texttt{graceful failure} and if not properly implemented may easily cause remote check failures.}
+
+\textcolor{blue}{Another requirement from CRAN is limiting the number of dependencies, namely the number of packages imported \cite[][chapter 11]{RPackages}. No more than 20 dependencies are typically allowed. Except for shapefiles, most input data objects are originally provided as \texttt{.csv} files, which can be read with some functions from the \texttt{readr} package. Two datasets are provided in \texttt{.xlsx} format (i.e. excel files). In this case, \texttt{readr} is not sufficient anymore. The most conservative approach is unzipping the excel files and parsing the underlying \texttt{.xml} structure. This is feasible for the inner areas taxonomy, which is a relatively small worksheet, but becomes computationally intensive when dealing with the broadband dataset. In this case, we resort to \texttt{readxl} if it is already included in the user library, otherwise the slower unzipping procedure is activated. This allows us to list \texttt{readxl} among suggested packages and keep the number of dependencies as low as possible. }
+
+
 %% -------- Data ---------------------------------------- %%
 \section{The Italian Education System Data} \label{section:Data}
 This section describes the main datasets currently retrieved and handled by the package. For the school infrastructure system evaluation, the most valuable public source of information is the Unique School Data Portal \citep{MIUR}, an open data portal managed by the Italian Ministry of Education according to Law 107/2015 \citep{law2}. The National Schools Registry (Section \ref{par:registry}), the school buildings database (\ref{par:buildings}) and the counts of students and teachers (\ref{par:nstud}) are all provided through this website. Another relevant aspect of school infrastructure assessment is the implementation of ultra-broadband connection, whose timeline, available through the ultra-broadband activation dashboard, provided by \cite{BB} has been included in the package as well.
@@ -2174,24 +2242,18 @@ $$
 x_{ih;m} = \bar{x}_{i;m} + \Delta x_{ih;m}
 $$
 being $\bar{x}_{i;m}$ the unweighted average value of the covariate within the $i$-th macro-area; the term $\Delta x_{ih;m}$ represents municipality-level noise. In matrix form, this decomposition is: $\boldsymbol{X}= \xi \bar{\boldsymbol{X}} + \boldsymbol{\Delta X}$, where $\bar{\boldsymbol{X}} = (\xi ^{\top} \xi)^{-1} \xi^{\top} \boldsymbol{X}$.
-
-Consider the eigendecomposition of the Laplacian matrix \citep{Urdangarin24}: 
+We can then apply the Spatial+2.0 procedure \citep{Urdangarin24} described in Section \ref{subsection:Spatial+}. Consider the eigendecomposition of the Laplacian matrix:
 $$
 \boldsymbol{L} = \boldsymbol{V \Gamma V}^{\top}
 $$
 where the eigenvalues in $\boldsymbol{\Gamma}$ are in decreasing order and the eigenvectors in $\boldsymbol{V}$ have a decreasing number of oscillations. 
 
 Within a generic component of the connected graph, the eigenvector associated with the lowest non-null eigenvalue follows a linear spatial trend (i.e. the Fiedler vector of the relevant subgraph), the one related to the second non-null eigenvalue follows a quadratic trend (one oscillation), and so on.
-For an appropriately chosen $n \times 4$ matrix $\boldsymbol{b}$, $\boldsymbol{\bar{X}}$ can be expressed as a linear combination of $\boldsymbol{V}$:
-$$
-\boldsymbol{\bar{X}} = \boldsymbol{Vb}
-$$
-Intuitively, the spatial component of $\boldsymbol{\bar{X}}$ is determined by the last columns of $\boldsymbol{V}$ \citep{Urdangarin24}: without loss of generality, $\boldsymbol{\bar{X}}$ is decomposed into:
+For an appropriately chosen $n \times 4$ matrix $\boldsymbol{B}$, we have $\boldsymbol{\bar{X}} = \boldsymbol{VB}$, and the spatial component of $\boldsymbol{\bar{X}}$ is thus determined by the last columns of $\boldsymbol{V}$ \citep{Urdangarin24}: without loss of generality, $\boldsymbol{\bar{X}}$ is decomposed into:
 $$
 \boldsymbol{\bar{X} }= \boldsymbol{\bar{X}^{(NS)}} + \boldsymbol{\bar{X}^{(S)}} +\boldsymbol{ \bar{X}^{(0)}}
 $$
-where $\boldsymbol{\bar{X}^{(NS)}}$ is the nonspatial component, given by the linear combination of the first $n-G-K$ eigenvectors (with $G=3$ connected graph components), $\boldsymbol{\bar{X}^{(s)}}$ is the combination of the eigenvectors associated with the last $K$ nonzero eigenvalues and represents the spatial component, and $\boldsymbol{\bar{X}^{(0)}}$ is the combination of the $G=3$ eigenvectors in the null space of the Laplacian matrix, constant within each connected component. 
-To remove spatial confounding, it is sufficient to consider $\xi \left(\boldsymbol{\bar{X}^{(NS)}} \right) + \boldsymbol{ \Delta X}$ as the covariate matrix in the regression model. 
+where $\boldsymbol{\bar{X}^{(NS)}}$ is the nonspatial component, given by the linear combination of the first $n-G-K$ eigenvectors (with $G=3$ connected graph components), $\boldsymbol{\bar{X}^{(s)}}$ is the combination of the eigenvectors associated with the last $K$ nonzero eigenvalues and represents the spatial component, and $\boldsymbol{\bar{X}^{(0)}}$ is the combination of the $G=3$ eigenvectors in the null space of the Laplacian matrix, constant within each connected component. To remove spatial confounding, it is sufficient to consider $\xi \left(\boldsymbol{\bar{X}^{(NS)}} \right) + \boldsymbol{ \Delta X}$ as the covariate matrix in the regression model. 
 
 For the present data, the Spatial+2.0 methodology implies a shift in the value of explanatory variables by an additive correction defined at the macro-area level, namely $\boldsymbol{\bar{X}^{(S)}} + \boldsymbol{\bar{X}^{(0)}}$. For instance, for a generic $h$-th covariate the corresponding deconfounded values are $x_{i;h} -x_{i;h}^{(S)}-x_{i;h}^{(0)}$. Subsequently, to allow model comparisons addressed in Section \ref{Par:results}, deconfounded covariates are scaled to have the same global variance as the input ones.
 
@@ -2551,6 +2613,374 @@ For what concerns the nonspatial model, explaining $y$ without a spatial latent 
 \end{appendices}
 
 
+
+\chapter{Investigating access to support centers for Violence Against Women in Apulia: A Spatial analysis over multiple years}
+\section{Introduction}\label{sec.1}
+
+Violence against women (VAW) is a widespread violation of human rights and a form of gender-based discrimination, encompassing acts that cause or risk causing physical, sexual, psychological, or economic harm. As recognised by the Istanbul Convention \citep{IstaCon2011}, this structural issue is deeply tied to persistent gender inequalities worldwide, making accurate data essential for understanding its scale and developing effective policies. Despite this need, tracking gender-based violence remains challenging. In Italy, legislative initiatives such as Law No. 53/2022 \citep{GU2022} underscore the importance of systematic data collection for prevention, yet data sources remain fragmented, often outdated, and not easily accessible. Stigma and under-reporting further hinder accurate quantification, as many survivors fear social repercussions, blame, or disbelief. Local Anti-Violence Centers (AVCs), established under Italian Law No. 119/2013 \citep{GU2013}, play a crucial role in supporting victims through a holistic array of services, starting from consultancy and including psychological support, legal assistance, and sheltering, while also documenting cases of abuse. 
+
+As stressed by \cite{Toffanin2020}, a distinctive feature of AVCs is establishing intimate trust and promoting the subjectivity and the active role of women seeking help, instead of substituting to them in their decisional processes. Taking into account also the exclusive participation of women as AVC workers and the outworks activities carried out, such as training activities for health and social operators, law enforcement and lawyers or cultural initiatives \citep{ISTAT2023}, qualifies AVCs not as mere service providers, but as core political actors in the process of combating systematic gender-based violence. % perpetrated by men. 
+In addition, it is worthwhile to notice that both aims and operating modes of AVCs belong to a different conceptual level than judicial measures; hence, we deem that the access to AVCs deserves a dedicated, standalone analysis, not to be confused with the well-developed debate on violence reporting. 
+
+In 2017, the Italian National Institute of Statistics (ISTAT) started monitoring the activity of AVCs \citep{ISTAT2023}, %. and support participation in the ISTAT experimental survey, conducted nationally since 2020 in collaboration with the DPO (Dipartimento delle Pari Opportunit\`{a}, Presidenza del Consiglio). 
+%The ISTAT survey aims to 
+capturing the scope and characteristics of violence experienced by women seeking help across the national territory. From then until 2023, the number of AVCs active over the national territory increased by 43.8\%, with 404 AVCs operative in 2023. Similarly, the number of women accessing them increased by 41.5\% (ibidem). This information may suggest that the expansion of AVC activity encourages women victims of violence to seek help and find a way out of violence and abuse.
+%
+Records from AVCs provide valuable information on victim demographics and violence patterns \citep{Toffanin2020}, enabling investigation of the distribution of the phenomenon at the territorial level and allowing us to assess how local socioeconomic factors affect the occurrence and reporting of VAW.
+
+As the process of finding a way out of violence may start with seeking help from AVCs \citep{CAV2024report} and, more generally, from sheltering structures, the importance of shelter accessibility emerges immediately. On the one hand, a solution is provided by the availability of local help desks, which operate under the control of the AVCs and are widely distributed across the territory. On the other hand, the isolation of peripheral areas and the resulting lower accessibility to shelters may be hindering help-seeking, as noticed by \cite{peek2011rural}. In addition, \cite{Denti2022} found strong evidence that local support services in the United Kingdom have a positive impact on gender-based violence reporting, even when controlling for the implementation of nationwide measures. Similarly, in Italy, \cite{Bettin} examined the \textit{Codice Rosa} initiative (a triage code dedicated to hospitalising VAW victims) and anti-stalking help desks, highlighting the significant impact of the former on violence reporting nationwide.
+
+Building on this evidence, we investigate how local disparities in the accessibility of AVCs may shape women’s capacity to seek help and escape situations of violence.
+%
+To this end, we propose a territorial analysis of accesses to AVCs within the Apulia region (Southern Italy) in years 2021--2024, detailed by the origin municipality of women seeking help, by means of a Bayesian hierarchical spatio-temporal Poisson regression model \citep{martinez2008autoregressive}. We investigate the association of AVC accesses with both the distance from AVCs and help desks, and a set of socio-economic indicators employed to define the Municipality Frailty Index provided by the ISTAT \footnote{\label{note:MFI} Available on the ISTAT website \url{https://www.istat.it/comunicato-stampa/aggiornato-indice-di-fragilita-comunale/}}.
+
+The inherent spatial dependence in the data suggests us to consider a latent spatial process, explicitly modelled through four competing spatial structures: the Intrinsic Conditional Autoregressive model \citep[ICAR,][]{Besag1995}, the Proper Conditional Autoregressive model \citep[PCAR,][]{Gelfand2003}, the Leroux Conditional Autoregressive model \citep[LCAR,][]{Leroux1999} and the Besag, York and Molli\'{e} convolution model \citep[BYM,][]{Besag1991, BYM2}. 
+%
+These spatial models depend in turn on an additional layer of hyperparameters, which require a prior distribution setup. Here, following the principle of parsimony, we set hyperpriors in such a way to penalise departures from the corresponding non-spatial models. This can be done intuitively and flexibly through the Penalised Complexity prior (PC-prior) approach, developed by \cite{PC}. Since, to the best of our knowledge, for the hyperparameters controlling the strength of spatial association in the PCAR and LCAR models the PC-prior has not been employed yet, we compare the results of the full PC-prior specification with a hybrid setup in which only this parameter is assigned a Uniform distribution.
+
+Explicitly accounting for unmeasured spatial variability may cause confounding with some explanatory variables, when the latter show a spatial trend, as it implies some confounding bias in the estimation of the effects of such covariates \citep{RHZ}. For those covariates whose effects mostly differ between a nonspatial and the corresponding spatial regression model, we mitigate this bias by reducing the effect of the spatial trend. This is obtained by a simplified version of the Spatial+ method \citep{Dupont} that captures the spatial trends through the lowest-frequency eigenvectors of the graph Laplacian matrix \citep{Urdangarin24}.
+
+Model estimation is carried out within the Integrated Nested Laplace Approximation \citep[INLA,][]{INLA, VBINLA2023}, which enables computationally efficient Bayesian inference and model selection based on the Watanabe-Akaike Information Criterion \citep[WAIC,][]{GelmanWAIC}. 
+
+The spatial patterns of reported violence related to access to AVCs in Apulia allow us to identify differences in prevalence rates and evaluate the adequacy of available services. Specifically, the study region is characterised by significant socioeconomic disparities \citep{PROMETHEEII}, including variations in economic development, infrastructure, and service accessibility. This circumstance, together with the high level of territorial detail in available data provided by the Regional Statistical Office, makes Apulia an ideal case study to investigate how such factors affect the search for AVC assistance. 
+
+The remainder of this paper is structured as follows: section \ref{sec.2} introduces the data set of accesses to AVCs in Apulia and relevant explanatory variables, section \ref{sec.3} describes the Bayesian space-time statistical modelling framework and provides some generalities on the proposed PC-priors, section \ref{sec:imple} accounts for some practical implementation issues and summarises the strategy to prevent spatial confounding, section \ref{sec:results} provides some results of posterior inferences and interpretative comments.
+
+\section{The Apulia Region data}\label{sec.2}
+%\subsection{Data description}\label{sec.subsection1}
+
+This study focuses on the number of accesses to AVCs in the municipalities of the Apulia region over the years 2021 -- 2024. Data are collected by the Statistical Section and the Welfare Department of the Apulia Region as part of a systematic monitoring program established under Regional Law No. 29/2014. Since 2013, all AVCs have been required to submit annual reports detailing women’s access to support services to monitor the effectiveness of the service and identify local problems. The resulting data collection and processing activities contribute to the Regional annual reports \citep{CAV2024report}.
+
+To avoid considering duplicate data records, we only retain reports of violence that are directly managed by each center, excluding those that are redirected to other services or centers. In Apulia, the total number of women supported by AVCs was 1477, 1516, 1822, 1778 over the four years in scope.
+%
+Fig.~\ref{fig:log_access} shows the incidence of AVC accesses (obtained as the count of accesses over the female population aged $>14$ years) across Apulian municipalities in the 4 years on the logarithmic scale, alongside with the municipalities with at least one operating AVC. White areas correspond to zero counts (in 2022, the center in San Severo (FG) was active, but no access results by women residing there). This map suggests a heterogeneous spatial pattern of access, with slightly higher values for coastal municipalities, indicating potential differences in the population, infrastructure, and service availability between coastal and inland areas.
+
+\begin{figure}[ht]
+\centering
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig1.pdf}} 
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig2.pdf}}\\
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig3.pdf}}
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig4.pdf}} 
+\caption{Log-incidence of AVC accesses. White areas correspond to zero counts. Points correspond to municipalities hosting at least one AVC.}\label{fig:log_access}	
+\end{figure}
+
+To investigate the association of access rates with potential drivers at the municipal level, a set of candidate explanatory variables is considered. First, we employ the distance of women's residence municipalities from the closest municipality hosting either an AVC or a help desk; between-municipalities road distances are provided by ISTAT\footnote{Data retrieved from \url{https://www.istat.it/notizia/matrici-di-contiguita-distanza-e-pendolarismo/}}.
+%
+Considering the deep link between socio-economic vulnerability and both the occurrence and reporting of gender-based violence, investigated in depth by \cite{bettio2017violence}, an additional set of explanatory variables has been selected amid the components of the Municipality Index of Fragility (IFC) referring to year 2021 (source Istat$^1$). These variables capture multiple dimensions of local vulnerability, such as economic deprivation, demographic imbalance, and social marginalisation. Including them in the analysis allows us to account for the contextual conditions that may influence both the risk of experiencing violence and the likelihood of seeking help. For instance, areas characterised by higher unemployment, ageing populations, or weaker social support networks may exhibit lower reporting rates or different help-seeking patterns. These aspects will be further discussed with the results of the proposed model estimation. However, among the available indicators, we excluded the distance of each municipality from the closest infrastructural pole due to the high correlation with the distance from AVCs (71\%), which in the scope of this analysis appears to be a more informative variable. This high correlation is intuitive, as AVCs are typically located in larger municipalities corresponding to infrastructure hubs.
+%
+The set of explanatory variables considered henceforth is summarised in Table \ref{tab:covars}.
+
+\begin{table}[!ht]
+\caption{Relevant explanatory variables}
+\begin{tabular}{l l p{9cm }} 
+\hline
+Variable & Unit & Description\\
+\hline
+AVC\_dist & Minutes& Road travel time to the closest municipality hosting an AVC\\
+Desk\_dist & Minutes & Road travel time to the closest municipality hosting a help desk\\
+ELI & Ventile & Share of employees in low productivity units in the fabric and services sectors. Labour productivity is given by the ratio of value added per employee and is considered low if smaller than its first quartile. \\
+PGR & Rate & Population growth rate in years 2011--2021, i.e. total net migration in 2011--2021 over resident population at the end of 2011. \\
+UIS & Ventile & Density of economic production units, i.e. the ratio between the stock of active business companies over the total population \\
+ELL & Percentage & Percentage of people aged 25--64 with low education level, i.e. no more than middle school or vocational schools\\
+PDI & Percentage & Structural dependency index, i.e. population aged $[0-19]$ or $>64$ over population aged 20--64\\
+ER & Percentage & Employment rate among population aged 20--64\\
+\hline
+\end{tabular}
+\label{tab:covars}
+\end{table}
+
+
+
+
+\section{Space-time Poisson models}\label{sec.3}
+
+The counts of women residing in each Apulian municipality accessing AVCs within a given year are modelled via Poisson ecological regression. For a generic year $t \in \lbrace 2021, \dots, 2024 \rbrace$, we denote the count of women from municipality $i \in \lbrace 1, \dots, 256 \rbrace$ accessing an AVC as $y_{i,t}$, and model it as follows:
+%
+$$
+y_{i, t} \sim \mathrm{Poisson}(P_{i,t} \,e^{ \eta_{i,t} })
+$$
+%
+where $P_{i,t}$ is the female population aged $>14$ years\footnote{Data retrieved from ISTAT at: \url{http://dati.istat.it/Index.aspx?DataSetCode=DCIS_POPRES1}} and $\eta_{i,t} := \beta_{0, t} +X_{i,t}^{\top}\beta + z_{i,t}$ is the linear predictor; $X_{i,t}$ is a vector of covariates described in Table \ref{tab:covars}. The only covariate changing over time is the distance from AVCs, as the components of the MFI are not computed yearly, and only the list of help desks in 2024 was available.
+%
+Moreover, $\beta$ is a vector of constant covariate effects, $\beta_{0,t}$ are time-dependent intercepts and $z_{i,t}$ is a realisation of a latent spatio-temporal field $Z = (Z_{1}^\top, \dots, Z_{T}^\top)^{\top}$, modelled as a type IV interaction term, namely a latent field both spatially and temporally structured \citep{KnorrHeld}. Specifically, we assume a lag-1 temporal dependence, and model $Z$ as follows:
+%
+\begin{equation}\label{eq:AR1}
+\left \{ \begin{array}{ll}
+ Z_t = r Z_{t-1} + \nu_t  \quad \text{for} \quad t=2,\dots, T\\
+\nu_t \sim \mathcal{N}_n\left(0, \sigma^2_t \Omega_ t\right)  \quad \text{for} \quad t=2,\dots, T\\
+Z_1 \sim \mathcal{N}_n \left( 0, \frac{1}{1-r^2}\sigma^2_1 \Omega_1 \right)
+\end{array} 
+\right.
+\end{equation}
+\label{eq:ST}
+%
+where $\nu_t$ is a spatially structured Gaussian random field taking values over a graph of order $n$, described by the symmetric and positive semi-definite variance-covariance matrix $\Omega_t$, $\sigma^2_t$ is a marginal variance parameter and $r$ is a temporal correlation parameter. Here, the nodes of the reference graph are the $n=256$ Apulian mainland municipalities, and its edges are the links between pairs of neighbouring municipalities. 
+This rather general model formulation allows the $\Omega_t$ matrices to depend on time-varying parameters, thus providing a special case of the more general multivariate M-models \citep{MMod}. If instead we assume $\sigma^2_1 = \dots=\sigma_T^2=\sigma^2$ and $\Omega_1 = \dots = \Omega_T=\Omega$, the model reduces to the stationary AR(1) spatio-temporal model outlined by \cite{martinez2008autoregressive}. In this case, the joint distribution of $Z$ then reduces to
+%
+$$
+Z \sim \mathcal{N}_{T\times n} \left(0, \frac{\sigma^2}{1-r^2}R \otimes \Omega \right)
+$$
+%
+where $R$ is the AR(1) correlation matrix of size $T \times T$ with elements $R_{st}=r^{\mathrm{abs}(s-t)}$ for $s, t \in [1,T]$.
+%
+This constitutes a simplification of a more general multivariate spatial model in which $k$ marginal variances and $k(k-1)/2$ correlations are employed.
+%
+Since we have no prior information justifying a temporal variation in the parameters of the spatial component of the latent field, we follow this latter approach and assume the distribution of $\nu_t$ in equation \ref{eq:ST} is stationary over time. 
+%
+This spatio-temporal model employs only one scale parameter $\sigma^2$ and one correlation parameter $r$, resulting in a simplified between-years variance-covariance matrix and a sparse between-years precision.
+
+\subsection{Spatial structures}
+
+The regression model outlined in the previous section features a spatial component described by the matrix $\Omega$. In this study, we compare four alternative spatial models, corresponding to as many specifications of the matrix $\Omega$:
+
+\textbf{Intrinsic Conditional Auto Regressive} \citep[ICAR,][]{Besag1995} 
+\begin{equation}\label{eq:ICAR}
+\Omega := L^+=(D-W)^+
+\end{equation}
+where $L^+$ is the Moore-Penrose pseudoinverse of the $n \times n$ Laplacian matrix of the graph $D-W$, $W$ is the binary neighbourhood or adjacency matrix, with $w_{ij} = 1$ if municipalities $i$ and $j$ share a border and $w_{ij}=0$ otherwise and by convention, $w_{ii}=0$; $D$ is the diagonal degree matrix, in which for each $i = 1, ..., n$, $d_{ii} = \sum_{j=1}^n w_{ij}$. To make this model identifiable, we constrain $Z_t$ to sum to zero for each $t$.
+\\
+
+\textbf{Proper Conditional Auto Regressive} \citep[PCAR,][]{Gelfand2003} 
+\begin{equation}\label{eq:PCAR}
+\Omega := (D - \rho W)^{-1}
+\end{equation}
+A more flexible extension of the ICAR in which the autocorrelation parameter $\rho \in [0, 1]$ is introduced to control the strength of spatial association; the limit case for $\rho = 1$ is the ICAR, while $\rho = 0$ implies an independent but not identically distributed Gaussian random field. Even though this model does not require the sum-to-zero constraint, we apply it in analogy with other models to make results comparable. 
+\\
+
+\textbf{Leroux proper Conditional Auto Regressive} \citep[LCAR,][]{Leroux1999} 
+\begin{equation}\label{eq:LCAR}
+\Omega := \left(\lambda L + (1-\lambda) I_n \right)^{-1}
+\end{equation}
+Another extension of the ICAR introducing the precision mixing parameter $\lambda \in [0, 1]$; the limit case for $\lambda = 1$ is again the ICAR, while for $\lambda = 0$ the model reduces to an IID Standard Normal field. Even though this is not a singular model, we follow \cite{Goicoa} and apply the sum-zero constraint to ensure that the model is identifiable and that no confounding occurs with the intercept. 
+
+\textbf{Besag-York-Mollié} \citep[BYM,][]{Besag1991,BYM2}  
+\begin{equation}\label{eq:BYM2}
+Z_t = \sigma \sqrt{\phi}U_t + \sigma \sqrt{1-\phi} V_t
+\end{equation}
+Here $U_t$ is an ICAR process with precision matrix given by the scaled Laplacian matrix, say $L_s$ \cite{Sorbye, BYM2}, obtained multiplying $L$ by a constant factor. This is required to ensure that $L_s^+$, representing the variance-covariance matrix of the ICAR component, is such that the geometric mean of the diagonal is equal to one; scaling allows $\sigma^2$ to be correctly identifiable and interpretable. $V_t$ is a standard IID process, such that $V_t \sim \mathcal{N}_n(0, I_n)$. It can be seen that in this case $\Omega = \phi L_s^+ + (1-\phi)I_n$. $\phi$ is the variance mixing parameter, and is interpreted as the share of variability explained by the spatial stochastic trend, while $1-\phi$ is the share of variability explained by random noise. This interpretation is made possible by the scaling of the Laplacian matrix. As for the LCAR, the limit cases for $\phi=1$ and $\phi =0$ are the ICAR and IID processes respectively. Although the spatial precision matrix $\Omega^{-1}$ is dense, it can be shown that the joint distribution of $(Z, U)$ has a sparse and singular precision matrix \citep{BYM2}, and the sum-to-zero constraint is required on the ICAR components $U_t$ for all $t$.
+
+\subsection{The PC-prior framework} \label{subsec:PC}
+
+The regression model outlined so far features a latent spatio-temporal effect, which implies a potentially high degree of complexity. In the context of Bayesian hierarchical models, an organic approach to measuring and penalising model complexity is provided by PC-priors \citep{PC}. The basic idea behind the PC-prior for a given parameter $\theta$ is to penalise \textit{a priori} the departure of a flexible model $\mathcal{M}_1$ with random $\theta$ against a base model $\mathcal{M}_0$ in which $\theta$ is fixed. \cite{PC} propose to measure the departure between two models with the distance function $\sqrt{2 \mathrm{KLD}(\mathcal{M}_1 || \mathcal{M}_0)}$, where $\mathrm{KLD}\left(\cdot||\cdot \right)$ denotes the Kullback-Leibler divergence. Additionally, they propose to penalise the distance between the two models by assigning an exponential prior to the distance function.
+%
+The exponential prior depends on a rate parameter $\psi$ that can be tuned to assume \textit{a priori} that $\theta$ is smaller than a boundary value $U$ with a given probability $\alpha$.
+
+In this application, we define a joint PC-prior setup for the whole hyperparameter set. For the spatio-temporal ICAR model, hyperparameters are only the temporal autocorrelation $r$ and the standard deviation $\sigma$. The latter three models employ an additional hyperparameter $\xi \in \lbrace \alpha, \lambda, \phi \rbrace$. 
+To the best of our knowledge the PC-priors for the LCAR precision mixing parameter $\lambda$ and for the PCAR spatial autocorrelation $\rho$ constitute a novelty; we then test the Uniform prior on $\xi$ as a more familiar alternative. Overall, the joint prior on the whole hyperparameter set reads as:
+$$
+\pi(r, \sigma, \xi) =\pi(r \mid \sigma, \xi) \pi(\xi\mid\sigma) \pi(\sigma)
+$$
+As these hyperparameters prove to be independent \textit{a priori}, it can be shown that using the PC-priors allows us to factor the joint prior into the three marginals. The PC-prior for $\sigma$ has been described by \cite{PC} and proved to coincide with an Exponential prior. In the following sections, we provide some details on the computation of the KLD for $r$, $\rho$, and $\lambda$ in the AR(1), PCAR, and LCAR cases, respectively. In the BYM case, where $\xi = \phi$, the PC-prior has already been described by both \cite{BYM2} and \cite{PC}.
+
+We obtain the KLD for the temporal autocorrelation parameter $r$ in the AR(1) model (\ref{eq:AR1}) penalising $r \in [-1, 1]$ against $r=0$. Hence the KLD becomes:
+  %
+  \begin{equation}
+ \mathrm{KLD}(r||r=0) =   \frac{n}{2}
+ \left( \ln(1-r^2)
+ +T  \frac{r^2}{1-r^2} \right)
+ \end{equation}
+  %
+The KLD is a U-shaped even function of $r$, with a minimum at 0 for $r=0$ and tending to infinity for $\mathrm{abs}(r)$ approaching 1. These findings generalise the KLD of the purely temporal autocorrelation parameter developed and discussed by \cite{Sorbye2017}.
+%  
+Additionally, in the spatio-temporal case, the PC-prior can be proved to be independent of $n$. This is indeed a desirable property, as it would make no sense for the temporal autocorrelation parameter $r$ to depend on the number of areas $n$. For the scope, consider $\mathrm{KLD}(r||r=0) = \frac{n}{2}h(r)$ where $h(r)$ does not depend on $n$; then, assuming an $\mathrm{exp}(\psi)$ distribution on $\sqrt{2\mathrm{KLD}(r||r=0)}$ and parametrising the PC-prior through the left-tail probability $\alpha$ and the upper boundary $U$,% then $\alpha = \mathrm{Prob} \lbrace \sqrt{2\mathrm{KLD}(r||r=0)} \leq \sqrt{2\mathrm{KLD}(U||r=0)}\rbrace =1-e^{-\psi U}$. Hence, 
+ we obtain $\psi = \ln \frac{1}{1-\alpha} \frac{1}{\sqrt{n h(U)}}$. It follows that:
+%$$
+%  \pi(r) = \ln \left(\frac{1}{ 1-\alpha} \right)\frac{1}%ì{\sqrt{n h(U)}} e^{
+%  \ln \left(1-\alpha\right)\frac{1}{ \sqrt{n h(U)}} \sqrt{n h(r)}
+%  }   \frac{1}{\sqrt{nh(r)}} \frac{n}{2} \frac{\partial h}{\partial r}
+%$$ 
+$$
+  \pi(r) = \ln \frac{1}{ 1-\alpha} \frac{1}{2\sqrt{h(U)h(r)}} e^{
+  \ln \left(1-\alpha\right)\frac{\sqrt{ h(r)}}{ \sqrt{h(U)}} 
+  }  \frac{\partial h}{\partial r}
+$$ 
+
+
+
+ \section{Model implementation}\label{sec:imple}
+In this section, we first summarise the settings of the prior distributions of all model parameters, then we describe the practical procedure to estimate the space-time Poisson regression model described in section \ref{sec.3}.
+ 
+Constant covariate effects in $\beta$ and time-dependent intercepts $\beta_{0,t}$ are assigned independent $\mathcal{N}(0, 10^3)$ priors. 
+%
+For the marginal standard deviation $\sigma$ and the temporal correlation parameter $r$, we follow the PC-prior approach outlined in section \ref{subsec:PC}. Specifically, for $\sigma$ we assume $\mathrm{Prob} (\sigma^2 \leq 1/2)= 0.9$, implying $\mathbb{E}[\sigma] \approx 0.307$ \textit{a priori}. 
+% 
+For the AR(1) autocorrelation $r$, we penalise the departure from the time-independent model while attempting not to be excessively restrictive, and assume $\mathrm{Prob} (r \leq 0.4)= 0.8$. This parametrisation was also used, though in a different context, by \cite{fioravanti2021spatio}. We acknowledge, however, that in our context the posteriors of $\sigma^2$ and $r$ result to be scarcely sensitive to hyperparameter tuning.
+% 
+For the parameters $\rho$, $\lambda$ and $\phi$ we tested three alternative prior specifications: the PC-prior with $\mathrm{Prob} \lbrace \xi \leq 1/2 \rbrace=2/3$, for $\xi \in \lbrace\rho, \lambda, \phi \rbrace $, considered to be a reasonable standard for the BYM parameter $\phi$ and thus implemented by default in \texttt{R-INLA} (only for the BYM), the more restrictive PC-prior $\mathrm{Prob} \lbrace \xi \leq 0.6 \rbrace=0.9$, and the Uniform prior in $[0,1]$.
+
+ As is frequently the case in Bayesian applications, posterior inference cannot be obtained by analytical calculations. Therefore, we need to approximate the posterior distributions of all layers of model parameters. Considering that with the model at hand, covariate effects and the spatio-temporal latent field have a joint Gaussian prior and the predictor is linear, it is particularly convenient to employ the Integrated Nested Laplace Approximation \citep[INLA][]{INLA} for the purpose. First, the joint hyperparameter posterior is Laplace approximated. Then, a Gaussian approximation is applied to the joint posterior of $\beta$ and $Z$, and the resulting posterior mean undergoes a Variational Bayes correction \citep{VBINLA2023}. this methodology is implemented in a dedicated \texttt{R} package (available at \url{https://www.r-inla.org/}). All spatio-temporal models are implemented within the \texttt{rgeneric} environment \citep[][chapter 11]{INLAbook} using package version \texttt{2025-06-22.1}.
+
+
+Spatial patterns are observed for some of the explanatory variables. Moreover, we notice some major changes in the posterior distribution of the effect of two covariates, i.e., ELI (share of low productivity workers) and ELL (low education incidence), as shown in the forest plot in Figure \ref{fig:forestplot} and discussed in more detail in the next section. This suggests the presence of spatial confounding \citep{RHZ} between those covariates and unmeasured spatial effects. Therefore, following the simplified Spatial+ method developed by \cite{Urdangarin24}, we attempt to mitigate spatial confounding by filtering out these variables' spatial trends represented by the eigenvectors of the Laplacian matrix associated with the smallest eigenvalues \citep{SpectralClust}. Part of the explanatory variables, i.e. the MFI components and the distance from help desks, are mapped in Appendix \ref{Appendix:X_maps}.
+
+The four spatial structures for the space-time Poisson model presented in section \ref{sec.3}, namely ICAR, PCAR, LCAR, and BYM, are compared using the Watanabe-Akaike information criterion \citep[WAIC hereinafter,][]{GelmanWAIC}, computed internally in \texttt{R-INLA}. The WAIC and its complexity component, i.e., the number of free parameters (P. eff), are shown in Table \ref{tab:waic}. For the $\alpha$, $\lambda$, and $\phi$ parameters of PCAR, LCAR and BYM, respectively, we compare the uniform prior and two alternative parametrisations of the PC-prior: PC1 with $\alpha = 2/3 \wedge U = 1/2$, and PC2 with $\alpha = 0.9 \wedge U = 0.6$.
+%
+\begin{table}[ht]
+\centering
+\begin{tabular}{llrrrrrrrr}
+  \hline
+  \multirow{2}{*}{Models} & \multirow{2}{*}{Prior} & \multicolumn{2}{c}{Base} & \multicolumn{2}{c}{S+ 15} & \multicolumn{2}{c}{S+ 20} & \multicolumn{2}{c}{S+ 25}  \\
+   & &WAIC & P. eff &  WAIC & P. eff & WAIC & P. eff & WAIC & P. eff \\
+  \hline
+%nosp & 4803.84 & 49.74 &  &  &  &  &  &  \\ 
+  ICAR& & 3928.35 & 255.65 & 3928.15 & 255.58 & 3927.85 & 255.42 & 3928.54 & 255.88 \\ 
+  PCAR&Unif & 3915.55 & 261.17 & 3914.08 & 261.02 & 3913.65 & 260.89 & 3914.69 & 261.33 \\ 
+  PCAR& PC1 & 3915.11 & 261.54 & 3913.43 & 261.40 & 3913.12 & 261.23 & 3914.10 & 261.71 \\ 
+  PCAR& PC2 & 3914.24 & 262.44 & 3912.51 & 262.19 & 3912.14 & 262.02 & 3913.15 & 262.52 \\ 
+  LCAR&Unif & 3910.67 & 261.08 & 3908.45 & 260.83 & 3908.02 & 260.69 & 3909.38 & 261.13 \\ 
+  LCAR& PC1& 3910.20 & 261.58 & 3907.86 & 261.28 & 3907.49 & 261.12 & 3908.83 & 261.57 \\ 
+  LCAR& PC2 & 3910.02 & 261.76 & 3907.47 & 261.47 & 3907.18 & 261.31 & 3908.48 & 261.76 \\ 
+  BYM& Unif & 3907.66 & 255.83 & 3906.71 & 255.84 & 3906.40 & 255.67 & 3908.28 & 256.26 \\ 
+  BYM& PC1 & 3908.00 & 256.04 & 3907.24 & 255.97 & 3906.90 & 255.82 & 3908.79 & 256.41 \\ 
+  BYM& PC2 & 3908.37 & 256.23 & 3907.53 & 256.14 & 3907.22 & 255.97 & 3909.07 & 256.59 \\ 
+   \hline
+\end{tabular}
+%\captionsetup{width=0.8\textwidth}
+\caption{Model diagnostics using the Watanabe-Akaike criterion for four spatial models with three possible Spatial+ adjustments, consisting of removing either 15, 20 or 25 Laplacian eigenvectors from the covariates ELI and ELL. For the parameter controlling the spatial association in the PCAR, LCAR, and BYM models, we compare the Uniform prior and the PC prior with left-tail probability values of either $2/3$ and $0.9$, associated with upper boundaries of $0.5$ and $0.6$, respectively. The P\_eff column consists of the number of free parameters, i.e., the complexity component.}
+\label{tab:waic}
+\end{table}
+%
+%%\begin{table}[ht]
+%\centering
+%\begin{tabular}{rrrrrrr}
+%  \hline
+% & Out\_1\_sets & Out\_2\_sets & Out\_5\_sets & Out\_8\_sets & Out\_10\_sets & Out\_15\_sets \\ 
+%  \hline
+% %nosp & 2402.25 & 2407.98 & 2412.27 & 2406.96 & 2408.04 & 2411.00 \\ 
+%  ICAR & 2021.14 & 2054.07 & 2033.26 & 2027.87 & 2021.79 & 2005.74 \\ 
+%  PCAR\_Un & 2021.38 & 2049.83 & 2031.68 & 2025.27 & 2019.67 & 2007.83 \\ 
+%  PCAR\_PC\_d & 2021.62 & 2049.69 & 2031.01 & 2025.89 & 2019.00 & 2007.82 \\ 
+%  PCAR\_PC\_s & 2022.49 & 2049.27 & 2033.92 & 2027.30 & 2023.09 & 2011.15 \\ 
+%  LCAR\_Un & 2021.13 & 2048.28 & 2031.48 & 2024.42 & 2018.68 & 2007.98 \\ 
+%  LCAR\_PC\_d & 2021.51 & 2047.62 & 2031.44 & 2026.47 & 2019.21 & 2008.81 \\ 
+%  LCAR\_PC\_s & 2021.80 & 2047.91 & 2031.72 & 2026.80 & 2020.79 & 2009.78 \\ 
+%  BYM\_Un & 2019.92 & 2049.51 & 2043.63 & 2038.27 & 2034.61 & 2030.28 \\ 
+%  BYM\_PC\_d & 2020.33 & 2049.93 & 2044.39 & 2038.96 & 2035.39 & 2032.29 \\ 
+%  BYM\_PC\_\_s & 2020.95 & 2050.77 & 2044.87 & 2039.11 & 2035.32 & 2035.61 \\ %   \hline
+%\end{tabular}
+%\end{table} }
+%Interpreting precisely the two information criteria is complicated in that the BYM has the lowest WAIC but the ICAR has the lowest DIC. For the BYM, the Uniform prior on $\phi$ outperforms the PC-prior, while for PCAR and LCAR evidence is mixed.
+%
+Differences in model performances do not appear relevant; the WAIC leads us to prefer the BYM model over the others. Neither does the treatment of spatial confounding change radically model performance, but a small improvement can be noticed if we filter out the 20 smallest-frequency eigenvectors.
+
+ 
+ \section{Results} \label{sec:results}
+In this section, we display the main results of the alternative model specifications described in Section \ref{sec:imple}, focusing on the BYM with $\phi \sim \mathrm{Unif}(0,1)$ after removing the 20 lowest-frequency Laplacian eigenvectors \cite[applying the simplified Spatial+ correction proposed by][]{Urdangarin24} from two covariates: the share of employees in low-productivity firms (ELI) and the low education incidence (ELL). All explanatory variables have been scaled to zero mean and unit variance to facilitate the interpretation of results.
+
+In Figure \ref{fig:forestplot} we show a forest plot of the 95\% posterior credible intervals of covariate effects using the non-spatial and spatial models before and after removing the 20 lowest-frequency Laplacian eigenvectors from the covariates ELI and ELL. Such a correction is justified by the difference in the posterior distributions of these two variables between the non-spatial and spatial models, which suggests the potential confounding with the latent spatial field. In particular, including the spatial field shrinks the estimated effect of ELI towards zero, while it raises in absolute value the estimated effect of ELL. Generally speaking, the inclusion of a spatial latent field increases uncertainty in the estimation of covariate effects, as can be seen from the wider credible intervals. The most noticeable differences among spatial models can be observed for ELL and the employment rate (ER); specifically, in both cases, controlling for the spatial confounding in ELI and ELL slightly reduces the covariate effect. Overall, the estimation of covariate effects does not appear to be sensitive to the spatial model choice or to spatial confounding treatment. 
+%
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\textwidth]{VAW/Fig5.pdf}
+\caption{Forest-plot of the posterior credible intervals of covariate effects using either the non-spatial model and the four spatio-temporal models, before ("base" models) and after filtering out the 20 lowest-frequency Laplacian eigenvectors from covariates ELI and EL ("S+" models). For the $\rho$ and $\lambda$ parameters of the PCAR and LCAR models respectively, a PC-prior parametrised by boundary value and left-tail probability of $0.6$ and $0.9$ has been used, while a Uniform prior has been assigned to $\phi$ in the BYM model.}\label{fig:forestplot}	
+\end{figure}
+%
+In Table \ref{tab:betapost} we show more in detail the posterior summaries for intercepts and covariate effects using the BYM model and filtering out 20 eigenvectors from ELI and EL. 
+%
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrr} %%rrrr
+  \hline
+%  \multirow{2}{*}{Effect} & \multicolumn{4}{c}{Base} &\multicolumn{4}{c}{Spatial+}\\
+%  & mean & sd & Q0.025 & Q0.975 & mean & sd & Q0.025 & Q0.975 \\ 
+%  \hline
+%  Y\_2021 & -7.445 & 0.051 & -7.546 & -7.345 & -7.453 & 0.051 & -7.554 & -7.352 \\ 
+%  Y\_2022 & -7.576 & 0.054 & -7.683 & -7.470 & -7.582 & 0.055 & -7.690 & -7.476 \\ 
+%  Y\_2023 & -7.210 & 0.047 & -7.303 & -7.117 & -7.216 & 0.047 & -7.309 & -7.123 \\ 
+%  Y\_2024 & -7.319 & 0.051 & -7.419 & -7.220 & -7.327 & 0.051 & -7.428 & -7.228 \\ 
+%  AVC\_dist & -0.204 & 0.042 & -0.286 & -0.121 & -0.193 & 0.042 & -0.276 & -0.110 \\ 
+%  Desk\_dist & -0.072 & 0.038 & -0.145 & 0.002 & -0.065 & 0.038 & -0.139 & 0.009 \\ 
+%  ELI & -0.008 & 0.038 & -0.083 & 0.068 & -0.001 & 0.035 & -0.070 & 0.068 \\ 
+%  PGR & 0.069 & 0.042 & -0.013 & 0.151 & 0.070 & 0.042 & -0.012 & 0.153 \\ 
+%  UIS & 0.092 & 0.040 & 0.015 & 0.171 & 0.091 & 0.040 & 0.013 & 0.171 \\ 
+%  ELL & -0.197 & 0.050 & -0.295 & -0.100 & -0.159 & 0.039 & -0.235 & -0.083 \\ 
+%  PDI & -0.025 & 0.046 & -0.115 & 0.064 & -0.025 & 0.046 & -0.115 & 0.064 \\ 
+%  ER & -0.264 & 0.057 & -0.377 & -0.152 & -0.235 & 0.053 & -0.341 & -0.131 \\ 
+Effect & mean & sd & 0.025quant & 0.975quant \\ 
+  \hline
+  Year 2021 & -7.453 & 0.051 & -7.555 & -7.353 \\ 
+  Year 2022 & -7.583 & 0.055 & -7.691 & -7.477 \\ 
+  Year 2023 & -7.216 & 0.047 & -7.310 & -7.124 \\ 
+  Year 2024 & -7.328 & 0.051 & -7.428 & -7.229 \\ 
+  AVC\_dist & -0.196 & 0.042 & -0.278 & -0.113 \\ 
+  Desk\_dist & -0.061 & 0.038 & -0.135 & 0.012 \\ 
+  ELI & -0.002 & 0.035 & -0.069 & 0.067 \\ 
+  PGR & 0.071 & 0.042 & -0.011 & 0.153 \\ 
+  UIS & 0.095 & 0.040 & 0.018 & 0.174 \\ 
+  ELL & -0.155 & 0.037 & -0.229 & -0.083 \\ 
+  PDI & -0.024 & 0.046 & -0.114 & 0.065 \\ 
+  ER & -0.229 & 0.053 & -0.333 & -0.126 \\  
+   \hline
+\end{tabular}
+\captionsetup{width=0.8\textwidth}
+\caption{Posterior summaries of year-specific intercepts and covariate effects when $Z$ is modelled as a BYM process with a Uniform prior on the mixing parameter. Simplified spatial+ correction has been applied to ELI and ELL covariates by removing the 20 lowest-frequency Laplacian eigenvectors.}
+\label{tab:betapost}
+\end{table}
+%
+To assess the effects of explanatory variables on AVC accesses, it is needful to recall the twofold interpretation of the response variable, as it depends on both the frequency at which violence incidents occur and the frequency at which victims seek help when it occurs.
+%
+The three strongest predictors across the years in scope appear to be the travel time from the closest municipality hosting an AVC (AVC\_dist), the percentage of people with a low educational level (ELL), and the employment rate (ER), in all cases with a negative association.
+%
+Additionally, the density of productive units (UIS) has a positive effect, and the credibility interval of such effect ranges entirely away from zero. 
+
+The negative association between AVC accesses and distance from AVCs can be read as a symptom of the persisting physical barrier to seeking help. The magnitude of the coefficient may be interpreted as follows: an increase in the travel time to the closest AVC by one standard deviation, i.e. approximately $13'40''$ is associated, \textit{ceteris paribus}, with a decrease of about $17.7\%$ in the frequency of accesses to AVCs (since $\exp\lbrace E\left[\beta_\mathrm{AVC\_Dist}|y \right]\rbrace = 0.823$). The expected association with the distance from the closest help desk (Desk dist) is negative, consistent with the distance from the closest AVC, but the magnitude of such expected association is smaller, and, most importantly, the credible interval includes zero. This result may suggest that the distance from help desks is less prohibitive than the distance from AVCs in seeking assistance, which is not surprising considering how widespread help desks are.
+% 
+In light of the twofold process generating AVC accesses, a tentative yet intuitive interpretation of the negative association with both low education and employment rate could be that women victims of violence have a lower propensity to access AVCs in poor educational contexts, but the incidence of violence may become lower in contexts of higher economic development. This latter consideration should be interpreted in light of the state-of-the-art evidence that both women's and partners' unemployment are associated with higher violence occurrence, as reviewed by \citep[][chapter 2]{bettio2017violence}.
+The positive association of accesses with the density of productive units (UIS), instead, is less intuitive, as a higher number of firms does not imply \textit{per se} higher economic development, even though it has a negative weight in determining the frailty index of Italian municipalities.
+
+ Lastly, hyperparameter posterior summaries for the BYM--uniform model after ELI and ELL are corrected for spatial confounding are shown in Table \ref{tab:hyperpar}.
+%
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrrr}
+  \hline
+param & mean & sd & Q0.025 & Median & Q0.975 \\ 
+  \hline
+  $\phi$ & 0.602 & 0.117 & 0.358 & 0.609 & 0.808 \\ 
+  $\sigma$ & 0.468 & 0.046 & 0.383 & 0.466 & 0.563 \\ 
+%  $\sigma^2$ & 0.221 & 0.043 & 0.147 & 0.218 & 0.317 \\ 
+  $r$ & 0.622 & 0.059 & 0.499 & 0.625 & 0.729 \\ 
+   \hline
+\end{tabular}
+\captionsetup{width=0.8\textwidth}
+\caption{Posterior summaries of the hyperparameters of the BYM latent effect when $\phi \sim \mathrm{Unif}(0,1)$ \textit{a priori}, where $\phi$ is the variance mixing parameter, $\sigma$ is the marginal standard deviation, and $r$ is the temporal autocorrelation.}
+\label{tab:hyperpar}
+\end{table}
+%
+Residual variability is balanced between spatial autocorrelation and random noise, as the variance mixing parameter has a posterior expectation of $\approx 0.6$, which means that the share of residual variability explained by the spatial structure is slightly larger. The standard deviation of the spatio-temporal latent field has a posterior expectation of $\approx 0.47$. This can be interpreted as an increment of 1 standard deviation of the latent field in a municipality implies, \textit{ceteris paribus}, a change of approximately $\exp(0.47)-1\approx59\%$ in the frequency of AVC accesses. Lastly, the temporal autocorrelation is positive, as one could expect by comparing the spatial patterns in AVC accesses in Figure \ref{fig:log_access}.
+
+
+\section{Discussion and conclusions}\label{sec.4}
+
+The main limitation of this research is that we employ a unique predictor combining the two processes of violence occurring and help seeking after violence occurs, which cannot be disentangled with the available data. Consequently, the effects we estimate reflect both mechanisms at once. Additional limitations include the lack of individual-level information for privacy reasons, the unavailability of service-level performance indicators, and the constraints posed by aggregated data that can mask within-area heterogeneity. 
+A promising development would be the implementation of a Poisson-logistic regression model \citep{Stoner02102019}, in line with the analysis of \cite{Polettini}, to allow the explicit quantification of VAW under-reporting. To this end, more integrated datasets are required combining administrative, health, social-service and AVC-level information, thereby enabling the identification of respective contributions of structural incidence, help-seeking propensity and territorial accessibility, and allowing the two processes of occurrence and help-seeking to be modelled separately. 
+ 
+Overall, present results show that seeking support is far from a straightforward process: the negative association between access rates and proximity to the nearest AVC suggests that even modest distances can act as barriers to help-seeking. Moreover, education-related vulnerability and local economic conditions appear to affect the likelihood of accessing AVCs, suggesting that structural factors, cultural attitudes, and service accessibility interact in shaping women’s behaviour. Even after adjusting for potential spatial confounding, a residual spatial effect remains, pointing to unobserved factors that may influence women’s ability to activate support pathways. Beyond the empirical findings, the methodological contribution of this work lies in the derivation of PC-priors for the LCAR mixing parameter $\lambda$ and the PCAR spatial autocorrelation parameter $\rho$. These priors, obtained via explicit KLD penalisation, % allow $\pi(r,\sigma,\xi)$ to factorise into independent marginals,
+may contribute to improving interpretability and stabilising the INLA-based inference.
+
+
+
+
+\begin{appendices}
+
+\section{Maps of Explanatory Variables} \label{Appendix:X_maps}
+In this section, we display some additional maps, i.e. the components of the Municipality Frailty Index (MFI) included as explanatory variables in the analytical model described in section \ref{sec.3}, and the distance from municipalities hosting a help desk, which equals to zero for about 40\% of municipalities (105 over 256), as they have at least one. The pupulation growth rate map does not include the municipality of Anzano di Puglia (FG) due to its extreme record ($ -311\%$)
+
+\begin{figure}
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig6.pdf}} 
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig7.pdf}}\\
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig8.pdf}}
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig9.pdf}} \\
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig10.pdf}} 
+\subfloat{\includegraphics[width = 2.5in]{VAW/Fig11.pdf}} 
+\caption{Additional explanatory variables: MFI components and distance from help desks. White areas in the last map correspond to municipalities in which a desk is available (distance is zero).}
+\label{fig:covariates}
+\end{figure}
+
+
+\end{appendices}
+
+
 %
 % ---- Bibliography ----
 %
@@ -2562,6 +2992,8 @@ For what concerns the nonspatial model, explaining $y$ without a spatial latent 
 
 
  
+
+
 
 
  
