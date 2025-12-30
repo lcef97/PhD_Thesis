@@ -577,9 +577,11 @@ w_{n_z1} \boldsymbol{\Sigma}^{-1} & w_{n_z2} \boldsymbol{\Sigma}^{-1} & \ldots &
 \begin{pmatrix}
 z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
 \end{pmatrix}  = 
-(\mathrm{vec}_r z) ^{\top} (\boldsymbol{D} \otimes \boldsymbol{\Sigma}^{-1}) \mathrm{vec}_r z
 $$
-
+$$
+=(\mathrm{vec}_r z) ^{\top} (\boldsymbol{D} \otimes \boldsymbol{\Sigma}^{-1}) \mathrm{vec}_r z
+$$
+\\
 This proves the joint distribution of $z$ is \citep{Mardia, Banerjee, Gelfand}:
 %
 \begin{equation}
@@ -2333,7 +2335,7 @@ Pattern & level & Component & Central & Peripheral & BB Activation & Urban trans
 
 
 
-\subsection{Model assessment} \label{par:criteria}
+\subsection{Model assessment} \label{subsection:criteria}
 
 In this Section, some alternative model formulations are compared using a set of selection criteria internally computed by \texttt{R-INLA}: the negative Log Pseudo Marginal Likelihood \citep[LPML,][]{Geisser, Gelfand}, i.e. minus the logarithmic sum of the Conditional Predictive Ordinates \citep{CPO, CPOINLA}, and the Watanabe-Akaike Information criterion \citep[WAIC,][]{WAIC}, following the formulation of \cite{GelmanWAIC}, the Deviance Information Criterion \citep[DIC,][]{DIC}, alongside with the Mean Squared Error of posterior predictive response averages.
 
@@ -2613,18 +2615,19 @@ For what concerns the nonspatial model, explaining $y$ without a spatial latent 
 \end{appendices}
 
 
-
-\chapter{Investigating access to support centers for Violence Against Women in Apulia: A Spatial analysis over multiple years}
+%% ------------------------------------------------------------------------------ %%
+%% --------                   Fifth Chapter                 --------------------- %%
+%% ------------------------------------------------------------------------------ %%
+%
+\chapter{Investigating access to support centers for Violence Against Women in Apulia: A Spatial analysis over multiple years} \label{Chapter:VAW}
+%% --------- Introduction ------------------------------- %%
 \section{Introduction}\label{sec.1}
 
 Violence against women (VAW) is a widespread violation of human rights and a form of gender-based discrimination, encompassing acts that cause or risk causing physical, sexual, psychological, or economic harm. As recognised by the Istanbul Convention \citep{IstaCon2011}, this structural issue is deeply tied to persistent gender inequalities worldwide, making accurate data essential for understanding its scale and developing effective policies. Despite this need, tracking gender-based violence remains challenging. In Italy, legislative initiatives such as Law No. 53/2022 \citep{GU2022} underscore the importance of systematic data collection for prevention, yet data sources remain fragmented, often outdated, and not easily accessible. Stigma and under-reporting further hinder accurate quantification, as many survivors fear social repercussions, blame, or disbelief. Local Anti-Violence Centers (AVCs), established under Italian Law No. 119/2013 \citep{GU2013}, play a crucial role in supporting victims through a holistic array of services, starting from consultancy and including psychological support, legal assistance, and sheltering, while also documenting cases of abuse. 
 
-As stressed by \cite{Toffanin2020}, a distinctive feature of AVCs is establishing intimate trust and promoting the subjectivity and the active role of women seeking help, instead of substituting to them in their decisional processes. Taking into account also the exclusive participation of women as AVC workers and the outworks activities carried out, such as training activities for health and social operators, law enforcement and lawyers or cultural initiatives \citep{ISTAT2023}, qualifies AVCs not as mere service providers, but as core political actors in the process of combating systematic gender-based violence. % perpetrated by men. 
-In addition, it is worthwhile to notice that both aims and operating modes of AVCs belong to a different conceptual level than judicial measures; hence, we deem that the access to AVCs deserves a dedicated, standalone analysis, not to be confused with the well-developed debate on violence reporting. 
+As stressed by \cite{Toffanin2020}, a distinctive feature of AVCs is establishing intimate trust and promoting the subjectivity and the active role of women seeking help, instead of substituting to them in their decisional processes. Taking into account also the exclusive participation of women as AVC workers and the outworks activities carried out, such as training activities for health and social operators, law enforcement and lawyers or cultural initiatives \citep{ISTAT2023}, qualifies AVCs not as mere service providers, but as core political actors in the process of combating systematic gender-based violence. In addition, it is worthwhile to notice that both aims and operating modes of AVCs belong to a different conceptual level than judicial measures; hence, we deem that the access to AVCs deserves a dedicated, standalone analysis, not to be confused with the well-developed debate on violence reporting. 
 
-In 2017, the Italian National Institute of Statistics (ISTAT) started monitoring the activity of AVCs \citep{ISTAT2023}, %. and support participation in the ISTAT experimental survey, conducted nationally since 2020 in collaboration with the DPO (Dipartimento delle Pari Opportunit\`{a}, Presidenza del Consiglio). 
-%The ISTAT survey aims to 
-capturing the scope and characteristics of violence experienced by women seeking help across the national territory. From then until 2023, the number of AVCs active over the national territory increased by 43.8\%, with 404 AVCs operative in 2023. Similarly, the number of women accessing them increased by 41.5\% (ibidem). This information may suggest that the expansion of AVC activity encourages women victims of violence to seek help and find a way out of violence and abuse.
+In 2017, the Italian National Institute of Statistics (ISTAT) started monitoring the activity of AVCs \citep{ISTAT2023}, and support participation in the ISTAT experimental survey, conducted nationally since 2020 in collaboration with the DPO (Dipartimento delle Pari Opportunit\`{a}, Presidenza del Consiglio). The ISTAT survey aims at capturing the scope and characteristics of violence experienced by women seeking help. From 2017 until 2023, the number of AVCs active over the national territory increased by 43.8\%, with 404 AVCs operative in 2023. Similarly, the number of women accessing them increased by 41.5\% (ibidem). This information may suggest that the expansion of AVC activity encourages women victims of violence to seek help and find a way out of violence and abuse.
 %
 Records from AVCs provide valuable information on victim demographics and violence patterns \citep{Toffanin2020}, enabling investigation of the distribution of the phenomenon at the territorial level and allowing us to assess how local socioeconomic factors affect the occurrence and reporting of VAW.
 
@@ -2634,26 +2637,25 @@ Building on this evidence, we investigate how local disparities in the accessibi
 %
 To this end, we propose a territorial analysis of accesses to AVCs within the Apulia region (Southern Italy) in years 2021--2024, detailed by the origin municipality of women seeking help, by means of a Bayesian hierarchical spatio-temporal Poisson regression model \citep{martinez2008autoregressive}. We investigate the association of AVC accesses with both the distance from AVCs and help desks, and a set of socio-economic indicators employed to define the Municipality Frailty Index provided by the ISTAT \footnote{\label{note:MFI} Available on the ISTAT website \url{https://www.istat.it/comunicato-stampa/aggiornato-indice-di-fragilita-comunale/}}.
 
-The inherent spatial dependence in the data suggests us to consider a latent spatial process, explicitly modelled through four competing spatial structures: the Intrinsic Conditional Autoregressive model \citep[ICAR,][]{Besag1995}, the Proper Conditional Autoregressive model \citep[PCAR,][]{Gelfand2003}, the Leroux Conditional Autoregressive model \citep[LCAR,][]{Leroux1999} and the Besag, York and Molli\'{e} convolution model \citep[BYM,][]{Besag1991, BYM2}. 
+The inherent spatial dependence in the data suggests us to consider a latent spatial process, explicitly modelled through four competing spatial structures: the Intrinsic Conditional Autoregressive model (ICAR), the Proper Conditional Autoregressive model (PCAR), the Leroux Conditional Autoregressive model (LCAR) and the scaled Besag, York and Molli\'{e} convolution model (BYM), all of which have been described in Chapter \ref{chapter:theory}.
 %
-These spatial models depend in turn on an additional layer of hyperparameters, which require a prior distribution setup. Here, following the principle of parsimony, we set hyperpriors in such a way to penalise departures from the corresponding non-spatial models. This can be done intuitively and flexibly through the Penalised Complexity prior (PC-prior) approach, developed by \cite{PC}. Since, to the best of our knowledge, for the hyperparameters controlling the strength of spatial association in the PCAR and LCAR models the PC-prior has not been employed yet, we compare the results of the full PC-prior specification with a hybrid setup in which only this parameter is assigned a Uniform distribution.
+These spatial models depend in turn on an additional layer of hyperparameters, which require an appropriate prior distribution setup. Here, following the principle of parsimony, we set hyperpriors in such a way to penalise departures from the corresponding non-spatial models. This can be done intuitively and flexibly through the Penalised Complexity prior (PC-prior) approach, developed by \cite{PC}. Since, to the best of our knowledge, for the hyperparameters controlling the strength of spatial association in the PCAR and LCAR models the PC-prior has not been employed yet, we compare the results of the full PC-prior specification with a hybrid setup in which only this parameter is assigned a Uniform distribution.
 
-Explicitly accounting for unmeasured spatial variability may cause confounding with some explanatory variables, when the latter show a spatial trend, as it implies some confounding bias in the estimation of the effects of such covariates \citep{RHZ}. For those covariates whose effects mostly differ between a nonspatial and the corresponding spatial regression model, we mitigate this bias by reducing the effect of the spatial trend. This is obtained by a simplified version of the Spatial+ method \citep{Dupont} that captures the spatial trends through the lowest-frequency eigenvectors of the graph Laplacian matrix \citep{Urdangarin24}.
+Explicitly accounting for unmeasured spatial variability may cause confounding with some explanatory variables, when the latter show a spatial trend, as it implies some confounding bias in the estimation of the effects of such covariates. For those covariates whose effects mostly differ between a nonspatial and the corresponding spatial regression model, we mitigate this bias by reducing the effect of the spatial trend through the Spatial+2.0 method \citep{Urdangarin24} that captures the spatial trends through the lowest-frequency eigenvectors of the graph Laplacian matrix. We have introduced this methodology in Section \ref{subsection:Spatial+}.
 
-Model estimation is carried out within the Integrated Nested Laplace Approximation \citep[INLA,][]{INLA, VBINLA2023}, which enables computationally efficient Bayesian inference and model selection based on the Watanabe-Akaike Information Criterion \citep[WAIC,][]{GelmanWAIC}. 
+Model estimation is carried out within INLA \citep[][see also chapter \ref{chapter:INLA}]{INLA, VBINLA2023}; model selection is based on the Watanabe-Akaike Information Criterion \citep[WAIC][see also \ref{subsection:criteria}]{GelmanWAIC}, computed internally to \texttt{R-INLA} as well.
 
 The spatial patterns of reported violence related to access to AVCs in Apulia allow us to identify differences in prevalence rates and evaluate the adequacy of available services. Specifically, the study region is characterised by significant socioeconomic disparities \citep{PROMETHEEII}, including variations in economic development, infrastructure, and service accessibility. This circumstance, together with the high level of territorial detail in available data provided by the Regional Statistical Office, makes Apulia an ideal case study to investigate how such factors affect the search for AVC assistance. 
 
-The remainder of this paper is structured as follows: section \ref{sec.2} introduces the data set of accesses to AVCs in Apulia and relevant explanatory variables, section \ref{sec.3} describes the Bayesian space-time statistical modelling framework and provides some generalities on the proposed PC-priors, section \ref{sec:imple} accounts for some practical implementation issues and summarises the strategy to prevent spatial confounding, section \ref{sec:results} provides some results of posterior inferences and interpretative comments.
+The remainder of this paper is structured as follows: section \ref{sec.Apulia.data} introduces the data set of accesses to AVCs in Apulia and relevant explanatory variables, section \ref{section:STPoisson} describes the Bayesian space-time statistical modelling framework and provides some generalities on the proposed PC-priors, section \ref{sec:imple} accounts for some practical implementation issues and summarises the strategy to prevent spatial confounding, section \ref{sec:results} provides some results of posterior inferences and interpretative comments.
 
-\section{The Apulia Region data}\label{sec.2}
-%\subsection{Data description}\label{sec.subsection1}
+\section{The Apulia Region data}\label{section:Apulia.data}
 
-This study focuses on the number of accesses to AVCs in the municipalities of the Apulia region over the years 2021 -- 2024. Data are collected by the Statistical Section and the Welfare Department of the Apulia Region as part of a systematic monitoring program established under Regional Law No. 29/2014. Since 2013, all AVCs have been required to submit annual reports detailing women’s access to support services to monitor the effectiveness of the service and identify local problems. The resulting data collection and processing activities contribute to the Regional annual reports \citep{CAV2024report}.
+This study focusses on the number of accesses to AVCs in the municipalities of the Apulia region over the years 2021--2024. Data are collected by the Statistical Section and the Welfare Department of the Apulia Region as part of a systematic monitoring program established under Regional Law No. 29/2014. Since 2013, all AVCs have been required to submit annual reports detailing women’s access to support services to monitor the effectiveness of the service and identify local problems. The resulting data collection and processing activities contribute to the Regional annual reports \citep{CAV2024report}.
 
 To avoid considering duplicate data records, we only retain reports of violence that are directly managed by each center, excluding those that are redirected to other services or centers. In Apulia, the total number of women supported by AVCs was 1477, 1516, 1822, 1778 over the four years in scope.
 %
-Fig.~\ref{fig:log_access} shows the incidence of AVC accesses (obtained as the count of accesses over the female population aged $>14$ years) across Apulian municipalities in the 4 years on the logarithmic scale, alongside with the municipalities with at least one operating AVC. White areas correspond to zero counts (in 2022, the center in San Severo (FG) was active, but no access results by women residing there). This map suggests a heterogeneous spatial pattern of access, with slightly higher values for coastal municipalities, indicating potential differences in the population, infrastructure, and service availability between coastal and inland areas.
+Fig.~\ref{fig:log_access} shows the incidence of AVC accesses, obtained as the count of accesses over the female population aged $>14$ years, across Apulian municipalities in the 4 years on the logarithmic scale, alongside with the municipalities with at least one operating AVC. White areas correspond to zero counts (in 2022, the center in San Severo (FG) was active, but no access results by women residing there). This map suggests a heterogeneous spatial pattern of access, with slightly higher values for coastal municipalities, indicating potential differences in population, infrastructure, and service availability between coastal and inland areas.
 
 \begin{figure}[ht]
 \centering
@@ -2664,35 +2666,31 @@ Fig.~\ref{fig:log_access} shows the incidence of AVC accesses (obtained as the c
 \caption{Log-incidence of AVC accesses. White areas correspond to zero counts. Points correspond to municipalities hosting at least one AVC.}\label{fig:log_access}	
 \end{figure}
 
-To investigate the association of access rates with potential drivers at the municipal level, a set of candidate explanatory variables is considered. First, we employ the distance of women's residence municipalities from the closest municipality hosting either an AVC or a help desk; between-municipalities road distances are provided by ISTAT\footnote{Data retrieved from \url{https://www.istat.it/notizia/matrici-di-contiguita-distanza-e-pendolarismo/}}.
+To investigate the association of access rates with potential drivers at the municipal level, a set of candidate explanatory variables is considered. First, we employ the distance of women residence municipalities from both the closest municipality hosting an AVC and the closest municipality with a help desk; between-municipalities road distances are provided by ISTAT at this address: \url{https://www.istat.it/notizia/matrici-di-contiguita-distanza-e-pendolarismo/}.
 %
-Considering the deep link between socio-economic vulnerability and both the occurrence and reporting of gender-based violence, investigated in depth by \cite{bettio2017violence}, an additional set of explanatory variables has been selected amid the components of the Municipality Index of Fragility (IFC) referring to year 2021 (source Istat$^1$). These variables capture multiple dimensions of local vulnerability, such as economic deprivation, demographic imbalance, and social marginalisation. Including them in the analysis allows us to account for the contextual conditions that may influence both the risk of experiencing violence and the likelihood of seeking help. For instance, areas characterised by higher unemployment, ageing populations, or weaker social support networks may exhibit lower reporting rates or different help-seeking patterns. These aspects will be further discussed with the results of the proposed model estimation. However, among the available indicators, we excluded the distance of each municipality from the closest infrastructural pole due to the high correlation with the distance from AVCs (71\%), which in the scope of this analysis appears to be a more informative variable. This high correlation is intuitive, as AVCs are typically located in larger municipalities corresponding to infrastructure hubs.
+Considering the deep link between socio-economic vulnerability and both the occurrence and reporting of gender-based violence, investigated in depth by \cite{bettio2017violence}, an additional set of explanatory variables has been selected amid the components of the Municipality Index of Fragility (IFC) referring to year 2021. These variables capture multiple dimensions of local vulnerability, such as economic deprivation, demographic imbalance, and social marginalisation. Including them in the analysis allows us to account for the contextual conditions that may influence both the risk of experiencing violence and the likelihood of seeking help. For instance, areas characterised by higher unemployment, ageing populations, or weaker social support networks may exhibit lower reporting rates or different help-seeking patterns. These aspects will be further discussed with the results of the proposed model estimation. However, among the available indicators, we excluded the distance of each municipality from the closest infrastructural pole \citep{InnerAreas} due to the high correlation with the distance from AVCs (71\%), which in the scope of this analysis appears to be a more informative variable. This high correlation is intuitive, as AVCs are typically located in larger municipalities with the potential to gather a higher number of victims and typically corresponding to infrastructure hubs.
 %
-The set of explanatory variables considered henceforth is summarised in Table \ref{tab:covars}.
+The set of explanatory variables considered in the present analysis is summarised as follows.
 
-\begin{table}[!ht]
-\caption{Relevant explanatory variables}
-\begin{tabular}{l l p{9cm }} 
-\hline
-Variable & Unit & Description\\
-\hline
-AVC\_dist & Minutes& Road travel time to the closest municipality hosting an AVC\\
-Desk\_dist & Minutes & Road travel time to the closest municipality hosting a help desk\\
-ELI & Ventile & Share of employees in low productivity units in the fabric and services sectors. Labour productivity is given by the ratio of value added per employee and is considered low if smaller than its first quartile. \\
-PGR & Rate & Population growth rate in years 2011--2021, i.e. total net migration in 2011--2021 over resident population at the end of 2011. \\
-UIS & Ventile & Density of economic production units, i.e. the ratio between the stock of active business companies over the total population \\
-ELL & Percentage & Percentage of people aged 25--64 with low education level, i.e. no more than middle school or vocational schools\\
-PDI & Percentage & Structural dependency index, i.e. population aged $[0-19]$ or $>64$ over population aged 20--64\\
-ER & Percentage & Employment rate among population aged 20--64\\
-\hline
-\end{tabular}
-\label{tab:covars}
-\end{table}
+\paragraph{AVC\_Dist} Road travel time from each municipality to the closest one hosting an AVC, expressed in minutes. As the record of active AVCs is available for each year, this is the only time-changing covariate. As it can be observed from figure \ref{fig:log_access}, changes in the spatial distribution of AVCs are minimal. Specifically, with data at hand the number of AVCs active across the region is 21, 24, 24 and 25 for the relevant years.
+
+\paragraph{Desk\_Dist} Road travel time from each municipality to the closest hosting a help desk, expressed in minutes. We do not have the complete record of active desks in each municipality, hence we needed to impute the record from 2024 to all previous years.
+
+\paragraph{ELI} Ventile of the distribution of the municipality-level share of employees working in low productivity units in the fabric and services sectors. Labour productivity is defined as the ratio of value added per employee and is classified "low" if smaller than the first quartile of its distribution,
+
+\paragraph{PGR} Population growth rate in years 2011--2021, i.e. total net migration in 2011--2021 over resident population at the end of 2011.
+
+\paragraph{UIS} Ventile of the density of economic production units, defined as the ratio between the stock of active business companies over the total population.
+
+\paragraph{ELI} Percentage of people aged 25--64 with a low education level, i.e. no more than middle school license or vocational schools diploma. 
+
+\paragraph{PDI} Structural dependency index, i.e. population aged $[0-19]$ or $>64$ over population aged 20--64.
+
+\paragraph{ER}  Employment rate among population aged 20--64.
 
 
 
-
-\section{Space-time Poisson models}\label{sec.3}
+\section{Space-time Poisson models}\label{section:STPoisson}
 
 The counts of women residing in each Apulian municipality accessing AVCs within a given year are modelled via Poisson ecological regression. For a generic year $t \in \lbrace 2021, \dots, 2024 \rbrace$, we denote the count of women from municipality $i \in \lbrace 1, \dots, 256 \rbrace$ accessing an AVC as $y_{i,t}$, and model it as follows:
 %
@@ -2798,7 +2796,7 @@ $$
 
 
  \section{Model implementation}\label{sec:imple}
-In this section, we first summarise the settings of the prior distributions of all model parameters, then we describe the practical procedure to estimate the space-time Poisson regression model described in section \ref{sec.3}.
+In this section, we first summarise the settings of the prior distributions of all model parameters, then we describe the practical procedure to estimate the space-time Poisson regression model described in section \ref{section:STPoisson}.
  
 Constant covariate effects in $\beta$ and time-dependent intercepts $\beta_{0,t}$ are assigned independent $\mathcal{N}(0, 10^3)$ priors. 
 %
@@ -2813,7 +2811,7 @@ For the parameters $\rho$, $\lambda$ and $\phi$ we tested three alternative prio
 
 Spatial patterns are observed for some of the explanatory variables. Moreover, we notice some major changes in the posterior distribution of the effect of two covariates, i.e., ELI (share of low productivity workers) and ELL (low education incidence), as shown in the forest plot in Figure \ref{fig:forestplot} and discussed in more detail in the next section. This suggests the presence of spatial confounding \citep{RHZ} between those covariates and unmeasured spatial effects. Therefore, following the simplified Spatial+ method developed by \cite{Urdangarin24}, we attempt to mitigate spatial confounding by filtering out these variables' spatial trends represented by the eigenvectors of the Laplacian matrix associated with the smallest eigenvalues \citep{SpectralClust}. Part of the explanatory variables, i.e. the MFI components and the distance from help desks, are mapped in Appendix \ref{Appendix:X_maps}.
 
-The four spatial structures for the space-time Poisson model presented in section \ref{sec.3}, namely ICAR, PCAR, LCAR, and BYM, are compared using the Watanabe-Akaike information criterion \citep[WAIC hereinafter,][]{GelmanWAIC}, computed internally in \texttt{R-INLA}. The WAIC and its complexity component, i.e., the number of free parameters (P. eff), are shown in Table \ref{tab:waic}. For the $\alpha$, $\lambda$, and $\phi$ parameters of PCAR, LCAR and BYM, respectively, we compare the uniform prior and two alternative parametrisations of the PC-prior: PC1 with $\alpha = 2/3 \wedge U = 1/2$, and PC2 with $\alpha = 0.9 \wedge U = 0.6$.
+The four spatial structures for the space-time Poisson model presented in section \ref{section:STPoisson}, namely ICAR, PCAR, LCAR, and BYM, are compared using the Watanabe-Akaike information criterion \citep[WAIC hereinafter,][]{GelmanWAIC}, computed internally in \texttt{R-INLA}. The WAIC and its complexity component, i.e., the number of free parameters (P. eff), are shown in Table \ref{tab:waic}. For the $\alpha$, $\lambda$, and $\phi$ parameters of PCAR, LCAR and BYM, respectively, we compare the uniform prior and two alternative parametrisations of the PC-prior: PC1 with $\alpha = 2/3 \wedge U = 1/2$, and PC2 with $\alpha = 0.9 \wedge U = 0.6$.
 %
 \begin{table}[ht]
 \centering
@@ -2950,7 +2948,7 @@ param & mean & sd & Q0.025 & Median & Q0.975 \\
 Residual variability is balanced between spatial autocorrelation and random noise, as the variance mixing parameter has a posterior expectation of $\approx 0.6$, which means that the share of residual variability explained by the spatial structure is slightly larger. The standard deviation of the spatio-temporal latent field has a posterior expectation of $\approx 0.47$. This can be interpreted as an increment of 1 standard deviation of the latent field in a municipality implies, \textit{ceteris paribus}, a change of approximately $\exp(0.47)-1\approx59\%$ in the frequency of AVC accesses. Lastly, the temporal autocorrelation is positive, as one could expect by comparing the spatial patterns in AVC accesses in Figure \ref{fig:log_access}.
 
 
-\section{Discussion and conclusions}\label{sec.4}
+\section{Discussion and conclusions}\label{section:VAW.discussion}
 
 The main limitation of this research is that we employ a unique predictor combining the two processes of violence occurring and help seeking after violence occurs, which cannot be disentangled with the available data. Consequently, the effects we estimate reflect both mechanisms at once. Additional limitations include the lack of individual-level information for privacy reasons, the unavailability of service-level performance indicators, and the constraints posed by aggregated data that can mask within-area heterogeneity. 
 A promising development would be the implementation of a Poisson-logistic regression model \citep{Stoner02102019}, in line with the analysis of \cite{Polettini}, to allow the explicit quantification of VAW under-reporting. To this end, more integrated datasets are required combining administrative, health, social-service and AVC-level information, thereby enabling the identification of respective contributions of structural incidence, help-seeking propensity and territorial accessibility, and allowing the two processes of occurrence and help-seeking to be modelled separately. 
@@ -2964,7 +2962,7 @@ may contribute to improving interpretability and stabilising the INLA-based infe
 \begin{appendices}
 
 \section{Maps of Explanatory Variables} \label{Appendix:X_maps}
-In this section, we display some additional maps, i.e. the components of the Municipality Frailty Index (MFI) included as explanatory variables in the analytical model described in section \ref{sec.3}, and the distance from municipalities hosting a help desk, which equals to zero for about 40\% of municipalities (105 over 256), as they have at least one. The pupulation growth rate map does not include the municipality of Anzano di Puglia (FG) due to its extreme record ($ -311\%$)
+In this section, we display some additional maps, i.e. the components of the Municipality Frailty Index (MFI) included as explanatory variables in the analytical model described in section \ref{section:STPoisson}, and the distance from municipalities hosting a help desk, which equals to zero for about 40\% of municipalities (105 over 256), as they have at least one. The pupulation growth rate map does not include the municipality of Anzano di Puglia (FG) due to its extreme record ($ -311\%$)
 
 \begin{figure}
 \subfloat{\includegraphics[width = 2.5in]{VAW/Fig6.pdf}} 
