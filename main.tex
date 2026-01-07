@@ -58,11 +58,13 @@
 %% -------- Introduction --------------------------------- %%
 \section{Introduction}
 
-In this chapter, we provide an overview of the statistical methodology followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox of spatial autoregressive modelling, with specific applications in chapter \ref{Chapter:Invalsi} \textcolor{red}{and 5}. Since multivariate applications are frequent in practice, and the context of chapter \ref{Chapter:Invalsi} is multivariate as well, most of the attention of this chapter is devoted to multivariate models, keeping in mind that once the multivariate model is defined, the univariate one follows straightforwardly. 
+In this chapter, we provide an overview of the statistical methodology followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox of spatial autoregressive modelling, with specific applications in chapter \ref{Chapter:Invalsi} and \ref{Chapter:VAW}. Since multivariate applications are frequent in practice, and the context of chapter \ref{Chapter:Invalsi} is multivariate as well, most of the attention of this chapter is devoted to multivariate models, keeping in mind that once the multivariate model is defined, the univariate one follows straightforwardly. 
 
 We start by introducing the simplest and most intuitive model, the Intrinsic Conditional Autoregressive \citep{Mardia}, which generalises to the multivariate case the seminal paper of \cite{CAR}. We then introduce some simple extensions of the ICAR which may be needful to handle random noise. 
 
-Autoregressive models are usually employed as latent variables in spatial regression. This is partly motivated by the improper prior distribution of intrinsic processes, which however does not imply an improper posterior \citep{Banerjee}. On the other hand, the reason to employ a spatially structured latent random variable is the presence of an unmeasured covariate following a spatial pattern and entering the model predictor. When a spatial effect is included in a regression model to account for unmeasured covariates, it may happen that the latter is correlated with some observed covariates. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in two decades of literature (\citep{Urdangarin23}, \citep{DupontArXiv}), starting from the intuitive solution of constraining random effects to be linearly independent on observed explanatory variables (\citep{RHZ}, \cite{Hodges}), which goes under the name of restricted spatial regression (RSR); this is done by projecting the spatial field onto the orthogonal subspace to the covariates matrix.
+Autoregressive models are usually employed as latent variables in spatial regression. This is partly motivated by the improper prior distribution of intrinsic processes, which however does not imply an improper posterior \citep{Banerjee}. On the other hand, the reason to employ a spatially structured latent random variable is the presence of an unmeasured covariate following a spatial pattern and entering the model predictor. 
+
+When a spatial effect is included in a regression model to account for unmeasured covariates, it may happen that the latter is correlated with some observed covariates. This issue can be traced to the more general problem of spatial confounding. Several approaches have been developed in two decades of literature \citep{Urdangarin23, DupontArXiv}, starting from the intuitive solution of constraining random effects to be linearly independent on observed explanatory variables \citep{RHZ, Hodges}, which goes under the name of restricted spatial regression (RSR); this is done by projecting the spatial field onto the orthogonal subspace to the covariates matrix.
 
  
 
@@ -73,35 +75,43 @@ Autoregressive models are usually employed as latent variables in spatial regres
 
 Consider a $k$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{E}$ is the set of edges, such that a generic element $\epsilon_{ij}$ denotes the edge between sites $s_i$ and $s_j$;  $\mathcal{S} := \lbrace s_i \rbrace_{i=1}^{n_z}$ the set of nodes (sites) of size $n_z$, and $\partial_i := \lbrace s_j :\epsilon_{ij} \in \mathcal{E}\rbrace$ is the set of neighbours of site $i$.  The graph can be described by:
 \begin{itemize}
-\item The binary neighbourhood matrix $\boldsymbol{W}$, with $w_{ij} = 1 \Longleftrightarrow s_j \in \partial s_i$ and $w_{ij}=0$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs})
+\item The binary neighbourhood matrix $\boldsymbol{W}$, with $w_{ij} = 1 \Longleftrightarrow s_j \in \partial s_i$ and $w_{ij}=0$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs}).
 \item The diagonal degree matrix $\boldsymbol{D}$, whose elements correspond to the number of edges of each node or, alternatively, to the row or column sums of $\boldsymbol{W}$, hence $d_i = \sum_{j=1}^{n_z} w_{ij} = \mathrm{card}(\partial s_i)$
-\item The Laplacian matrix $\boldsymbol{L} =\boldsymbol{ D} - \boldsymbol{W}$, which is singular by construction and more precisely has rank deficiency equal the number of connected components in $\mathcal{G}$, \citep[see e.g.][]{ICAR, Hodges2003}
+\item The Laplacian matrix $\boldsymbol{L} =\boldsymbol{ D} - \boldsymbol{W}$, which is singular by construction and more precisely has rank deficiency equal the number of connected components in $\mathcal{G}$, \citep[see e.g.][]{ICAR, Hodges2003}. 
 \end{itemize}
+
+In this work, we will assume that graphs are undirected and the neighbourhood matrix is binary and symmetric. As a consequence, the resulting Laplacian will be symmetric as well. Some authors refer to it a the \textit{unweighted} Laplacian. We will omit this specification as no other definition of Laplacian matrix will be employed presently.
+
 
 Following \cite{Mardia}, see also chapter 10 of \cite{Banerjee}, we suppose that $z_i$ follows this prior conditional distribution:
 %
 \begin{equation}
-z_i | z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \boldsymbol{\Sigma}\right)
+z_i \vert z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \boldsymbol{\Sigma}\right)
 \label{eq:icarconditional}
 \end{equation}
 %
-Where $\boldsymbol{\Sigma}$ is a $k \times k$ variance-covariance matrix. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i | z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} B_{ij} z_{i}, \frac{1}{d_i} \boldsymbol{\Sigma} \right)$ and presented $B_{ij} = \frac{w_{ij}}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
+Where $\boldsymbol{\Sigma}$ is a $k \times k$ variance-covariance matrix between ICAR fields. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i \vert z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} B_{ij} z_{i}, \frac{1}{d_i} \boldsymbol{\Sigma} \right)$ and presented $B_{ij} = \frac{w_{ij}}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
 
-We show in Appendix \ref{appendix:icar} that the joint distribution of a multivariate ICAR field is:
+The joint distribution of a multivariate ICAR field is:
 %
 \begin{equation}
-z|\boldsymbol{\Sigma} \sim \mathcal{N}_{kn_z} \left( 0, \boldsymbol{\Sigma}^{-1} \otimes \boldsymbol{L}^{+}\right)
+\pi \left(z \vert \boldsymbol{\Sigma} \right)= 
+\left( \frac{1}{2 \pi} \right)^{\frac{k(n_z-G)}{2}}\sqrt{\lvert \boldsymbol{\Sigma}^{-1} \otimes
+\boldsymbol{L} \rvert} 
+\, \, e^{\displaystyle{-\tfrac{1}{2}
+z^\top\left(\boldsymbol{\Sigma^{-1}} \otimes \boldsymbol{L} \right) z}}
+%z\vert\boldsymbol{\Sigma} \sim \mathcal{N}_{kn_z} \left( 0, \boldsymbol{\Sigma} \otimes \boldsymbol{L}^{+}\right)
 \label{eq:icarjoint}
 \end{equation}
 %
-Here, the $^{+}$ superscript here denotes the Moore-Penrose pseudoinverse.
+The exponent in the normalising constant depends on the rank deficiency $G$ of the Laplacian, as proved by \cite{Hodges2003}. In Appendix \ref{appendix:icar} we show how the precision matrix is derived. 
 
 \subsection{Precision scaling} \label{subsection:scaling}
 
-As can be seen in the previous equations, the ICAR precision is the product of two terms, the global precision (inverse scale) and a structure matrix. This hinders parameter interpretation at the global level; to start discussing it, let us first consider the case of a connected graph. Denoting with $\boldsymbol{S} : = \boldsymbol{L}^{+}$, the marginal variance of a generic $i$-th realisation of the latent effect for the $h$-th variable is: 
+As can be seen in the previous equations, the ICAR precision is the product of two terms, the global precision (inverse scale) and the Laplacian. This hinders parameter interpretation at the global level; to start discussing it, let us first consider the case of a connected graph. Denoting with $\boldsymbol{S} : = \boldsymbol{L}^{+}$, the marginal variance of a generic $i$-th realisation of the latent effect for the $h$-th variable is: 
 %
 $$
-\mathrm{VAR}[z_{ih} \mid \boldsymbol{\Sigma}] = \sigma_{h}^2 s_{ii}
+\mathrm{VAR}[z_{ih} \vert \boldsymbol{\Sigma}] = \sigma_{h}^2 s_{ii}
 $$
 Where $\sigma_h^2$ is the marginal variance of the $h$-th variable, corresponding to the $h$-th diagonal element of of $\boldsymbol{\Sigma}$; in other words, $s_{ii}$ would be the marginal variance of $z_i$ if the relevant global precision was equal to 1.
 %
@@ -125,37 +135,39 @@ Where $\mathcal{P}$ is an appropriate permutation matrix, $\boldsymbol{L_i}$ is 
 %% -------- More flexible areal models ------------%%
 \section{Some extensions of the Intrinsic CAR} \label{section:CARs}
 
-The ICAR model has a relatively small number of parameters, i.e. $k(k+1)/2$, corresponding to the entries of the precision matrix, and is easy to interpret. However, it can be easily seen that it is not a flexible model, in that it assumes a spatial autocorrelation parameter equal to $1$. It can be thought of as the spatial equivalent of $RW(1)$ processes in time series analysis: it is suited to detect strong spatial structures, but is misspecified when spatial trends are not particularly smooth. In such cases, the possible outcomes are two: either the model fails at capturing random noise in data, or it does adapt to data but at the price of a higher complexity (overfitting). For this reason, some extension have been developed in literature to account for noise. Here we introduce three popular ones, the so-called Proper CAR \citep{PCAR_Gelfand}, the Leroux proper CAR \citep{Leroux}, and the Besag-York-Mollié \citep[BYM][]{BYM, BYM2} convolution model. 
+The ICAR model has a relatively small number of parameters, i.e. $k(k+1)/2$, corresponding to the entries of the precision matrix, and is easy to interpret. However, it can be seen that it is not a flexible model, in that it assumes a spatial autocorrelation parameter equal to $1$. It can be thought of as the spatial equivalent of order 1 Random Walk processes in time series analysis: it is suited to detect strong spatial structures, but is misspecified when spatial trends are not particularly smooth. In such cases, the possible outcomes are two: either the model fails at capturing random noise in data, or it does adapt to data but at the price of a higher complexity (overfitting). For this reason, some extension have been developed in literature to account for noise. Here we introduce three popular ones, the so-called Proper CAR \citep{PCAR_Gelfand}, the Leroux proper CAR \citep{Leroux}, and the Besag-York-Mollié \citep[BYM][]{BYM, BYM2} convolution model. 
 
 \subsection{The Proper CAR} \label{subsection:pcar}
 
-Thinking analogously as time series analysts, an intuitive generalisation of the ICAR would be to introduce a parameter, say $ \rho \in [0, 1]$, controlling for spatial autocorrelation \citep[][chapter 10]{Banerjee}. This would yield the conditional prior distribution:
+Thinking analogously as time series analysts, an intuitive generalisation of the ICAR would be to introduce a parameter, say $ \rho \in [0, 1[$, controlling for spatial autocorrelation \citep[][chapter 10]{Banerjee}. This would yield the conditional prior distribution:
 %
 $$
-z_i | z_{-i}, \Sigma \sim \mathcal{N}_{k} \left(\sum_{j=1}^{n_k} \frac{w_{ij}}{d_i}\rho z_{j}, \frac{1}{d_i} \Sigma \right)
+z_i \vert z_{-i}, \Sigma \sim \mathcal{N}_{k} \left(\sum_{j=1}^{n_k} \frac{w_{ij}}{d_i}\rho z_{j}, \frac{1}{d_i} \Sigma \right)
 $$
 %
 Please notice that $\rho$ is a scalar here. With calculations like those in section \ref{section:icar}, the joint prior becomes:
 %
 \begin{equation}
-z|\Sigma, \rho \sim \mathcal{N}_{kn_z} \left( 0, \Sigma \otimes (\boldsymbol{D} - \rho \boldsymbol{W})^{-1}\right)
+z\vert\Sigma, \rho \sim \mathcal{N}_{kn_z} \left( 0, \Sigma \otimes (\boldsymbol{D} - \rho \boldsymbol{W})^{-1}\right)
  \label{eq:pcar}
 \end{equation}
 %
-On a side note, this is a proper distribution in that for $\rho < 1$ the precision matrix is full-rank \footnote{For this reason, this model has been known in the literature as the 'proper' CAR. Properness is far from an exclusive feature of this model, and is not even limited to the models listed in this section, yet this naming has become a convention, and we respect this convention for notation brevity.}. One advantage of this model is the ease in interpretation, as $\rho$ quantifies the extent to which the value of $z_j$ depends on the neighbouring sites. Clearly, the limit case for $\rho = 1$ is the ICAR, while the limit case for $\rho = 0$ is an independent but \textit{not} identically distributed model, in which the variance is proportional to the inverse degree matrix $\boldsymbol{D}^{-1}$, hence a site with a higher number of neighbours will have a smaller prior conditional variance.
+On a side note, in absence of singletons, i.e. nodes with zero neighbours, this is a proper distribution in that for $\rho \in[0,1[$ the within-fields precision matrix is symmetric and positive definite \footnote{For this reason, this model has been known in the literature as the 'proper' CAR. Properness is far from an exclusive feature of this model, and is not even limited to the models listed in this section, yet this naming has become a convention, and we respect this convention for notation brevity.}. This can be easily seen starting from the eigendecomposition of the row-stochastic matrix $\boldsymbol{D^{-1}W}$. The Gershgorin disk theorem \citep[][section 6.1]{HornJohnson} implies all its eigenvalues lie within the unit disk. This matrix is similar to $ \boldsymbol{D^{-1/2}WD^{-1/2}}$, hence these two matrices share the same eigenvalues. If $\rho \in [0,1[$, the eigenvalues of the symmetric matrix $\boldsymbol{I}_{n_z} - \rho \boldsymbol{D^{-1/2}WD^{-1/2}}$ must then be all strictly positive. The within-fields precision matrix is given by the quadratic form $\boldsymbol{D^{1/2}} \left(\boldsymbol{I}_{n_z} - \rho \boldsymbol{D^{-1/2}WD^{-1/2}} \right)\boldsymbol{D^{1/2}}$ and, if $\rho \in[0,1[$, is positive definite for any full-rank degree matrix $\boldsymbol{D}$ \cite[see also][Observation 7.1.8]{HornJohnson}.
+
+One advantage of this model is the ease in interpretation, as $\rho$ quantifies the extent to which the value of $z_j$ depends on the neighbouring sites. Clearly, the limit case for $\rho = 1$ is the ICAR, while the limit case for $\rho = 0$ is an independent but \textit{not} identically distributed model, in which the variance is proportional to the inverse degree matrix $\boldsymbol{D}^{-1}$, hence a site with a higher number of neighbours will have a smaller prior conditional variance.
 
 \subsection{The Leroux proper CAR} \label{subsection:lcar}
 
 As we have seen, a partial drawback of the PCAR model is that the limit case in absence of spatial autocorrelation is not an IID process. A simple solution would be to employ a rather similar model proposed by \cite{Leroux}. This time, the idea is to balance the precision matrix between the ICAR precision (proportional to the Laplacian) and the precision of an IID process (proportional to the identity matrix). To do so, a precision mixing parameter is introduced; here we label it as $\lambda \in [0,1]$. The starting point is the conditional prior:
 %
 $$
-z_i | z_{-i}, \Sigma \sim \mathcal{N}_{k} \left(\sum_{j=1}^{n_z} \frac{ \lambda w_{ij}}{1 - \lambda  + \lambda d_i} z_{j}, \frac{1}{1 - \lambda + \lambda d_i} \Sigma\right)
+z_i \vert z_{-i}, \Sigma \sim \mathcal{N}_{k} \left(\sum_{j=1}^{n_z} \frac{ \lambda w_{ij}}{1 - \lambda  + \lambda d_i} z_{j}, \frac{1}{1 - \lambda + \lambda d_i} \Sigma\right)
 $$
 %
 As can be seen, for $\lambda = 0$ the conditional prior becomes $\mathcal{N}(0, \Sigma) \, \forall i$, and for $\lambda = 1$ we revert to the ICAR. After the usual algebra, the joint prior reads:
 %
 \begin{equation}
-z|\Sigma, \lambda \sim \mathcal{N}_{kn_z} \left( 0,    \Sigma
+z\vert\Sigma, \lambda \sim \mathcal{N}_{kn_z} \left( 0,    \Sigma
   \otimes [\lambda \boldsymbol{L} + (1-\lambda)\boldsymbol{I}_{n_z} ]^{-1}\right)
  \label{eq:lcar}
 \end{equation}
@@ -164,7 +176,7 @@ Interpreting this model is less simple, as it involves understanding the meaning
 
 \subsection{The Besag-York-Mollié model} \label{subsection:bym}
 
-The original version of this model, proposed by \cite{BYM} was the convolution of a univariate ICAR, say $u' \sim \mathcal{N}=(0, \sigma_u^2 \boldsymbol{L})$, and a IID process, say $v \sim \mathcal{N}(0, \sigma_v^2 \boldsymbol{I})$. The underlying idea is to control for both spatial variation and random noise. This is particularly useful in disease mapping contexts, in which the dependent variable is usually Poisson distributed and the linear predictor needs a term to account for random noise, which is not captured by the IMCAR component alone. Some drawbacks can be found, however, in this model. The two components $u$ and $v$ are not separable and their convolution $z =: u' + v$ is what needs being modelled.
+The original version of this model, proposed by \cite{BYM} was the convolution of a univariate ICAR, say $u' \sim \mathcal{N}(0, \sigma_u^2 \boldsymbol{L})$, and a IID process, say $v \sim \mathcal{N}(0, \sigma_v^2 \boldsymbol{I})$. The underlying idea is to control for both spatial variation and random noise. This is particularly useful in disease mapping contexts, in which the dependent variable is usually Poisson distributed and the linear predictor needs a term to account for random noise, which is not captured by the IMCAR component alone. Some drawbacks can be found, however, in this model. The two components $u$ and $v$ are not separable and their convolution $z =: u' + v$ is what needs being modelled.
 
 This formulation hinders the interpretation of the extent to which process variability is driven either by spatial autocorrelation or by noise. For this reason, \cite{BYM2} proposed a reparametrisation of the BYM which allows to scale the variance of the ICAR component, as seen in section \ref{subsection:scaling}. By doing so, a variance mixing parameter $\phi \in [0,1]$ is introduced, and a unique scale parameter $\sigma^2$ is used in place of the two parameters $\sigma_u^2$ and $\sigma_v^2$, replacing the former with $\phi \sigma^2$ and the latter with $(1-\phi) \sigma^2$. The univariate scaled BYM model becomes thus:
 $$
@@ -178,10 +190,10 @@ Since the Laplacian matrix is scaled, the two addenda are now defined on the sam
 
 In the multivariate case, suppose all the ICAR fields are independent and have the same distribution, i.e. 
 $U_j \sim \mathcal{N}_{n_z}(0, \boldsymbol{L_\mathrm{s}}^{+}) \quad \forall j \in [1,k]$
-and $\mathrm{vec}\boldsymbol{U} \sim \mathcal{N}_{pn}(0, I_p \otimes \boldsymbol{L}^{+})$. The same assumption holds for the IID component, i.e. $\mathrm{vec}\boldsymbol{V} \sim \mathcal{N}_{kn_z}(0, \boldsymbol{I_k} \otimes \boldsymbol{I_{n_z}})$. the joint distribution of $z$ is then:
+and $\mathrm{vec}\,\boldsymbol{U} \sim \mathcal{N}_{kn_z}(0, \boldsymbol{I_k} \otimes \boldsymbol{L}^{+})$. The same assumption holds for the IID component, i.e. $\mathrm{vec}\boldsymbol{V} \sim \mathcal{N}_{kn_z}(0, \boldsymbol{I_k} \otimes \boldsymbol{I_{n_z}})$. the joint distribution of $z$ is then:
 %
 \begin{equation}
-z|\Sigma, \phi \sim \mathcal{N} \left( 0, 
+z\vert\Sigma, \phi \sim \mathcal{N} \left( 0, 
  \Sigma \otimes (\phi \boldsymbol{L}_\mathrm{s}^+ + (1-\phi) \boldsymbol{I}_{n_z})\right)
  \label{eq:mbym}
 \end{equation}
@@ -203,27 +215,27 @@ The core idea is defining $\boldsymbol{z} := \boldsymbol{z}^{(0)} \boldsymbol{M}
 
 Even though the $\boldsymbol{M}$ matrix does not have to be squared, if the number of variables is not prohibitive, models with squared $\boldsymbol{M}$, i.e. $p=k$, are easier to interpret and allow for exactly one spatial association parameter for each variable. 
 
-Take the PCAR model as an example. With $p=k$, equation \ref{eq:pcar} can be generalised as $\mathrm{Var}[z | \Sigma, \boldsymbol{\rho}] = \boldsymbol{\Sigma} \otimes(\boldsymbol{I_k} \otimes \boldsymbol{D} - \boldsymbol{\rho} \otimes \boldsymbol{W})^{-1}$, where $\boldsymbol{\rho} = \mathrm{diag}(\rho_1, \rho_2, \dots, \rho_k)$, and in the block-factorisable case seen in subsection \ref{subsection:pcar} it was $\boldsymbol{\rho} = \rho \boldsymbol{I_k}$. When the autocorrelation parameter is multivariate, the variance becomes
+Take the PCAR model as an example. With $p=k$, equation \ref{eq:pcar} can be generalised
 %
 \begin{equation}
 \text{PCAR:} \quad \quad 
-\mathrm{Var}[ \mathrm{vec}\,z | \boldsymbol{\Sigma}, \boldsymbol{\rho}] = 
+\mathrm{Var}[ \mathrm{vec}\,z \vert \boldsymbol{\Sigma}, \boldsymbol{\rho}] = 
 \left( \boldsymbol{M ^\top } \otimes\boldsymbol{ I_{n_z}} \right)
 \left(\boldsymbol{I_p} \otimes \boldsymbol{D} - \boldsymbol{\rho} \otimes \boldsymbol{W} \right)^{-1}
 \left(\boldsymbol{M} \otimes \boldsymbol{ I_{n_z}} \right)
 \end{equation}
 %
-The same reasoning easily applies to the LCAR:
+where $\boldsymbol{\rho} = \mathrm{diag}(\rho_1, \rho_2, \dots, \rho_k)$, and in the block-factorisable case seen in subsection \ref{subsection:pcar} it was $\boldsymbol{\rho} = \rho \boldsymbol{I_k}$. The same reasoning easily applies to the LCAR:
 %
 \begin{equation}
 \text{LCAR:} \quad \quad 
-\mathrm{Var}[\mathrm{vec} \,z | \boldsymbol{\Sigma}, \boldsymbol{\Lambda}] = 
+\mathrm{Var}[\mathrm{vec} \,z \vert \boldsymbol{\Sigma}, \boldsymbol{\Lambda}] = 
 \left( \boldsymbol{M ^\top } \otimes\boldsymbol{ I_{n_z}} \right)
  \left[ \Lambda \otimes \boldsymbol{L} + (\boldsymbol{I}_p - \Lambda) \otimes \boldsymbol{I}_n\right]^{-1} 
  \left(\boldsymbol{M} \otimes \boldsymbol{ I_{n_z}} \right)
 \end{equation}
 %
-Regarding the BYM, throughout this thesis we will rely on the simplifying hypothesis that:
+Where, again, $\boldsymbol{\Lambda} = \mathrm{diag} \left(\lambda_1, \lambda_2, \dots, \lambda_k \right)$. Regarding the BYM, throughout this thesis we will rely on the simplifying hypothesis that:
 %
 \begin{equation}
 \boldsymbol{z} = \boldsymbol{U}\boldsymbol{ \Phi}^\frac{1}{2} \boldsymbol{M} + 
@@ -231,11 +243,11 @@ Regarding the BYM, throughout this thesis we will rely on the simplifying hypoth
 \label{eq:mmbym_stochrep}
 \end{equation}
 %
-i.e. both the ICAR and IID components share the same scale parameter. This is not as immediate as in the univariate case, in which the univariate scale parameter could be easily rescaled leveraging on the presence of the mixing parameter. This simplifying hypothesis is not admitted, e.g., by \cite{Corpas}, who did not employ the scaled BYM parametrisation and admitted a different scale parameter for each of the two BYM components. On the other hand, the unique $M$ approach is followed by \cite{Urdangarin24}, who indeed extend the parametrisation of \cite{BYM2} to the M-model case. This approach we will commit to. Equation \ref{eq:mmbym_stochrep} then implies
+i.e. both the ICAR and IID components share the same scale parameter. This is not as immediate as in the univariate case, in which the univariate scale parameter could be easily rescaled leveraging on the presence of the mixing parameter. This simplifying hypothesis is not admitted, e.g., by \cite{Corpas}, who did not employ the scaled BYM parametrisation and admitted a different scale parameter for each of the two BYM components. On the other hand, the unique $\boldsymbol{M}$ approach is followed by \cite{Urdangarin24}, who indeed extend the parametrisation of \cite{BYM2} to the M-model case. This is the approach we will commit to. Equation \ref{eq:mmbym_stochrep} then implies
 %
 \begin{equation}
     \text{BYM:} \quad \quad
-    \mathrm{Var}[\mathrm{vec} \, z | \boldsymbol{\Sigma},\boldsymbol{ \Phi}] = 
+    \mathrm{Var}[\mathrm{vec} \, z \vert \boldsymbol{\Sigma},\boldsymbol{ \Phi}] = 
     \left( \boldsymbol{M ^\top } \otimes\boldsymbol{ I_{n_z}} \right)
  \left[ \boldsymbol{\Phi} \otimes \boldsymbol{L} + (\boldsymbol{I_k} - \boldsymbol{\Phi}) \otimes \boldsymbol{I}_n \right]
  \left(\boldsymbol{M} \otimes \boldsymbol{ I_{n_z}} \right)
@@ -258,9 +270,9 @@ To understand restricted regression, let us briefly outline a general latent Gau
 %
 $$
 \left\{ \begin{array}{ll} 
-\mathbb{E}\left[y \mid \eta, \psi \right] = g^{-1}(\eta) \\
+\mathbb{E}\left[y \vert \eta, \psi \right] = g^{-1}(\eta) \\
 \eta = \boldsymbol{A} \vartheta \\
-\vartheta | \psi \sim \mathcal{N}(0, \boldsymbol{Q_{\psi}}^{-1})
+\vartheta \vert \psi \sim \mathcal{N}(0, \boldsymbol{Q_{\psi}}^{-1})
 \end{array} \right. 
 $$
 %
@@ -273,9 +285,9 @@ $$
 $$
 where $\boldsymbol{X}$ is a matrix of explanatory variables or covariates of size $n_y \times p$, and $\boldsymbol{\xi}$ is the design matrix of latent effects of size $n_y \times n_z$. In many cases, such as in typical spatial disease mapping models, $n_y=n_z$, though this assumption is not necessary and is violated e.g. in multilevel models, such as the case study in Chapter \ref{Chapter:Invalsi}.
 
-Let us further assume that $(y_j\perp\!\!\!\perp y_k )|\vartheta, \psi$ and $(y_j\perp\!\!\!\perp \eta_k )|\vartheta, \psi$ for any $j,k \in [1, n_y]$ with $j \neq k$, so each observation $y_j$ depends on $\vartheta$ only through one value $\eta_j$ and the likelihood can be factorised as:
+Let us further assume that $(y_j\perp\!\!\!\perp y_k )\vert\vartheta, \psi$ and $(y_j\perp\!\!\!\perp \eta_k )\vert\vartheta, \psi$ for any $j,k \in [1, n_y]$ with $j \neq k$, so each observation $y_j$ depends on $\vartheta$ only through one value $\eta_j$ and the likelihood can be factorised as:
 $$
-\pi(y|\vartheta, \psi) = \pi(y| \eta, \psi) = \prod_{j = 1}^{n_y} \pi(y_j | \eta_j, \psi)
+\pi(y\vert\vartheta, \psi) = \pi(y\vert \eta, \psi) = \prod_{j = 1}^{n_y} \pi(y_j \vert \eta_j, \psi)
 $$
  For illustration purposes, let us now assume that $y$ is Gaussian and the latent spatial effect $z$ has prior mean $0$ and precision matrix $\boldsymbol{Q}(\psi) = \tau \boldsymbol{R}$, where $\boldsymbol{R}$ is a semidefinite positive structure matrix and $\tau \in \psi$ is a global precision parameter; for univariate spatial autoregressive models described in sections \ref{section:icar} and \ref{section:CARs}, $\boldsymbol{R}=\boldsymbol{\Omega^+}=\boldsymbol{L^+}$ for the ICAR $\boldsymbol{R}=\boldsymbol{\Omega^{-1}}$ if the model is proper. In such Gaussian regression framework, the regression model becomes:
 %
@@ -307,7 +319,7 @@ Then, the posterior expectation of $\beta$ and $z$, conditional on hyperparamete
 %
 \begin{equation}
 \begin{aligned}
-\mathbb{E}[\beta | y, \tau_{\varepsilon}, \bar{r}] = \boldsymbol{G}^{-1} \lbrace 
+\mathbb{E}[\beta \vert y, \tau_{\varepsilon}, \bar{r}] = \boldsymbol{G}^{-1} \lbrace 
 \boldsymbol{X}^{\top} 
 + \boldsymbol{X}^{\top} \boldsymbol{\xi S_{11}} ^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top} 
 - \boldsymbol{X}^{\top} \boldsymbol{\xi S_{11}}^{-1} \boldsymbol{\xi}^{\top}
@@ -317,7 +329,7 @@ Then, the posterior expectation of $\beta$ and $z$, conditional on hyperparamete
 \end{equation}
 And for the spatial field, we have:
 \begin{equation}
-\mathbb{E}[z | y, \tau_{\varepsilon}, \bar{r}] =  \boldsymbol{S_{11}} ^{-1}
+\mathbb{E}[z \vert y, \tau_{\varepsilon}, \bar{r}] =  \boldsymbol{S_{11}} ^{-1}
 \left(\boldsymbol{\xi}^{\top} - \boldsymbol{\xi}^{\top} \boldsymbol{X G}^{-1} \boldsymbol{X}^{\top}\right) \, y
 \label{eq:expzeta}
 \end{equation}
@@ -330,7 +342,7 @@ Moreover, if a flat prior is defined on $\beta$, we have $M \longrightarrow \inf
  \subsection{Restricted Regression} \label{subsection:RSR}
 We now consider the projection matrix of $y$ onto its least squares fitted values, and its orthogonal complement, respectively:
 $$
-\boldsymbol{P} := \boldsymbol{X}(\boldsymbol{X}^{\top}\boldsymbol{X})^{-1}X^{\top} \quad \quad \text{and} \quad \quad \boldsymbol{P_{\bot}} := \boldsymbol{I_{n_y}} - \boldsymbol{X}(\boldsymbol{X}^{\top}\boldsymbol{X})\boldsymbol{X}^{\top} = \boldsymbol{I_{n_y}} - \boldsymbol{P}
+\boldsymbol{P} := \boldsymbol{X}(\boldsymbol{X}^{\top}\boldsymbol{X})^{-1}X^{\top} \quad \quad \text{and} \quad \quad \boldsymbol{P_{\bot}} := \boldsymbol{I_{n_y}} - \boldsymbol{X}(\boldsymbol{X}^{\top}\boldsymbol{X})^{-1}\boldsymbol{X}^{\top} = \boldsymbol{I_{n_y}} - \boldsymbol{P}
 $$
 
 The crucial step of all the forthcoming analysis is the eigendecomposition of $\boldsymbol{P_{\bot}}$. Firstly, consider that its first $n_y-p$ eigenvalues are ones, and the latter $p$ are zeroes.
@@ -357,7 +369,7 @@ $$
 
 Without loss of generality, it holds that
 $$
-\ln \pi(z | \tau) = C -\dfrac{\tau}{2} z^{\top} \boldsymbol{R} z  = 
+\ln \pi(z \vert \tau) = C -\dfrac{\tau}{2} z^{\top} \boldsymbol{R} z  = 
 C -\dfrac{\tau}{2} z^{\top} \left(\boldsymbol{E \, K}\right)
 \begin{pmatrix} \boldsymbol{E}^{\top} \\ \boldsymbol{K}^{\top}\end{pmatrix} 
 \, \boldsymbol{R} \, \left(\boldsymbol{E \, K}\right) 
@@ -387,21 +399,21 @@ Specifically, the regression model under RSR reads as:
 \end{equation}
 %
 
-%Under the unrestricted model, we have $\mathrm{Prec}[\zeta_1 | \tau, K^{\top}z = 0] = E^{\top}\boldsymbol{R}E$, as in \citep[eq. 16-17 at p. 1201][]{RHZ}. To see this, recall:
+%Under the unrestricted model, we have $\mathrm{Prec}[\zeta_1 \vert \tau, K^{\top}z = 0] = E^{\top}\boldsymbol{R}E$, as in \citep[eq. 16-17 at p. 1201][]{RHZ}. To see this, recall:
 %$$
-%\ln p(\zeta | \tau; K^{\top}z = 0) \propto 
+%\ln p(\zeta \vert \tau; K^{\top}z = 0) \propto 
 % -\dfrac{\tau}{2}  (\zeta_1^{\top} \, 0_{p}^{\top}) \begin{pmatrix} E^{\top} \\ K^{\top}\end{pmatrix} 
 %\boldsymbol{R} (E \, K)  \begin{pmatrix} \zeta_1 \\ 0_{p} \end{pmatrix} = -\dfrac{\tau}{2} \zeta_1^{\top} \, E^{\top}\boldsymbol{R}E \, %\zeta_1
 %$$
 
-With respect to equation \ref{eq:RSR}, if we consider $\boldsymbol{\xi} = \boldsymbol{E}$ and $\vartheta_1 = \begin{pmatrix} \beta \\ \boldsymbol{E}^{\top}z \end{pmatrix}$, it is straightforward to see that $\mathbb{E}[\beta|y, \tau_{\varepsilon}, \bar{r}] = \boldsymbol{G}^{-1} \boldsymbol{X}^{\top}y$; if $\pi(\beta)$ is flat, its posterior expectation reduces to $X^{\top}(X^{\top}X)^{-1}y$, which is the ordinary least squares estimator.
+With respect to equation \ref{eq:RSR}, if we consider $\boldsymbol{\xi} = \boldsymbol{E}$ and $\vartheta_1 = \begin{pmatrix} \beta \\ \boldsymbol{E}^{\top}z \end{pmatrix}$, it is straightforward to see that $\mathbb{E}[\beta\vert y, \tau_{\varepsilon}, \bar{r}] = \boldsymbol{G}^{-1} \boldsymbol{X}^{\top}y$; if $\pi(\beta)$ is flat, its posterior expectation reduces to $X^{\top}(X^{\top}X)^{-1}y$, which is the ordinary least squares estimator.
 
 %As a side effect of deconfounding $z$, it may be worth noticing that the the size of the new precision matrix is $(n-p) \times (n-p)$ and its rank is $ \leq \mathrm{min} \lbrace   \mathrm{rk}(\boldsymbol{E}), \mathrm{rk}(\boldsymbol{R}) \rbrace = \mathrm{min} \lbrace (n-p), \mathrm{rk}(\boldsymbol{R}) \rbrace$. Hence, if the rank deficiency of $\boldsymbol{R}$ is less than $p$, the new spatial effect has a proper distribution even if $z$ is an ICAR process. If the underlying graph is disconnected and $p(z)$ can be factorised in a factor for each connected component (CC) then the rank deficiency of $\boldsymbol{R}$ is equal to the number of CCs, but it is necessary to impose a sum to zero constraint for each CC, hence the same number of intercepts would be required; thus, also in this case $n_y-p$ is smaller than $rk(\boldsymbol{R})$ and $\boldsymbol{E}^{\top}\boldsymbol{R E}$ is still proper. However, there are still some possible situations in which this inconvenience can arise, e.g. in multilevel models, like in Chapter \ref{Chapter:Invalsi}.
 
 
 Referring to the flat prior on $\beta$, under the restricted model it holds that:
 $$
-\mathrm{E}[\beta_\mathrm{RSR} | y, z, \tau_{\varepsilon}, \bar{r}] = \beta_\mathrm{OLS} - (X^{\top}X)^{-1} X^{\top}(I - X(X^{\top}X)^{-1}X^{\top})z = \beta_\mathrm{OLS}
+\mathrm{E}[\beta_\mathrm{RSR} \vert y, z, \tau_{\varepsilon}, \bar{r}] = \beta_\mathrm{OLS} - (X^{\top}X)^{-1} X^{\top}(I - X(X^{\top}X)^{-1}X^{\top})z = \beta_\mathrm{OLS}
 $$
 Where $\beta_\mathrm{RSR}$ denotes the vector of covariate effects under restricted spatial regression and $\beta_{OLS}$ are covariate effects estimated via the ordinary least squares. This implies $\beta$ is estimated independently of the latent effect, and its expectation equals that of the nonspatial model. Holding a flat prior on $\beta$, referring to equation \ref{eq:projmat}, we see that under the  unrestricted model, with $\xi = I_n$, $\Gamma = \bar{r} \boldsymbol{R} + P_{\bot}$
 \begin{align*}
@@ -421,7 +433,7 @@ RSR can be extended to the multilevel case \cite{Nobre}, in which e.g. spatial e
 
 \subsection{Beyond Restricted Regression}
 
-We have just seen that under RSR the posterior means of covariate effects approximate those of a non-spatial model, and even more so when $y$ is Gaussian and $\beta$ has a flat prior the two estimates are equal. Interestingly, \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta |y]$ if confounding occurs: intuitively, the expectation would be approximately the same of a model ignoring the existence of the spatial component. In terms of interpretation, adding a spatial effect forced to be orthogonal to covariates would not significantly alter the point estimation of covariate effects. 
+We have just seen that under RSR the posterior means of covariate effects approximate those of a non-spatial model, and even more so when $y$ is Gaussian and $\beta$ has a flat prior the two estimates are equal. Interestingly, \cite{DupontArXiv} argue that setting such a constraint would indeed yield a bias in $\mathbb{E}[\beta \vert y]$ if confounding occurs: intuitively, the expectation would be approximately the same of a model ignoring the existence of the spatial component. In terms of interpretation, adding a spatial effect forced to be orthogonal to covariates would not significantly alter the point estimation of covariate effects. 
 
 For this reason, alternative approaches have been sought for in recent year. To our aims, the most useful one is represented by filtering out spatial trends from the explanatory variables. Using a non-parametric correction \citep{Urdangarin24} is particularly convenient to our aims. Before diving into details, we find it useful to discuss another method proposed by \cite{HughesHaran} with the same purpose as RSR, which leverages on the spectral properties of the graph.
 
@@ -489,19 +501,19 @@ If $\boldsymbol{\xi} \neq \boldsymbol{I}$, and the observation length of covaria
 \begin{appendices}
 
 \section{Jont distribution of multivariate ICAR}
-To compute the joint density $\pi(y|\boldsymbol{\Sigma})$ we rely on the Brook's Lemma \citep{HammersleyClifford, CAR}:
+To compute the joint density $\pi(y\vert\boldsymbol{\Sigma})$ we rely on the Brook's Lemma \citep{HammersleyClifford, CAR}:
  \begin{equation}
  \pi(z) = \prod_{i=1}^{n_z} \frac{
- \pi \left(z_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
+ \pi \left(z_i \vert \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
  }{
- \pi \left(x_i \mid \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
+ \pi \left(x_i \vert \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}  \right)
  } \, \pi(x)
  \label{eq:brookslemma}
  \end{equation}
-Where $x$ is a set of known variables with the same cardinality ass $z$ and satisfying the positivity condition. Also, notice  $\pi(x)$ is a constant term we can treat a a normalising constant. Then, consider:
+Where $x$ is a set of known variables with the same cardinality ass $z$ and satisfying the positivity condition \citep{CAR}. Also, notice  $\pi(x)$ is a constant term we can treat a a normalising constant. Then, consider:
 %
 \begin{align}
-\ln \pi \left(z_i | \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) = \\ =
+\ln \pi \left(z_i \vert \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) = \\ =
 C_0 - \frac{d_i}{2} \left( 
 z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n_z} \frac{w_ik}{d_i}z_k
 \right)^{\top} \boldsymbol{\Sigma}^{-1} \left( 
@@ -512,7 +524,7 @@ z_i - \sum_{j=1}^{i-1} \frac{w_{ij}}{d_i} x_j  - \sum_{k=i+1}^{n_z} \frac{w_ik}{
 Where $C_0$ is an additive constant. Now, with no loss of generality, let us assume $x_i = 0 \,   \forall \, i \in [1,n_z]$, so that numerator elements in equation \ref{eq:brookslemma} can be written as
 %
 \begin{align}
- \ln \pi \left(z_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) =\\
+ \ln \pi \left(z_i \vert \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) =\\
  C_0 - \frac{d_i}{2 } \left(z_i   -\sum_{k=i+1}^{n_z} \frac{w_{ij}}{d_i}z_k  \right) ^{\top}
  \boldsymbol{\Sigma}^{-1}  \left(z_i   -\sum_{k=i+1}^{n_z} \frac{w_{ij}}{d_i}z_k  \right)=  \\
  = C_0- \frac{d_i}{2 } \left[ z^{\top}_i \boldsymbol{\Sigma}^{-1} z_i - 
@@ -528,7 +540,7 @@ Where $C_0$ is an additive constant. Now, with no loss of generality, let us ass
 While denominator elements take the form:
 %
 \begin{equation}
- \ln \pi \left(x_i | \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right)\mid_{x_i=0} = C_0 - \frac{d_i}{2}  \left( 
+ \ln \pi \left(x_i \vert \lbrace x_j =0\rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right)\vert_{x_i=0} = C_0 - \frac{d_i}{2}  \left( 
  \sum_{k=i+1}^{n_z} \frac{w_{ik}}{d_i} z_k
  \right) ^{\top} \boldsymbol{\Sigma}^{-1} \left( 
  \sum_{k=i+1}^{n_z} \frac{w_{ik}}{d_i} z_k
@@ -539,7 +551,7 @@ While denominator elements take the form:
 Then, with some standard algebra we get:
 %
 \begin{equation}
-\ln \pi(z \mid \boldsymbol{\Sigma}) = C_1 + \sum_{i=1}^{n_z} d_i z_i ^{\top} \boldsymbol{\Sigma}^{-1} z_i -
+\ln \pi(z \vert \boldsymbol{\Sigma}) = C_1 + \sum_{i=1}^{n_z} d_i z_i ^{\top} \boldsymbol{\Sigma}^{-1} z_i -
 \sum_{i=1}^{n_z} \sum_{k=1}^{n_z} w_{ik} z_i^{\top} \boldsymbol{\Sigma}^{-1} z_k
 \end{equation}
 %
@@ -548,44 +560,44 @@ Where $C_1$ is an additive constant independent on $z$.
 Let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks row-wise the elements of a $n \times k$ matrix into a $kn \times 1$ vector. First consider:
 $$
  \sum_{i=1}^{n_z} d_i z^{\top}_i \boldsymbol{\Sigma}^{-1} z_i = 
-\begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
-\end{pmatrix}^{\top}
-\begin{pmatrix}
-d_1 \boldsymbol{\Sigma}^{-1} & 0 & \ldots & 0 \\
-0 & d_2 \boldsymbol{\Sigma}^{-1} & \ldots & 0 \\
-\vdots & \vdots & \ddots & \vdots \\
-0 & 0 & \ldots & d_{n_z} \boldsymbol{\Sigma}^{-1}
-\end{pmatrix}
-\begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
-\end{pmatrix}  = 
+%\begin{pmatrix}
+%z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+%\end{pmatrix}^{\top}
+%\begin{pmatrix}
+%d_1 \boldsymbol{\Sigma}^{-1} & 0 & \ldots & 0 \\
+%0 & d_2 \boldsymbol{\Sigma}^{-1} & \ldots & 0 \\
+%\vdots & \vdots & \ddots & \vdots \\
+%0 & 0 & \ldots & d_{n_z} \boldsymbol{\Sigma}^{-1}
+%\end{pmatrix}
+%\begin{pmatrix}
+%z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+%\end{pmatrix}  = 
 \mathrm{vec}_r(z) ^{\top} (W \otimes \boldsymbol{\Sigma}^{-1}) \mathrm{vec}_r(z)
 $$
 Then, consider:
 $$
- \sum_{i=1}^{n_z} \sum_{k=1}^{n_z} w_{ik} z^{\top}_i \boldsymbol{\Sigma}^{-1} z_k = 
-\begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
-\end{pmatrix}^{\top}
-\begin{pmatrix}
-\boldsymbol{0_{k \times k}} & w_{12} \boldsymbol{\Sigma}^{-1} & \ldots & w_{1n_z} \boldsymbol{\Sigma}^{-1}\\
-w_{21} \boldsymbol{\Sigma}^{-1} & \boldsymbol{0_{k \times k}} & \ldots & w_{2n_z} \boldsymbol{\Sigma}^{-1}\\
-\vdots & \vdots & \ddots & \vdots \\
-w_{n_z1} \boldsymbol{\Sigma}^{-1} & w_{n_z2} \boldsymbol{\Sigma}^{-1} & \ldots & \boldsymbol{0_{k \times k}}
-\end{pmatrix}
-\begin{pmatrix}
-z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
-\end{pmatrix}  = 
-$$
-$$
+ \sum_{i=1}^{n_z} \sum_{k=1}^{n_z} w_{ik} z^{\top}_i \boldsymbol{\Sigma}^{-1} z_k %= 
+%\begin{pmatrix}
+%z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+%\end{pmatrix}^{\top}
+%\begin{pmatrix}
+%\boldsymbol{0_{k \times k}} & w_{12} \boldsymbol{\Sigma}^{-1} & \ldots & w_{1n_z} \boldsymbol{\Sigma}^{-1}\\
+%w_{21} \boldsymbol{\Sigma}^{-1} & \boldsymbol{0_{k \times k}} & \ldots & w_{2n_z} \boldsymbol{\Sigma}^{-1}\\
+%\vdots & \vdots & \ddots & \vdots \\
+%w_{n_z1} \boldsymbol{\Sigma}^{-1} & w_{n_z2} \boldsymbol{\Sigma}^{-1} & \ldots & \boldsymbol{0_{k \times k}}
+%\end{pmatrix}
+%\begin{pmatrix}
+%z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+%\end{pmatrix}  = 
+%$$
+%$$
 =(\mathrm{vec}_r z) ^{\top} (\boldsymbol{D} \otimes \boldsymbol{\Sigma}^{-1}) \mathrm{vec}_r z
 $$
 \\
 This proves the joint distribution of $z$ is \citep{Mardia, Banerjee, Gelfand}:
 %
 \begin{equation}
- \pi(z  | \boldsymbol{\Sigma}^{-1}) \propto e^{
+ \pi(z  \vert \boldsymbol{\Sigma}^{-1}) \propto e^{
  -\frac{1}{2} (\mathrm{vec}_r\,z)^{\top} (\boldsymbol{L} \otimes \boldsymbol{\Sigma}^{-1})\, \mathrm{vec}_rz
  }
 \label{eq:rowwise}
@@ -611,7 +623,7 @@ $$
 $$
 Which can be proved with some algebra. Hence, in total equivalence with equation \ref{eq:rowwise}, we find that
 $$
-z \mid \boldsymbol{\Sigma} \sim \mathcal{N}_{kn_z} \left(0, \boldsymbol{\Sigma} \otimes \boldsymbol{L}^+\right)
+z \vert \boldsymbol{\Sigma} \sim \mathcal{N}_{kn_z} \left(0, \boldsymbol{\Sigma} \otimes \boldsymbol{L}^+\right)
 $$
 Where the $^+$ sign denotes the Moore-Penrose pseudoinverse of the Laplacian matrix $\boldsymbol{L}$. Pseudoinversion is needed due to Laplacian singularity.
 
@@ -624,14 +636,14 @@ As mentioned in section \ref{subsection:Mmodels}, we use a unique scale paramete
 Consider the model in equation \ref{eq:mmbym}. Keeping up with the approach of \cite{BYM2}, and defining for the sake of brevity $\bar{\Phi} := \boldsymbol{I}_p - \Phi$, we know that:
 %
 $$
-\mathbb{E} [\mathrm{vec}\, \boldsymbol{z} \mid U, \Phi , \boldsymbol{\Sigma}] = \mathrm{vec}(\boldsymbol{U} \Phi^{\frac{1}{2}} \boldsymbol{M}) =
+\mathbb{E} [\mathrm{vec}\, \boldsymbol{z} \vert U, \Phi , \boldsymbol{\Sigma}] = \mathrm{vec}(\boldsymbol{U} \Phi^{\frac{1}{2}} \boldsymbol{M}) =
 [( \boldsymbol{M}^{\top}\Phi^{\frac{1}{2}}) \otimes \boldsymbol{I}_n] \mathrm{vec}\,\boldsymbol{U}
 $$
 %
 and similarly 
 %
 $$
-\mathrm{Var} [\mathrm{vec}\, \boldsymbol{z} \mid \boldsymbol{U}, \Phi , \boldsymbol{\Sigma}] =
+\mathrm{Var} [\mathrm{vec}\, \boldsymbol{z} \vert \boldsymbol{U}, \Phi , \boldsymbol{\Sigma}] =
 \left[( \boldsymbol{M}^{\top} \bar{\Phi}^{ 1/2}) \otimes \boldsymbol{I}_n \right] 
 \mathbb{E} \left[
 \mathrm{vec}\boldsymbol{V}
@@ -641,9 +653,9 @@ $$
  \boldsymbol{M}^\top \bar{\Phi}  \boldsymbol{M} \right) \otimes \boldsymbol{I}_n
 $$
 %
-The distribution of $\boldsymbol{Y} \mid \boldsymbol{U}, \boldsymbol{\Sigma}, \Phi $ then reads:
+The distribution of $\boldsymbol{Z} \vert \boldsymbol{U}, \boldsymbol{\Sigma}, \Phi $ then reads:
 \begin{align*}
--2 \ln \pi \left(\mathrm{vec} \, \boldsymbol{Z} \mid \boldsymbol{U}, \boldsymbol{\Sigma}, \phi \right) =\\
+-2 \ln \pi \left(\mathrm{vec} \, \boldsymbol{Z} \vert \boldsymbol{U}, \boldsymbol{\Sigma}, \phi \right) =\\
  %
 =(\mathrm{vec}\,\boldsymbol{Z})^{\top}
 \left[ \left(
@@ -687,7 +699,7 @@ Now, for brevity let us define the following $p \times p$ matrices:
 \end{align*}
 Hence 
 \begin{align*}
--2 \ln \pi \left(\mathrm{vec}\,\boldsymbol{z} \mid \boldsymbol{U}, \boldsymbol{\Sigma}, \Phi \right) 
+-2 \ln \pi \left(\mathrm{vec}\,\boldsymbol{z} \vert \boldsymbol{U}, \boldsymbol{\Sigma}, \Phi \right) 
 = C + \mathrm{vec}(\boldsymbol{z})^{\top}
 \left(\boldsymbol{q}_{11} \otimes \boldsymbol{I}_n \right) 
 \mathrm{vec}\,\boldsymbol{z} +\\
@@ -701,7 +713,7 @@ Hence
 \end{align*}
 And
 \begin{align*}
--2 \ln \pi \left(\mathrm{vec} \,\boldsymbol{z}, \mathrm{vec}\,\boldsymbol{U} \mid \boldsymbol{\Sigma}, \phi \right)  
+-2 \ln \pi \left(\mathrm{vec} \,\boldsymbol{z}, \mathrm{vec}\,\boldsymbol{U} \vert \boldsymbol{\Sigma}, \phi \right)  
 = C + (\mathrm{vec}\,\boldsymbol{z})^{\top}
 \left(\boldsymbol{q}_{11} \otimes \boldsymbol{I}_n \right) 
 \mathrm{vec}\,\boldsymbol{z} +\\ 
@@ -764,7 +776,7 @@ Since the error term $\varepsilon$ and the latent effects $z$ have different pre
 Now, it is possible to show \citep{LindleySmith} that the posterior mean of $\vartheta_1$, conditional on the model hyperparameters, is
 %
 \begin{equation}
-\mathbb{E}[\vartheta_1 | y, \tau, \tau_{\varepsilon}] =
+\mathbb{E}[\vartheta_1 \vert y, \tau, \tau_{\varepsilon}] =
 \left( \boldsymbol{A_{1}^{\top}A_{1}} + \boldsymbol{C^{-1}} \right)^{-1}\boldsymbol{A_{1}^{\top}}y
 \label{eq:exp_theta}
 \end{equation}
@@ -849,11 +861,11 @@ The most convenient area of application of INLA are the models for Gaussian Mark
 \subsection{Conditional Independence in Gaussian Random Fields}\label{subsection:GRFs}
 An interesting property of the Normal distribution is that if two observations are mutually independent conditioned on all the other ones, then the marginal precision element corresponding to that couple is zero even though the marginal covariance is non-zero \cite{GMRFs}. Let us consider a generic $n$-dimensional Gaussian random field $X = (X_1, X_2 .. . X_n) \sim \mathcal{N}(\mu, \boldsymbol{\Sigma})$. Then, a deductive prove is given for this property:
 \begin{equation}
-		X_i \bot X_j \mid X_{-ij} \iff q_{ij} = 0
+		X_i \bot X_j \vert X_{-ij} \iff q_{ij} = 0
 		\label{eq:zeroprec}
 \end{equation}
 
-For any $i \neq j,  \quad i,j \in [1,n]$; $\boldsymbol{q}_{i,j}$ is the element in position $(i,j)$ in the precision matrix $\boldsymbol{Q}: = \boldsymbol{\Sigma^{-1}}$. We can choose any set of indices $A \subset \mathbb{N}^n$ to partition $X$ into $X_A$ and $X_B$, being $B = \mathbb{N}^n / A$ with $card(A) := m<n, \, card(B) = n-m$, namely:
+For any $i \neq j,  \quad i,j \in [1,n]$; $\boldsymbol{q}_{i,j}$ is the element in position $(i,j)$ in the precision matrix $\boldsymbol{Q}: = \boldsymbol{\Sigma^{-1}}$. We can choose any set of indices $A \subset \lbrace1, 2, \dots, n\rbrace$ to partition $X$ into $X_A$ and $X_B$, being $B = \mathbb{N}^n / A$ with $\mathrm{card}(A) := m<n, \, \mathrm{card}(B) = n-m$, namely:
 %
 	$$
 	X := \left( \begin{array}{l} X_A \\ X_B
@@ -868,7 +880,7 @@ For any $i \neq j,  \quad i,j \in [1,n]$; $\boldsymbol{q}_{i,j}$ is the element 
 	\right)
 	$$
 % 
-Matrix $\boldsymbol{\Sigma_{AA}}$ has dimensions $m \times m$, $\boldsymbol{\Sigma_{BB}}$ is $(n-m) \times (n-m)$,	$\boldsymbol{\Sigma_{AB}}$ is $n \times (n-m)$ and $\boldsymbol{\Sigma_{BA}} = \boldsymbol{\Sigma_{AB}^\top}$. Moreover, we presently assume that $\boldsymbol{\Sigma}$ is nonsingular, and so are its diagonal blocks. To compute the precision $\boldsymbol{Q} = \boldsymbol{\Sigma}^{-1}$, we decompose $\boldsymbol{\Sigma}$ into the product of an upper triangular, a block-diagonal and a lower triangular matrix, specifically:
+Matrix $\boldsymbol{\Sigma_{AA}}$ has dimensions $m \times m$, $\boldsymbol{\Sigma_{BB}}$ is $(n-m) \times (n-m)$,	$\boldsymbol{\Sigma_{AB}}$ is $m \times (n-m)$ and $\boldsymbol{\Sigma_{BA}} = \boldsymbol{\Sigma_{AB}^\top}$. Moreover, we presently assume that $\boldsymbol{\Sigma}$ is nonsingular, and so are its diagonal blocks. To compute the precision $\boldsymbol{Q} = \boldsymbol{\Sigma}^{-1}$, we decompose $\boldsymbol{\Sigma}$ into the product of an upper triangular, a block-diagonal and a lower triangular matrix, specifically:
 
 $$
 \boldsymbol{\Sigma} = 
@@ -887,7 +899,7 @@ $$
 \end{array}
 \right)
 $$
- Where $\boldsymbol{\Sigma_{BB}} : =\boldsymbol{\Sigma_{AA}} - \boldsymbol{\Sigma_{AB}} \boldsymbol{\Sigma^{-1}_{BB}} \boldsymbol{\Sigma_{BA}}$ is the Schur complement of $\boldsymbol{\Sigma_{BB}}$ in $\boldsymbol{\Sigma}$. Then the precision reads as:
+ Where $\boldsymbol{S_{BB}} : =\boldsymbol{\Sigma_{AA}} - \boldsymbol{\Sigma_{AB}} \boldsymbol{\Sigma^{-1}_{BB}} \boldsymbol{\Sigma_{BA}}$ is the Schur complement of $\boldsymbol{\Sigma_{BB}}$ in $\boldsymbol{\Sigma}$. Then the precision reads as:
 \begin{equation}
 	\boldsymbol{Q} = 
 	\left( \begin{array}{ll} 
@@ -940,21 +952,21 @@ This enables us to write the precision matrix in compact form:
 %
 The \textcolor{red}{theorem} on conditional moments in Gaussian distributions \cite[see][Result 4.6]{JohnsonWichern} states that 
 $$
-\mathrm{Var}\left[ X_A \mid X_B \right] = \boldsymbol{S_{BB}}
+\mathrm{Var}\left[ X_A \vert X_B \right] = \boldsymbol{S_{BB}}
 $$
-This latter property is proved in Appendix \ref{Appendix:CNorm}. Yet, as we see in equation \ref{eq:precision_compact}, also the element of the joint precision matrix corresponding to the subset $A$, i.e. $\mathrm{Prec} \left[X_B\right]$ is equal to $\boldsymbol{S_{BB}^{-1}}$. This means that by choosing the index set $A$ as any couple $(i,j)$ with $i \neq j$, such that $X_A = (X_i, X_j)^\top$ we have 
+This latter property is proved in Appendix \ref{Appendix:CNorm}. Yet, as we see in equation \ref{eq:precision_compact}, also the element of the joint precision matrix corresponding to the subset $A$, i.e. $\mathrm{Prec} \left[X_B\right]$ is equal to $\boldsymbol{S_{AA}^{-1}}$. This means that by choosing the index set $A$ as any couple $(i,j)$ with $i \neq j$, such that $X_A = (X_i, X_j)^\top$ we have 
 %
 $$ X_i \perp X_j \Longrightarrow
 \boldsymbol{S_{BB}} = \begin{pmatrix}
-\sigma_{i\mid B}^2 & 0 \\ 0 & \sigma_{j\mid B}^{2} 
+\sigma_{i\vert B}^2 & 0 \\ 0 & \sigma_{j\vert B}^{2} 
 \end{pmatrix}
 \quad \text{ and } \quad
 \boldsymbol{S_{BB}}^{-1} = \begin{pmatrix}
-\sigma_{i\mid B}^{-2} & 0 \\ 0 & \sigma_{j\mid B}^{-2} 
+\sigma_{i\vert B}^{-2} & 0 \\ 0 & \sigma_{j\vert B}^{-2} 
 \end{pmatrix}
 $$
 %
-For two conditional variances $\sigma_{i\mid B}^{2}$ and $\sigma_{j\mid B}^{2}$. The marginal precision elements $\mathrm{Prec}[X_i \mid X_B]$ and $\mathrm{Prec}[X_j \mid X_B]$ are the off-diagonal entries in $\boldsymbol{S_{BB}}^{-1}$, which are, however, two zeroes. This implies that whenever two Gaussian variables are conditionally independent, the corresponding off-diagonal precision element is zero, proving equation \ref{eq:zeroprec}.
+For two conditional variances $\sigma_{i\vert B}^{2}$ and $\sigma_{j\vert B}^{2}$. The marginal precision elements $\mathrm{Prec}[X_i \vert X_B]$ and $\mathrm{Prec}[X_j \vert X_B]$ are the off-diagonal entries in $\boldsymbol{S_{BB}}^{-1}$, which are, however, two zeroes. This implies that whenever two Gaussian variables are conditionally independent, the corresponding off-diagonal precision element is zero, proving equation \ref{eq:zeroprec}.
 
 
 
@@ -966,14 +978,14 @@ It is thus convenient to identify a class of probabilistic models for Gaussian r
 We start by assuming that each element of an $n$-dimensional Gaussian random field can thus be associated with a node in a graph defined as at the beginning of section \ref{section:icar}. The relationship $X:\mathcal{S} \rightarrow \mathbb{R}^n$ is thus assumed to hold, and for brevity we will write $X_i$ in place of $X(s_i)$. The \textit{global} Markov property \citep{HammersleyClifford} means that:
 %
 \begin{equation}
-\pi(X_i \mid X_{-i}) = \pi \left(X_i \mid \lbrace X_j : s_j \in \partial_i \rbrace \right)
+\pi(X_i \vert X_{-i}) = \pi \left(X_i \vert \lbrace X_j : s_j \in \partial_i \rbrace \right)
     \label{eq:gMarkov}
 \end{equation}
 %
  For a generic probability density function $\pi$. %satisfying the positivity condition. $\pi(X) : \pi(X(s_i)) > 0 \quad \forall s_i \in \mathcal{S}$
  This property is relevant to our aims because it implies that
  $$
- X_i \bot X_j  \mid X_{-i} \quad \forall j \notin \partial s_i
+ X_i \bot X_j  \vert X_{-i} \quad \forall j \notin \partial s_i
  $$
 i.e. the probability distribution of $X_i$ is uniquely specified by its neighbours, and $X_i$ is independent on any non neighbouring site.
 
@@ -993,24 +1005,24 @@ Throughout this thesis, we will extensively resort to the INLA in the hierarchic
 %
 $$
 \left\{ \begin{array}{ll} 
-E[y\mid \eta, \psi] = g^{-1}(\eta)\\
+E[y\vert \eta, \psi] = g^{-1}(\eta)\\
 \eta = \boldsymbol{A} \vartheta \\
-\vartheta \sim\mathcal{N}\left(0, \boldsymbol{Q_\psi} \right)
+\vartheta \sim\mathcal{N}\left(0, \boldsymbol{Q_\psi}^{-1} \right)
 \end{array} \right. 
 $$
 %
 Where $y$ is the dependent variable, $\eta$ is the linear predictor, $g()$ is a link function, $A$ is a known model matrix equivalent to the $A_1$ matrix defined in equation \ref{eq:LGM_y_theta}, $\vartheta$ is a latent Gaussian random field (GRF), and $\psi$ are model hyperparameters.\footnote{In most of the INLA-related literature, the latent GRF is labelled as $X$ or $f$, and $\theta$ denotes hyperparameters. Throughout this thesis we chose to derogate to the $X, \theta $ or $f, \theta$ notation in favour of the $\vartheta, \psi$ notation in order to avoid confusion with explanatory variables being already labelled as $X$.}.
 
-This regression model is hierarchical as we are layering two arrays of unknown variables: the first layer $\vartheta$, which enters the linear predictor and whose prior distribution is Gaussian and may depend on $\psi$, and $\psi$, the second layer of unknown variables, from which either the likelihood or the prior of $\vartheta$ or both distributions depend; sometimes the prior distribution of $\psi$ is referred to as the hyper-prior. In Gaussian regression, for instance, $\psi$ includes the variance-covariances parameters of $y\mid \vartheta$ and $\vartheta$; in contrast, in Poisson regression, $\psi$ only influences the prior of $\vartheta$. In thus regression framework, we can assume $\vartheta$ includes a set of covariate effects of size $p$ and a latent GRF of size $n$, hence $\mathrm{card}(\vartheta) = n+p$.
+This regression model is hierarchical as we are layering two arrays of unknown variables: the first layer $\vartheta$, which enters the linear predictor and whose prior distribution is Gaussian and may depend on $\psi$, and $\psi$, the second layer of unknown variables, from which either the likelihood or the prior of $\vartheta$ or both distributions depend; sometimes the prior distribution of $\psi$ is referred to as the hyper-prior. In Gaussian regression, for instance, $\psi$ includes the variance-covariances parameters of $y\vert \vartheta$ and $\vartheta$; in contrast, in Poisson regression, $\psi$ only influences the prior of $\vartheta$. In thus regression framework, we can assume $\vartheta$ includes a set of covariate effects of size $p$ and a latent GRF of size $n$, hence $\mathrm{card}(\vartheta) = n+p$.
 %%%%% THIS IS ONLY VALID IN THE CLASSIC MODE OF R-INLA; namely, if $m$ is the size of $\vartheta$ (in this case, $m = N + n + p$), then the number of nonzero entries in $\boldsymbol{Q}$ is in $\mathcal{\vartheta}(m)$, i.e. in the same order of magnitude of $m$. The linear predictor is included in $\vartheta$ for computational reasons; with the appropriate choice of the stochastic representation of $\eta$ (see e.g. \cite{INLA2017}) if all other parameters are GMRFs, then $\vartheta$ is a GMRF as a whole. \\
-What researchers are typically interested in are the posterior marginal distributions $\pi(\vartheta_i | y)$ and $\pi(\psi_j | y)$  $\forall i \in [1, n+p]$ and $j \in [1, q]$ with $q$ being the number of hyperparameters. Posteriors are the solutions of the integrals:
+What researchers are typically interested in are the posterior marginal distributions $\pi(\vartheta_i \vert y)$ and $\pi(\psi_j \vert y)$  $\forall i \in [1, n+p]$ and $j \in [1, q]$ with $q$ being the number of hyperparameters. Posteriors are the solutions of the integrals:
 %
  \begin{equation}
  \label{eq:marginals}
  \begin{aligned}
  %\left\{ \begin{array}{ll}
- \pi(\vartheta_i | y) = \int_{\psi} \pi(\vartheta_i | y, \psi) \pi(\psi | y) d \psi\\
- \pi(\psi_j|y) = \int_{\psi_{-j}} \pi(\psi | y) \, d\psi_{-j}
+ \pi(\vartheta_i \vert y) = \int_{\psi} \pi(\vartheta_i \vert y, \psi) \pi(\psi \vert y) d \psi\\
+ \pi(\psi_j\vert y) = \int_{\psi_{-j}} \pi(\psi \vert y) \, d\psi_{-j}
  %\end{array} \right.
  \end{aligned}
  \end{equation}
@@ -1024,34 +1036,34 @@ Despite our interest lies in linear models, we deem worthy of being recalled the
 \subsection{Approximating joint Hyperparameters Posterior} \label{par:inla_psi}
 Considering Equation \ref{eq:marginals}, the first task is computing
  $$
-\pi(\psi | y) =  \frac{\pi(y | \eta, \psi) \pi(\vartheta | \psi) \pi(\psi)}
-{\pi(\vartheta | y, \psi)\pi(y)} 
+\pi(\psi \vert y) =  \frac{\pi(y \vert \eta, \psi) \pi(\vartheta \vert \psi) \pi(\psi)}
+{\pi(\vartheta \vert y, \psi)\pi(y)} 
  $$
  
- The numerator is known \textit{a priori}; $\pi(y)$ does not depend on the parameters of interest and can be treated here as a normalising constant. What is hard to find analytically, instead, is the full conditional $\pi(\vartheta \mid y, \psi)$, as it is derived as:
+ The numerator is known \textit{a priori}; $\pi(y)$ does not depend on the parameters of interest and can be treated here as a normalising constant. What is hard to find analytically, instead, is the full conditional $\pi(\vartheta \vert y, \psi)$, as it is derived as:
  $$
- \pi(\vartheta \mid y, \psi) = \frac{\pi(\vartheta, y \mid \psi)}{\int \pi(\vartheta, y | \psi) d \vartheta}
+ \pi(\vartheta \vert y, \psi) = \frac{\pi(\vartheta, y \vert \psi)}{\int \pi(\vartheta, y \vert \psi) d \vartheta}
  $$
- and the integral can only be solved in closed formula for conjugate priors on $\vartheta$. The intuition behind the INLA is, therefore, to replace the integrand function with its Gaussian approximation, which we denote as $\tilde{\pi}_\mathrm{_G}(\vartheta, y \mid \psi)$
+ and the integral can only be solved in closed formula for conjugate priors on $\vartheta$. The intuition behind the INLA is, therefore, to replace the integrand function with its Gaussian approximation, which we denote as $\tilde{\pi}_\mathrm{_G}(\vartheta, y \vert \psi)$
 %
 \begin{equation}
 \label{eq:GaussianApprox}
-\pi(\vartheta | y, \psi) \approx \tilde{\pi}_\mathrm{_G}(\vartheta | y, \psi) = \frac{\pi(\vartheta, y | \psi)}{\int \tilde{\pi}_\mathrm{_G}(\vartheta, y | \psi) \, d\vartheta}
+\pi(\vartheta \vert y, \psi) \approx \tilde{\pi}_\mathrm{_G}(\vartheta \vert y, \psi) = \frac{\pi(\vartheta, y \vert \psi)}{\int \tilde{\pi}_\mathrm{_G}(\vartheta, y \vert \psi) \, d\vartheta}
 \end{equation}
 %
-Here we describe more in detail how the Gaussian approximation works. For brevity, define $\gamma(\vartheta) := \ln \pi(\vartheta, y | \psi)$. Then, a Taylor approximation truncated at the second order is applied:
+Here we describe more in detail how the Gaussian approximation works. For brevity, define $\gamma(\vartheta) := \ln \pi(\vartheta, y \vert \psi)$. Then, a Taylor approximation truncated at the second order is applied:
 %
 \begin{align*}
 \gamma(\vartheta) \approx   \gamma(\mu_0) + \nabla   \gamma(\mu_0)^\top(\vartheta - \mu_0)+ \frac{1}{2}
 (\vartheta - \mu_0)^\top \boldsymbol{H_\gamma}(\mu_0)(\vartheta - \mu_0)
 \end{align*}
 %
-Here, $\boldsymbol{H_f}(x_0)$ denotes the Hessian matrix of a generic scalar-valued function $f(\cdot)$ evaluated at $x_0$ \footnote{This expression can be further simplified. To see this, first recall that $$\boldsymbol{H_{\gamma(\vartheta)}} = \boldsymbol{H_{ \ln \pi (\vartheta \mid \psi)}}  + \sum_{j=1}^{N}\boldsymbol{ H_{\ln \pi(y_j \mid \vartheta, \psi)}}$$ The first addendum is the negative prior precision of $\vartheta$. Regarding the second term, notice that instead of $\vartheta$ inference can be made on the first $N$ elements of the vector $\theta:= ((\eta + \epsilon)^{\top}, \vartheta^{\top})^{\top}$, which is itself a GMRF \citep{INLA2017}. The term $\epsilon$ is a Gaussian error with arbitrarily small variance employed to make the distribution of the augmented predictor $\eta + \epsilon$ proper. We then have, $\forall\, i,r,c \in [1, N]$, that $\frac{\partial^2 \ln \pi(y_i \mid\theta_i, \psi)}{\partial \theta_r \partial \theta_c}$ is nonzero only for $r = c = i$, hence under this parametrisation $\boldsymbol{ H_{\ln \pi(y_j \mid \vartheta, \psi)}}$ is diagonal.}. 
+Here, $\boldsymbol{H_f}(x_0)$ denotes the Hessian matrix of a generic scalar-valued function $f(\cdot)$ evaluated at $x_0$ \footnote{This expression can be further simplified. To see this, first recall that $$\boldsymbol{H_{\gamma(\vartheta)}} = \boldsymbol{H_{ \ln \pi (\vartheta \vert \psi)}}  + \sum_{j=1}^{N}\boldsymbol{ H_{\ln \pi(y_j \vert \vartheta, \psi)}}$$ The first addendum is the negative prior precision of $\vartheta$. Regarding the second term, notice that instead of $\vartheta$ inference can be made on the first $N$ elements of the vector $\theta:= ((\eta + \epsilon)^{\top}, \vartheta^{\top})^{\top}$, which is itself a GMRF \citep{INLA2017}. The term $\epsilon$ is a Gaussian error with arbitrarily small variance employed to make the distribution of the augmented predictor $\eta + \epsilon$ proper. We then have, $\forall\, i,r,c \in [1, N]$, that $\frac{\partial^2 \ln \pi(y_i \vert\theta_i, \psi)}{\partial \theta_r \partial \theta_c}$ is nonzero only for $r = c = i$, hence under this parametrisation $\boldsymbol{ H_{\ln \pi(y_j \vert \vartheta, \psi)}}$ is diagonal.}. 
 
-The point $\mu_0$ is set as the mode of $\gamma(\vartheta)$,  denoted as $\mu_0(y, \psi)$ to highlight its dependence on observed data and hyperparameters.  This choice implies that $\nabla \gamma(\theta_0)$ equals an array of zeroes, and it is straightforward to observe that $\pi_\mathrm{_G}(\vartheta \mid  y, \psi)$ is proportional to a Gaussian density with mean $\mu_0(y, \psi)$ and precision equal to the negative Hessian:
+The point $\mu_0$ is set as the mode of $\gamma(\vartheta)$,  denoted as $\mu_0(y, \psi)$ to highlight its dependence on observed data and hyperparameters.  This choice implies that $\nabla \gamma(\theta_0)$ equals an array of zeroes, and it is straightforward to observe that $\pi_\mathrm{_G}(\vartheta \vert  y, \psi)$ is proportional to a Gaussian density with mean $\mu_0(y, \psi)$ and precision equal to the negative Hessian:
 \begin{equation}
-\tilde{\pi}_\mathrm{_G}(\vartheta, y | \psi) =
-\pi\left(\mu_0(y, \psi), y | \psi\right)  \,\,  e^{\displaystyle{
+\tilde{\pi}_\mathrm{_G}(\vartheta, y \vert \psi) =
+\pi\left(\mu_0(y, \psi), y \vert \psi\right)  \,\,  e^{\displaystyle{
 \tfrac{1}{2}[\vartheta - \mu_0(y, \psi)]^\top
 \boldsymbol{H_\gamma}(\mu_0(y, \psi))
 [\vartheta - \mu_0(y, \psi)]
@@ -1061,8 +1073,8 @@ The point $\mu_0$ is set as the mode of $\gamma(\vartheta)$,  denoted as $\mu_0(
 More in detail, considering the latent Gaussian model defined in section \ref{subsection:INLA_LGM}, let us define, in a preliminary stance, for $j = 1, \dots, N$ :
 %
 $$
-\delta'_j :=\frac{\partial \ln \pi(y_j \mid \eta_j, \psi)}{\partial \eta_j} \quad \, \text{and} \, \quad
-\delta''_j :=\frac{\partial^2 \ln \pi(y_j \mid \eta_j, \psi)}{\partial \eta_j^2} 
+\delta'_j :=\frac{\partial \ln \pi(y_j \vert \eta_j, \psi)}{\partial \eta_j} \quad \, \text{and} \, \quad
+\delta''_j :=\frac{\partial^2 \ln \pi(y_j \vert \eta_j, \psi)}{\partial \eta_j^2} 
 $$
 %
 and stack these values in the arrays $\Delta_1=\left(\delta'_1, \delta'_2, \dots, \delta'_N \right)^\top$ and $\boldsymbol{\Delta_2} = \mathrm{diag}\left( -\delta''_1, -\delta''_2, \dots,- \delta''_N \right)$. It follows that
@@ -1080,7 +1092,7 @@ The mode of $\mu_0 \left( y, \psi \right)$, i.e. the zero of the gradient, can b
 
 %Let us view more in detail how Gaussian Approximation works in the context of Generalised Linear Models \citep{GLM,HGLM} In this case, the likelihood function can be reduced to the form
 %$$
-%\ln \pi(y \mid \vartheta, \psi) = \alpha(\psi) \left[ y_i \eta_i - b(\eta_i) + h(y_i)\right] + \beta(y_i, \psi)
+%\ln \pi(y \vert \vartheta, \psi) = \alpha(\psi) \left[ y_i \eta_i - b(\eta_i) + h(y_i)\right] + \beta(y_i, \psi)
 %$$
 %With appropriately chosen $\alpha(\cdot), b(\cdot), h(\cdot)$ and $\beta(\cdot)$ functions. Recalling the model defined in section \ref{subsection:INLA_LGM}, where $\eta = A \vartheta$, we obtain 
 %$$
@@ -1095,9 +1107,9 @@ The mode of $\mu_0 \left( y, \psi \right)$, i.e. the zero of the gradient, can b
 %\end{example}
 
 \noindent
-The remaining problem in the formula for $\pi(\psi | y)$ is that it still depends on $\vartheta$. The joint posterior distribution of hyperparameters is thus approximated via Laplace approximation, locating $\vartheta$ at its mode conditional on $\psi$ and $y$:
+The remaining problem in the formula for $\pi(\psi \vert y)$ is that it still depends on $\vartheta$. The joint posterior distribution of hyperparameters is thus approximated via Laplace approximation, locating $\vartheta$ at its mode conditional on $\psi$ and $y$:
 \begin{equation}
-\pi(\psi |y) \approx \tilde{\pi}_\mathrm{_{LA}}(\psi | y) \propto  \left. \frac{\pi(y | \eta, \psi) \pi(\vartheta | \psi) \pi(\psi)}{\pi_\mathrm{_G}(\vartheta | y, \psi)} 
+\pi(\psi \vert y) \approx \tilde{\pi}_\mathrm{_{LA}}(\psi \vert y) \propto  \left. \frac{\pi(y \vert \eta, \psi) \pi(\vartheta \vert \psi) \pi(\psi)}{\pi_\mathrm{_G}(\vartheta \vert y, \psi)} 
 \right \vert_{\vartheta = \mu_0(\psi, y)}
 \label{eq:hyper_laplace}
 \end{equation}
@@ -1105,7 +1117,7 @@ The remaining problem in the formula for $\pi(\psi | y)$ is that it still depend
 
 \subsection{Approximating joint Gaussian field Posterior}\label{par:inla_theta}
 
-To approximate the marginals $\pi(\vartheta_i \mid y, \psi) \forall i$, several solutions are possible. We provide an overview of the four methods developed so far, distinguishing between the original methods proposed in the seminal paper of \cite{INLA}, and the latest alternative method developed by \cite{VBINLA2024}.
+To approximate the marginals $\pi(\vartheta_i \vert y, \psi) \forall i$, several solutions are possible. We provide an overview of the four methods developed so far, distinguishing between the original methods proposed in the seminal paper of \cite{INLA}, and the latest alternative method developed by \cite{VBINLA2024}.
 
 \subsubsection{The original framework} \label{subsection:inla_original}
 The original INLA framework relied on a set of three alternative strategies, following a trade-off in accuracy and computational cost. We will not focus in depth on these strategies as in this thesis we mainly rely on the novel approach.
@@ -1116,49 +1128,49 @@ A rough solution would be using the Gaussian approximation in equation \ref{eq:G
 
 \paragraph{Full Laplace approximation}
 
-This strategy consists in reiterating the Laplace approximation for each element of $\vartheta$, i.e. marginalising $\vartheta_i$ out from $\pi(\vartheta | y, \psi)$ by using a Gaussian approximation to $\pi(\vartheta_{-i} | \vartheta_i, y, \psi)$ and setting $\vartheta_{-i}$ equal to the mode of $\pi(\vartheta_{-i}|\vartheta_i, y, \psi)$. This is the most rigorous choice but is computationally demanding.
+This strategy consists in reiterating the Laplace approximation for each element of $\vartheta$, i.e. marginalising $\vartheta_i$ out from $\pi(\vartheta \vert y, \psi)$ by using a Gaussian approximation to $\pi(\vartheta_{-i} \vert \vartheta_i, y, \psi)$ and setting $\vartheta_{-i}$ equal to the mode of $\pi(\vartheta_{-i}\vert\vartheta_i, y, \psi)$. This is the most rigorous choice but is computationally demanding.
 
 \paragraph{Simplified Laplace approximation}
 
-The third approach is known as "simplified Laplace" approximation, representing a compromise between the former two approaches in terms of accuracy and computational cost; it basically consists in truncating the Taylor approximation of $\ln\pi(\vartheta, y \mid \psi)$ at the third order term, while still locating the approximation at the mode of $\vartheta$. This allows to fit a Skew-Normal density to the full conditional.
+The third approach is known as "simplified Laplace" approximation, representing a compromise between the former two approaches in terms of accuracy and computational cost; it basically consists in truncating the Taylor approximation of $\ln\pi(\vartheta, y \vert \psi)$ at the third order term, while still locating the approximation at the mode of $\vartheta$. This allows to fit a Skew-Normal density to the full conditional.
 
 In the original framework, inference was originally made, rather than on $\vartheta$, on $\eta$, by leveraging on the fact that if $\vartheta$ is a GMRF, so is $\eta$ (though with a singular precision). For more details on inference is made on $\eta$, see \cite{INLA2017}. 
 
 \subsubsection{The Variational Bayes method}
 
-A recent strand of literature introduced a different approach to approximating the joint conditional posterior of the latent Gaussian field. While the former methods consisted of three proposed functional forms of this approximation, the new strategy takes a further step in the field of optimisation. In this context, optimisation must be read as proposing an approximation as close as possible to the true joint posterior $\pi(\vartheta \mid y, \psi)$. To this aim, the simplest Gaussian approximation $\pi_\mathrm{_G}(\theta \mid y, \psi)$ remains \textit{per se} a rigorous proposal as a functional form, while the elements on which attention is drawn are now its moments. 
+A recent strand of literature introduced a different approach to approximating the joint conditional posterior of the latent Gaussian field. While the former methods consisted of three proposed functional forms of this approximation, the new strategy takes a further step in the field of optimisation. In this context, optimisation must be read as proposing an approximation as close as possible to the true joint posterior $\pi(\vartheta \vert y, \psi)$. To this aim, the simplest Gaussian approximation $\pi_\mathrm{_G}(\theta \vert y, \psi)$ remains \textit{per se} a rigorous proposal as a functional form, while the elements on which attention is drawn are now its moments. 
 
-Intuitively, approximating the true but unknown density $\pi(\vartheta \mid y, \psi)$ with a known density $\pi_\mathrm{_G}(\vartheta \mid y, \psi)$ implies a loss in information. As argued by \cite{Zellner1988}, statistical inference consists, in its very essence, in the processing of two prior assumptions, the likelihood and parameter prior density, into two outputs, the marginal likelihood and the posterior distribution of parameters. The Bayes rule itself implies that no loss of information occurs when the output quantities are computed exactly. But prior conjugacy is a fortunate case, and if it held in general, humanity would have never bothered inventing the science of approximate inference, and this whole chapter would not even have any reason to be at all. 
+Intuitively, approximating the true but unknown density $\pi(\vartheta \vert y, \psi)$ with a known density $\pi_\mathrm{_G}(\vartheta \vert y, \psi)$ implies a loss in information. As argued by \cite{Zellner1988}, statistical inference consists, in its very essence, in the processing of two prior assumptions, the likelihood and parameter prior density, into two outputs, the marginal likelihood and the posterior distribution of parameters. The Bayes rule itself implies that no loss of information occurs when the output quantities are computed exactly. But prior conjugacy is a fortunate case, and if it held in general, humanity would have never bothered inventing the science of approximate inference, and this whole chapter would not even have any reason to be at all. 
 
-Since at this very stage all inferential interest lies in $\vartheta$, we will omit the conditioning on $\psi$ throughout the remainder of this paragraph. In mathematical terms, a statistical model yielding the posterior $\pi^*(\vartheta \mid y)$, prior or \textit{pre-data} inputs \citep{Zellner1988} are given by
+Since at this very stage all inferential interest lies in $\vartheta$, we will omit the conditioning on $\psi$ throughout the remainder of this paragraph. In mathematical terms, a statistical model yielding the posterior $\pi^*(\vartheta \vert y)$, prior or \textit{pre-data} inputs \citep{Zellner1988} are given by
 $$
-\Pi_\mathrm{IN} = \int_{-\infty}^{+\infty} \left[ \ln \pi (\theta) + \ln \pi(y \mid \theta)  \right] \pi^*(\vartheta \mid y) d \vartheta
+\Pi_\mathrm{IN} = \int_{-\infty}^{+\infty} \left[ \ln \pi (\theta) + \ln \pi(y \vert \theta)  \right] \pi^*(\vartheta \vert y) d \vartheta
 $$
 while the model output is:
 $$
-\Pi_\mathrm{OUT} = \int_{-\infty}^{+\infty} \left[ \ln \pi(y) + \ln \pi^*(\vartheta \mid y) \right] \pi^*(\vartheta \mid y) d \vartheta
-= \ln \pi(y) + \int_{-\infty}^{+\infty} \ln \pi^*(\vartheta \mid y)  \pi^*(\vartheta \mid y) d \vartheta
+\Pi_\mathrm{OUT} = \int_{-\infty}^{+\infty} \left[ \ln \pi(y) + \ln \pi^*(\vartheta \vert y) \right] \pi^*(\vartheta \vert y) d \vartheta
+= \ln \pi(y) + \int_{-\infty}^{+\infty} \ln \pi^*(\vartheta \vert y)  \pi^*(\vartheta \vert y) d \vartheta
 $$
 
-Where $\pi(y)$ is the marginal likelihood, obtained by integrating out $\vartheta$ from $\pi(y,\vartheta)$. The metric \cite{Zellner1988} proposed to measure information loss through the information processing scheme is the difference between output and input information. If the statistical model allowed to compute $\pi^*(\vartheta \mid y) \equiv \pi(\vartheta \mid y)$, the difference between output and input information would be zero. Otherwise, a loss in information would arise, and the optimisation problem shaping this novel approximation scheme in INLA consists precisely in minimising such an information loss. In particular, if the posterior of $\vartheta$ is approximated via a known functional form like the Gaussian approximation, $\pi_\mathrm{_{VB}}(\vartheta \mid y)$, where the VB subscript stands for Variational Bayes, the loss in information is measured as:
+Where $\pi(y)$ is the marginal likelihood, obtained by integrating out $\vartheta$ from $\pi(y,\vartheta)$. The metric \cite{Zellner1988} proposed to measure information loss through the information processing scheme is the difference between output and input information. If the statistical model allowed to compute $\pi^*(\vartheta \vert y) \equiv \pi(\vartheta \vert y)$, the difference between output and input information would be zero. Otherwise, a loss in information would arise, and the optimisation problem shaping this novel approximation scheme in INLA consists precisely in minimising such an information loss. In particular, if the posterior of $\vartheta$ is approximated via a known functional form like the Gaussian approximation, $\pi_\mathrm{_{VB}}(\vartheta \vert y)$, where the VB subscript stands for Variational Bayes, the loss in information is measured as:
 $$
 \Pi_\mathrm{OUT} - \Pi_\mathrm{IN} = 
--\mathbb{E}_{\pi_\mathrm{VB}(\vartheta\mid y)}\left[ \ln\pi(y \mid \vartheta)\right]+
-\int_{-\infty}^{+\infty} \ln\frac{\pi_\mathrm{_{VB}}(\vartheta \mid y)}{\pi(\vartheta)} \pi_\mathrm{_{VB}}(\vartheta \mid y) d\vartheta + C =
+-\mathbb{E}_{\pi_\mathrm{VB}(\vartheta\vert y)}\left[ \ln\pi(y \vert \vartheta)\right]+
+\int_{-\infty}^{+\infty} \ln\frac{\pi_\mathrm{_{VB}}(\vartheta \vert y)}{\pi(\vartheta)} \pi_\mathrm{_{VB}}(\vartheta \vert y) d\vartheta + C =
 $$
 $$
-= -\mathbb{E}_{\pi_\mathrm{_{VB}}(\vartheta\mid y)}\left[ \ln\pi(y \mid \vartheta)\right]+
-\mathrm{KLD} \left( \pi_\mathrm{_{VB}}(\vartheta \mid y) \mid \mid \pi(\vartheta) \right)  + C =
+= -\mathbb{E}_{\pi_\mathrm{_{VB}}(\vartheta\vert y)}\left[ \ln\pi(y \vert \vartheta)\right]+
+\mathrm{KLD} \left( \pi_\mathrm{_{VB}}(\vartheta \vert y) \vert \vert \pi(\vartheta) \right)  + C =
 $$
-Where $\mathrm{KLD}\left(f(x)||g(x)\right) = \int_{\mathcal{X}}\ln \frac{f(x)}{g(x)}f(x)dx$ denotes the Kullback-Leibler divergence between two densities $f(x)$ and $g(x)$, and $C = \ln \pi(y)$ does not depend on $\vartheta$ and is thus of no interest in this optimisation scheme. Specifically, \cite{VBINLA2024} propose to employ
+Where $\mathrm{KLD}\left(f(x)\vert\vert g(x)\right) = \int_{\mathcal{X}}\ln \frac{f(x)}{g(x)}f(x)dx$ denotes the Kullback-Leibler divergence between two densities $f(x)$ and $g(x)$, and $C = \ln \pi(y)$ does not depend on $\vartheta$ and is thus of no interest in this optimisation scheme. Specifically, \cite{VBINLA2024} propose to employ
 %
 \begin{equation}
-\pi_\mathrm{_{VB}}(\vartheta \mid y, \psi) := \varphi\left(\vartheta \mid \mu_1, 
+\pi_\mathrm{_{VB}}(\vartheta \vert y, \psi) := \varphi\left(\vartheta \vert \mu_1, 
 \left(-\boldsymbol{H_\gamma}\right)^{-1}\right)
 \label{eq:VBNorm}
 \end{equation}
 %
-where $-\boldsymbol{H_\gamma}$ is the precision matrix of the Gaussian approximation $\pi_G(\vartheta \mid y)$, as seen in section \ref{subsection:inla_original}, and 
+where $-\boldsymbol{H_\gamma}$ is the precision matrix of the Gaussian approximation $\pi_G(\vartheta \vert y)$, as seen in section \ref{subsection:inla_original}, and 
 $$
 \mu_1:=  \mu_0(y,\psi) + \Sigma_I \lambda
 $$
@@ -1167,8 +1179,8 @@ where $\Sigma_I$ is a projection matrix determined from a subset of the columns 
 \begin{equation}
 \begin{aligned}
 \lambda := \arg \min_{\lambda} \Bigg{\lbrace}
-KLD\left( \pi_{_{VB}}(\vartheta | y, \psi) \mid \mid \pi(\vartheta | \psi)\right) + \\
--\int_{-\infty}^{+\infty}  \sum_{i=1}^{N} \ln\pi(y_i | \eta_i, \psi) \pi_{_{VB}}(\vartheta \mid y, \psi)\, d \vartheta \Bigg{\rbrace}
+KLD\left( \pi_{_{VB}}(\vartheta \vert y, \psi) \vert \vert \pi(\vartheta \vert \psi)\right) + \\
+-\int_{-\infty}^{+\infty}  \sum_{i=1}^{N} \ln\pi(y_i \vert \eta_i, \psi) \pi_{_{VB}}(\vartheta \vert y, \psi)\, d \vartheta \Bigg{\rbrace}
 \label{VBINLA}
 \end{aligned}
 \end{equation}
@@ -1176,7 +1188,7 @@ To improve computation efficiency, \cite{VBINLA2024} suggest to choose $I$ as a 
 
 The integral can be computed via Gauss-Hermite quadrature and Taylor approximated at the second order, as shown by \cite{VBINLA2024}. Regarding the KLD, we have two Gaussian densities with the same mean and different precision: it is then available in closed formula using the result in Appendix \ref{appendix:KLDNorm}.
 
-Once the VB correction terms are computed, deriving the marginal conditionals $\pi_\mathrm{_{VB}}(\vartheta_i \mid y, \psi)$ from the joint distribution as defined in equation \ref{eq:VBNorm} is straightforward, as computing the marginal distributions of a multivariate Gaussian only requires the diagonal entries of the inverse precision matrix.
+Once the VB correction terms are computed, deriving the marginal conditionals $\pi_\mathrm{_{VB}}(\vartheta_i \vert y, \psi)$ from the joint distribution as defined in equation \ref{eq:VBNorm} is straightforward, as computing the marginal distributions of a multivariate Gaussian only requires the diagonal entries of the inverse precision matrix.
 
 This methodology appears promising, as it attempts to face the essential issue of approximate inference, i.e. the very fact that the output information is an approximate function. However, it bears two limits. First, only the mean of the posterior is corrected. Second, the posterior functional form is assumed rigidly. To this aim, some refinements are being carried forward \citep{dutta2025scalable}. On the first issue, a Variational Bayes additive correction has been proposed for the precision matrix, and it is seen to improve the accuracy of the posterior approximation for some likelihoods, such as the t-Student and the generalised Pareto in small samples. For the Poisson likelihood with a moderate-size sample (300 observations), instead, authors observed that the variance correction did not yield substantive improvements. 
 
@@ -1187,16 +1199,16 @@ Though these two developments may improve the accuracy of INLA in several scenar
 %% -------- Integration ---------------------------------- %%
 \section{INLA: The Integration Scheme} \label{section:inla_int}
 
-Once the integrand functions in equation \ref{eq:marginals} are defined, integration is carried out numerically. This requires to compute $\tilde{\pi}(\psi \mid y)$ across a given set of points, which in this case is a multidimensional grid. In particular, this grid exploration will not regard $\psi$ itself, but a transformation defined over $\mathbb{R}$, whereas many hyperparameters usually range on a subset of $\mathbb{R}$ (think of variance and precision parameters which are defined on the nonnegative axis, or correlations which range -1 to 1). 
+Once the integrand functions in equation \ref{eq:marginals} are defined, integration is carried out numerically. This requires to compute $\tilde{\pi}(\psi \vert y)$ across a given set of points, which in this case is a multidimensional grid. In particular, this grid exploration will not regard $\psi$ itself, but a transformation defined over $\mathbb{R}$, whereas many hyperparameters usually range on a subset of $\mathbb{R}$ (think of variance and precision parameters which are defined on the nonnegative axis, or correlations which range -1 to 1). 
 
-The fundamental assumption to make is that $\tilde{\pi}(\psi \mid y)$ is unimodal. In a first stance, unimodality implies that the hyperparameter posterior tends to zero as $\psi$ departs from its mode. Thus, numerical integration can be carried out within a neighbourhood of hyperparameter mode and not on its entire domain. In a second stance, under this assumption only one value for the local maximum of the hyperparameter posterior needs to be found. 
+The fundamental assumption to make is that $\tilde{\pi}(\psi \vert y)$ is unimodal. In a first stance, unimodality implies that the hyperparameter posterior tends to zero as $\psi$ departs from its mode. Thus, numerical integration can be carried out within a neighbourhood of hyperparameter mode and not on its entire domain. In a second stance, under this assumption only one value for the local maximum of the hyperparameter posterior needs to be found. 
 
-The output of the previous steps of the INLA procedure have been functions. Now, we are looking for for a numerical array, i.e. the posterior mode of $\psi$. This is clearly an optimisation problem, which requires to explore the hyperparameter space with an iterative scheme, in which at each iteration $t$, the directions of $\psi^{(t)}$ are typically proportional either to $\nabla \tilde{\pi}\left(\psi^{(t)} \mid y \right)$ (gradient descent) or to $\boldsymbol{H}_{\tilde{\pi}(\psi^{(t)} \mid y)}^{-1}\nabla \tilde{\pi}(\psi^{(t)} \mid y)$ (Newton-Raphson).
-The most intuitive way to define the numerical gradient is using a canonical basis, i.e considering that $\nabla \tilde{\pi}(\psi|y) = \sum_{j=1}^q \frac{\partial\tilde{\pi}(\psi|y)}{\partial \psi_j}\, e_j
+The output of the previous steps of the INLA procedure have been functions. Now, we are looking for for a numerical array, i.e. the posterior mode of $\psi$. This is clearly an optimisation problem, which requires to explore the hyperparameter space with an iterative scheme, in which at each iteration $t$, the directions of $\psi^{(t)}$ are typically proportional either to $\nabla \tilde{\pi}\left(\psi^{(t)} \vert y \right)$ (gradient descent) or to $\boldsymbol{H}_{\tilde{\pi}(\psi^{(t)} \vert y)}^{-1}\nabla \tilde{\pi}(\psi^{(t)} \vert y)$ (Newton-Raphson).
+The most intuitive way to define the numerical gradient is using a canonical basis, i.e considering that $\nabla \tilde{\pi}(\psi\vert y) = \sum_{j=1}^q \frac{\partial\tilde{\pi}(\psi\vert y)}{\partial \psi_j}\, e_j
 $ where $q=\mathrm{card}(\psi)$ and $e_j$ is the $j$-th vector of the canonical basis in $q$ dimensions. Due to the intractable form of the hyperparameter posterior, derivatives must be computed numerically, with either forward or central differences. \cite{SmartGrad} proposed to define directions with a non-canonical basis which, conceptually, "learns" from the previous iterations of the algorithm. In this framework, the gradient takes the form:
 $$
-\tilde{\nabla}_{\boldsymbol{\tilde{d}}} \tilde{\pi}\left( \psi^{(t)}\mid y\right) = \boldsymbol{\tilde{G}}^{{(t)^{-1}}^\top}
-\tilde{\nabla}_{\boldsymbol{e}} \tilde{\pi}\left( \psi^{(t)} + \boldsymbol{\tilde{G}} \delta \mid y\right) \vert_{\delta=0}
+\tilde{\nabla}_{\boldsymbol{\tilde{d}}} \tilde{\pi}\left( \psi^{(t)}\vert y\right) = \boldsymbol{\tilde{G}}^{{(t)^{-1}}^\top}
+\tilde{\nabla}_{\boldsymbol{e}} \tilde{\pi}\left( \psi^{(t)} + \boldsymbol{\tilde{G}} \delta \vert y\right) \vert_{\delta=0}
 $$
 Where notation $\tilde{\nabla}_{\boldsymbol{v}}f(x)$ stands for the approximate gradient of the function $f(x)$ using directions $\boldsymbol{v}$; $\boldsymbol{e}$ denotes the canonical basis. The matrix $\boldsymbol{\tilde{G}}^{(t)}$ whose columns form the orthonormal basis $\boldsymbol{\tilde{d}}$ is constructed by modified Gram-Schmidt orthogonalisation\footnote{Even though the original paper uses the notation $\boldsymbol{\tilde{G}}^{{-1}^\top}$, it should be noticed that since $\boldsymbol{\tilde{G}}$ is constructed on an orthonormal basis $\boldsymbol{\tilde{G}}^{-1} \equiv \boldsymbol{\tilde{G}}^\top$, so this notation could be simplified to $\boldsymbol{\tilde{G}}^{{-1}^\top} \equiv \boldsymbol{\tilde{G}}$.} of the matrix $\boldsymbol{G^{(t)}}:=\left( \psi^{(t)}-\psi^{(t-1)}, \,  d_1^{(t-1)}, \, \cdots, d_{q-1}^{(t-1)} \right)$, where columns $\left( d_1^{(t-1)}, \cdots, d_{q-1}^{(t-1)} \right)$ depend on the previous $q-1$ iterations. Taking second derivatives clearly allows to approximate the Hessian matrix as well. 
 
@@ -1204,17 +1216,17 @@ Authors labelled this methodology "smart gradient approach" and assess it to be 
 
 Now, expliciting equation \ref{eq:hyper_laplace} and omitting the argument from $\mu_0(y, \psi)$ for brevity, we obtain that
 $$
-\tilde{\pi}_\mathrm{LA}\left(\psi \mid y \right) \propto \pi(\psi) \times
-\prod_{j=1}^N \pi \left( y_j \mid\psi,  \eta_j=\boldsymbol{A}\mu_0\right)  \times
+\tilde{\pi}_\mathrm{LA}\left(\psi \vert y \right) \propto \pi(\psi) \times
+\prod_{j=1}^N \pi \left( y_j \vert\psi,  \eta_j=\boldsymbol{A}\mu_0\right)  \times
 e^{-\frac{1}{2} \mu_0 ^\top \boldsymbol{Q_\psi} \mu_0} \times
 \frac{\sqrt{\lvert \boldsymbol{Q_\psi} \rvert}}{\sqrt{\lvert -\boldsymbol{H_\gamma} \rvert}}
 $$
-Where $\boldsymbol{H_\gamma} = -\boldsymbol{A}^\top \boldsymbol{\Delta_2 A} - \boldsymbol{Q_\psi}$ is the precision of $\vartheta \mid y, \psi$. To compute the gradient with finite differences, the posterior must be evaluated $2q$ times, where $q$ is the length of $\psi$, and to compute the Hessian, which is required in Newton-Raphson schemes, $q^2  + 2$ iterations are required. Since the gradient (and the Hessian if required) must be evaluated, in turn, at each iteration of the optimisation algorithm, the computational cost of $\tilde{\pi}_\mathrm{_{LA}}(\psi \mid y)$ is crucial for the efficiency of INLA. We discuss the cost of each factor. In doing so, we can treat $1/\pi(y)$ as a proportionality constant, in that it does not depend on $\psi$. We define $n'$ as the size of $\vartheta$ and $N$ as the size of $y$.
+Where $\boldsymbol{H_\gamma} = -\boldsymbol{A}^\top \boldsymbol{\Delta_2 A} - \boldsymbol{Q_\psi}$ is the precision of $\vartheta \vert y, \psi$. To compute the gradient with finite differences, the posterior must be evaluated $2q$ times, where $q$ is the length of $\psi$, and to compute the Hessian, which is required in Newton-Raphson schemes, $q^2  + 2$ iterations are required. Since the gradient (and the Hessian if required) must be evaluated, in turn, at each iteration of the optimisation algorithm, the computational cost of $\tilde{\pi}_\mathrm{_{LA}}(\psi \vert y)$ is crucial for the efficiency of INLA. We discuss the asymptotic cost of each factor. In doing so, we can treat $1/\pi(y)$ as a proportionality constant, in that it does not depend on $\psi$. We define $n_\vartheta$ as the size of $\vartheta$ and $n_y$ as the size of $y$.
 \begin{itemize}
 \item The cost of the joint prior $\pi(\psi)$ strictly depends on how it is defined. Except for the unfrequent case of distributions requiring e.g. the eigendecomposition or the inversion of dense matrices such as in non-irreducible KLD structures \textcolor{red}{(TBD section)}, this is a negligible cost when the size of $\psi$ is in the order of $10^1$.
-\item $\prod_{j=1}^N \pi \left( y_j \mid\psi,  \eta_j=\boldsymbol{A}\mu_0\right)$ is the product of $N$ scalars. It can be noticed that the cost of each $\pi(y_j \mid \eta_j, \psi)$ is driven by $\eta_j = \boldsymbol{A_{j\cdot}} \vartheta$. In hierarchical regression, only $ {\Theta}(1)$ elements in each row of $\boldsymbol{A}$ are nonzero, and we do not actually need to perform as many operations as the values of $\vartheta$. This is possible by treating $\boldsymbol{A}$ as a sparse matrix, i.e. only storing in the internal memory the position of its nonzero entries. Due to sparse matrix algebra, the cost of computing the likelihood is $ {\Theta}(N)$, i.e. the procedure is scalable.
-\item $\mu_0^\top \boldsymbol{Q_\psi} \mu_0$. Two products occur. The first is between a vector and a square matrix. Again, the sparsity pattern of $\boldsymbol{Q_\psi}$ plays a crucial role. If $\boldsymbol{Q_\psi}$ has $\Theta(n')$ entries, i.e. it is a sparse matrix, the number of operations is in $\Theta(n')$; for dense matrices the cost is in $\mathcal{O}(n'^2)$, which is prohibitive. Then, the cross-product of the two vectors has $\Theta(n')$ operations. This operation is scalable as long as $\boldsymbol{Q}_\psi$ is sparse.
-\item The two determinants are usually the most complex operations in hierarchical regression. In a context where $\boldsymbol{A} = (\boldsymbol{X}, \boldsymbol{\xi})$ where $\boldsymbol{X}$ is the matrix of explanatory variables and $\boldsymbol{\xi}$ is the model matrix for a latent Gaussian random field, the matrix $\boldsymbol{A}^\top \boldsymbol{\Delta_2A}$ is block-diagonal, with a dense upper-left block of order equal to the column of $\boldsymbol{X}$, and a sparse bottom-right block (for instance, it is diagonal in the model used in chapter \ref{Chapter:Invalsi}). So, if the number of explanatory variables has a lower dimensional order than the size of the latent Gaussian field, the computational cost of both determinants depends on the sparsity pattern of $\boldsymbol{Q_\psi}$. The determinant of a matrix can be computed as the square product of the diagonal of its Cholesky factor. It turns out that Cholesky factorisation for sparse precision matrices implies significant computational advantages, considering that in the most general case the determinant of a matrix has a cubic cost. As pointed out by \cite{GMRFs} and \cite{INLA}, the factorisation has a cost in the order of $n'$ for time series (one-dimensional dependency structure), $n'^{3/2}$ for spatial models (two dimensions), and $n'^2$ for three-dimensional structures. With sparse precision matrices, this procedure is efficient, but not scalable, ezxcept for one-dimensional structures.
+\item $\prod_{j=1}^{n_y} \pi \left( y_j \vert\psi,  \eta_j=\boldsymbol{A}\mu_0\right)$ is the product of $n_y$ scalars. It can be noticed that the cost of each $\pi(y_j \vert \eta_j, \psi)$ is driven by $\eta_j = \boldsymbol{A_{j\cdot}} \vartheta$. In hierarchical regression, only $ {\Theta}(1)$ elements in each row of $\boldsymbol{A}$ are nonzero, and we do not actually need to perform as many operations as the values of $\vartheta$. This is possible by treating $\boldsymbol{A}$ as a sparse matrix, i.e. only storing in the internal memory the position of its nonzero entries. Due to sparse matrix algebra, the cost of computing the likelihood is $ {\Theta}(n_y)$, i.e. the procedure is scalable.
+\item $\mu_0^\top \boldsymbol{Q_\psi} \mu_0$. Two products occur. The first is between a vector and a square matrix. Again, the sparsity pattern of $\boldsymbol{Q_\psi}$ plays a crucial role. If $\boldsymbol{Q_\psi}$ has $\Theta(n_\vartheta)$ entries, i.e. it is a sparse matrix, the number of operations is in $\Theta(n_\vartheta)$; for dense matrices the cost is in $\mathcal{O}(n_\vartheta^2)$, which is prohibitive. Then, the cross-product of the two vectors has $\Theta(n_\vartheta)$ operations. This operation is scalable as long as $\boldsymbol{Q}_\psi$ is sparse.
+\item The two determinants are usually the most complex operations in hierarchical regression. In a context where $\boldsymbol{A} = (\boldsymbol{X}, \boldsymbol{\xi})$ where $\boldsymbol{X}$ is the matrix of explanatory variables and $\boldsymbol{\xi}$ is the model matrix for a latent Gaussian random field, the matrix $\boldsymbol{A}^\top \boldsymbol{\Delta_2A}$ is block-diagonal, with a dense upper-left block of order equal to the column of $\boldsymbol{X}$, and a sparse bottom-right block (for instance, it is diagonal in the model used in chapter \ref{Chapter:Invalsi}). So, if the number of explanatory variables has a lower dimensional order than the size of the latent Gaussian field, the computational cost of both determinants depends on the sparsity pattern of $\boldsymbol{Q_\psi}$. The determinant of a matrix can be computed as the square product of the diagonal of its Cholesky factor. It turns out that Cholesky factorisation for sparse precision matrices implies significant computational advantages, considering that in the most general case the determinant of a matrix has a cubic cost. As pointed out by \cite{GMRFs} and \cite{INLA}, the factorisation has a cost in the order of $n_\vartheta$ for time series (one-dimensional dependency structure), $n_\vartheta^{3/2}$ for spatial models (two dimensions), and $n_\vartheta^2$ for three-dimensional structures. With sparse precision matrices, this procedure is efficient, but not scalable, ezxcept for one-dimensional structures.
 \end{itemize}
 
 As can be seen, the sparsity pattern in $\boldsymbol{Q_\psi}$ is a crucial requirement for the efficiency of INLA. This motivates the emphasis we have given to this matter in section \ref{section:GMRFs}. 
@@ -1222,15 +1234,15 @@ As can be seen, the sparsity pattern in $\boldsymbol{Q_\psi}$ is a crucial requi
 Once hyperparameter posterior mode is located, numerical integration can be carried out to approximate the solution to equation \ref{eq:marginals} as:
 $$
 \left \{ \begin{array}{ll}
-\tilde{\pi}_\mathrm{_G}\left(\vartheta_i \mid y\right)=
-\sum_{k=1}^{K} \tilde{\pi} \left( \vartheta_i\mid y, \psi^{(k)}\right)
- \tilde{\pi}_{_\mathrm{LA}}\left( \psi^{(k)} \mid y\right)  \Delta \psi^{(k)}
+\tilde{\pi}_\mathrm{_G}\left(\vartheta_i \vert y\right)=
+\sum_{k=1}^{K} \tilde{\pi} \left( \vartheta_i\vert y, \psi^{(k)}\right)
+ \tilde{\pi}_{_\mathrm{LA}}\left( \psi^{(k)} \vert y\right)  \Delta \psi^{(k)}
 \\
-\tilde{\pi}_{_\mathrm{LA}}\left(\psi_j \mid y \right) = 
-\sum_{k=1}^{K} \tilde{\pi}_{_\mathrm{LA}}\left( \psi^{(k)} \mid y\right) \Delta \psi_{-j}^{(k)}
+\tilde{\pi}_{_\mathrm{LA}}\left(\psi_j \vert y \right) = 
+\sum_{k=1}^{K} \tilde{\pi}_{_\mathrm{LA}}\left( \psi^{(k)} \vert y\right) \Delta \psi_{-j}^{(k)}
 \end{array} \right.
 $$
-For all $i$ and all $j$. $\Delta \psi_{-j}^{(k)}$ are the integration weights and $\psi^{(k)}$ are the integration points chosen along the parameter space of $\psi$. $\tilde{\pi} \left( \vartheta_i\mid y, \psi^{(k)}\right)$ denotes any of the four approximations introduced in section \ref{par:inla_theta}. In the case of Gaussian approximations to the full posterior, marginalising from a joint Gaussian only requires the diagonal of the inverse Hessian, which can be computed efficiently through sparse Cholesky factorisation, and is only required once for all $\vartheta_i$. The cost of this operation has thus the same order as $\tilde{\pi}_\mathrm{_{LA}}(\psi)$, implying that the evaluation of the "integrand" functions in the formulae above is comparable to a single iteration of the optimisation algorithm to locate the mode of hyperparameters. This highlights that the number $K$ of integration points is a crucial matter. While the number of iterations of the optimisation algorithm is not always easy to control, the number of integration points depends the user choice among three alternative integration schemes proposed by \cite{INLA}. We sort them in order of complexity.
+For all $i$ and all $j$. $\Delta \psi_{-j}^{(k)}$ are the integration weights and $\psi^{(k)}$ are the integration points chosen along the parameter space of $\psi$. $\tilde{\pi} \left( \vartheta_i\vert y, \psi^{(k)}\right)$ denotes any of the four approximations introduced in section \ref{par:inla_theta}. In the case of Gaussian approximations to the full posterior, marginalising from a joint Gaussian only requires the diagonal of the inverse Hessian, which can be computed efficiently through sparse Cholesky factorisation, and is only required once for all $\vartheta_i$. The cost of this operation has thus the same order as $\tilde{\pi}_\mathrm{_{LA}}(\psi)$, implying that the evaluation of the "integrand" functions in the formulae above is comparable to a single iteration of the optimisation algorithm to locate the mode of hyperparameters. This highlights that the number $K$ of integration points is a crucial matter. While the number of iterations of the optimisation algorithm is not always easy to control, the number of integration points depends the user choice among three alternative integration schemes proposed by \cite{INLA}. We sort them in order of complexity.
 
 \paragraph{Empirical Bayes}
 The cheapest among possible solutions relies on the so-called empirical Bayes method, and consists in assuming that hyperparameter posterior is sharply peaked around its mode, hence the integrals in equation \ref{eq:marginals} are replaced by the integrand functions evaluated at the mode of $\psi$. In practice, the integration point is only one. This rather extreme solution rules out all the uncertainty on the joint distribution of hyperparameters, but has a negligible computation cost.
@@ -1258,7 +1270,7 @@ INLA can compute internally some information criteria and preserve the hyperpara
 
 Except for the case of one-dimensional GMRFs, we have seen that the optimisation algorithm is not scalable. This fact may become problematic in the case of large latent structures. A solution to this more-than-linear cost problem is in parallelising computations across multiple cores of the local machine of the user \cite{Parallel, VBINLA2023}. This higher efficiency, however, comes at the cost of losing exact replicability of results, which stems from the algorithm being run on several cores. To achieve results that are perfectly replicable using the same operating system and the same package version, it is necessary to force the number of cores to 1. This can be done with argument \texttt{num.threads = 1}, and setting \texttt{control.inla = list(..., internal.opt = FALSE} \cite{Wang}.
 
-The four approaches described in Section \ref{par:inla_theta} to approximate $\pi(\vartheta_i \mid y)$ are available within the software, which can run either in "classic" (old) or "compact" (new) mode. The former supports the Gaussian, Simplified Laplace and Full Laplace approximations, and needs to be activated with the command: \texttt{inla(... , inla.mode = "classic", ...)}). The latter mode, supporting the VB mean correction to the Gaussian approximation, is implemented by default (or can be equivalently set with the command \texttt{inla(..., inla.mode = "compact", ...)}). Unless differently stated, we rely on the VB approximation. Using the new package setup also implies that the hyperparameters posterior is integrated with points defined with the regular grid for $n_\psi \leq 2$ and with the CCD otherwise. 
+The four approaches described in Section \ref{par:inla_theta} to approximate $\pi(\vartheta_i \vert y)$ are available within the software, which can run either in "classic" (old) or "compact" (new) mode. The former supports the Gaussian, Simplified Laplace and Full Laplace approximations, and needs to be activated with the command: \texttt{inla(... , inla.mode = "classic", ...)}). The latter mode, supporting the VB mean correction to the Gaussian approximation, is implemented by default (or can be equivalently set with the command \texttt{inla(..., inla.mode = "compact", ...)}). Unless differently stated, we rely on the VB approximation. Using the new package setup also implies that the hyperparameters posterior is integrated with points defined with the regular grid for $n_\psi \leq 2$ and with the CCD otherwise. 
 
 
 
@@ -1270,12 +1282,12 @@ The four approaches described in Section \ref{par:inla_theta} to approximate $\p
 Consider the partitioned Gaussian field in section \ref{section:GMRFs}. Its density of $\boldsymbol{X}$ is
 %
 $$ 
-\varphi(X \mid \boldsymbol{\mu}, \boldsymbol{\Sigma}) = \frac{1}{(2 \pi)^{n/2} \lvert \boldsymbol{\Sigma} \rvert ^{-1}} \, \, e^{- \frac{d^2}{2}}
+\varphi(X \vert \boldsymbol{\mu}, \boldsymbol{\Sigma}) = \frac{1}{(2 \pi)^{n/2} \lvert \boldsymbol{\Sigma} \rvert ^{1/2}} \, \, e^{- \frac{d^2}{2}}
 $$
 %
 Where $d^2 = (X - \mu)^\top \boldsymbol{\Sigma}^{-1}(X - \mu)$ is the squared Mahalanobis distance. 
 
-Since $\ln \pi(X) = \ln \pi(X_A \mid X_B) + \ln \pi(X_B)$ by the law of conditional probabilities and $\pi(\boldsymbol{X}) \propto exp(-\tfrac{d^2}{2})$, then $d = d^2_{A|B} + d^2_{B}$, being $d^2_{A|B}$ and $d^2_B$ the squared Mahalanobis distances of  the conditional distribution of $\boldsymbol{X_A}$ given $\boldsymbol{X_B}$ and the marginal distribution of $\boldsymbol{X_B}$ respectively. Recalling equation \ref{eq:precision1}, it is possible to derive the first and second conditional moments \citep[][result 4.6]{JohnsonWichern}.If $\boldsymbol{X}$ has been partitioned into sets $A$ and $B$, the squared Mahalanobis distance can be written as:
+Since $\ln \pi(X) = \ln \pi(X_A \vert X_B) + \ln \pi(X_B)$ by the law of conditional probabilities and $\pi(\boldsymbol{X}) \propto exp(-\tfrac{d^2}{2})$, then $d = d^2_{A\vert B} + d^2_{B}$, being $d^2_{A\vert B}$ and $d^2_B$ the squared Mahalanobis distances of  the conditional distribution of $\boldsymbol{X_A}$ given $\boldsymbol{X_B}$ and the marginal distribution of $\boldsymbol{X_B}$ respectively. Recalling equation \ref{eq:precision1}, it is possible to derive the first and second conditional moments \citep[][result 4.6]{JohnsonWichern}.If $\boldsymbol{X}$ has been partitioned into sets $A$ and $B$, the squared Mahalanobis distance can be written as:
  
 $$
  \begin{aligned}
@@ -1322,18 +1334,18 @@ $$
 \end{aligned}
 $$ 
 
-By setting $ \mu_{A|B} :=  \mu_A + (\boldsymbol{X_B} - \mu_B) \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}}$ $d^2$ is decomposed into:
+By setting $ \mu_{A\vert B} :=  \mu_A - \boldsymbol{\Sigma_{AB}} \boldsymbol{\Sigma_{BB}}^{-1} (\boldsymbol{X_B} - \mu_B)$, $d^2$ is decomposed into:
 
 $$ d^2 = 
-\left( \boldsymbol{X_A} - \mu_{A|B} \right)^\top \boldsymbol{S_{BB}^{-1}}\left( \boldsymbol{X_A} - \mu_{A|B}\right) + 
+\left( \boldsymbol{X_A} - \mu_{A\vert B} \right)^\top \boldsymbol{S_{BB}^{-1}}\left( \boldsymbol{X_A} - \mu_{A\vert B}\right) + 
 \left( \boldsymbol{X_B} - \mu_B \right)^\top \boldsymbol{\Sigma_{BB}^{-1}}\left( \boldsymbol{X_B} - \mu_B\right)
 $$
  
-The second term is $d_B^2$, namely the Mahalanobis distance for the partition $\boldsymbol{X_B}$. The first term is the Mahalanobis distance of a Normal distribution with mean $\mu_{A|B}$ and covariance $\boldsymbol{S_{BB}}$, but it must also be the Mahalanobis distance of $\boldsymbol{X_A}$ conditioned on $\boldsymbol{X_B}$, by the law of conditional probability. 
+The second term is $d_B^2$, namely the Mahalanobis distance for the partition $\boldsymbol{X_B}$. The first term is the Mahalanobis distance of a Normal distribution with mean $\mu_{A\vert B}$ and covariance $\boldsymbol{S_{BB}}$, but it must also be the Mahalanobis distance of $\boldsymbol{X_A}$ conditioned on $\boldsymbol{X_B}$, by the law of conditional probability. 
 Therefore it is proved that, if $\boldsymbol{X} \sim \mathcal{N}(\boldsymbol{\mu}, \boldsymbol{\Sigma})$, for any two partitons $A$ and $B$ such that $\boldsymbol{X_B}$ is the complement to $\boldsymbol{X_A}$ with respect to $\boldsymbol{X}$, then 
 
 \begin{equation}
-	\boldsymbol{X_A} | \boldsymbol{X_B} \sim \mathcal{N} \left(
+	\boldsymbol{X_A} \vert \boldsymbol{X_B} \sim \mathcal{N} \left(
 	\mu_A + (\boldsymbol{X_B} - \mu_B) \boldsymbol{\Sigma_{BB}^{-1}} \boldsymbol{\Sigma_{BA}}, \, \,
 	 \boldsymbol{\Sigma_{AA}} - \boldsymbol{\Sigma_{AB}} \boldsymbol{\Sigma^{-1}_{BB}} \boldsymbol{\Sigma_{BA}}
 	 \right)
@@ -1345,15 +1357,15 @@ Therefore it is proved that, if $\boldsymbol{X} \sim \mathcal{N}(\boldsymbol{\mu
 
 \section{KLD between Gaussian densities} \label{appendix:KLDNorm}
 
-Here, the formula for the KLD between two Gaussian densities is proved; with no loss of generality, let us compare $\varphi_1(X) := \varphi(X |\mu_1, \Sigma_1)$ against $\varphi_0(X):=\varphi(X | \mu_0, \Sigma_0)$, where $X$ is a Gaussian random vector of size $n$ and $\mu$ and $\Sigma$ are generic terms for mean and variance. The only assumption we make is that $\Sigma_1$ has a positive and finite determinant. Then, we have by definition:
+Here, the formula for the KLD between two Gaussian densities is proved; with no loss of generality, let us compare $\varphi_1(X) := \varphi(X \vert\mu_1, \Sigma_1)$ against $\varphi_0(X):=\varphi(X \vert \mu_0, \Sigma_0)$, where $X$ is a Gaussian random vector of size $n$ and $\mu$ and $\Sigma$ are generic terms for mean and variance. The only assumption we make is that $\Sigma_1$ has a positive and finite determinant. Then, we have by definition:
 %
 $$
-\mathrm{KLD}(\varphi_1 || \varphi_0) = \int \Big{\lbrace} \frac{n}{2}\ln \frac{|\Sigma_0|}{|\Sigma_1|} 
+\mathrm{KLD}(\varphi_1 \vert\vert \varphi_0) = \int \Big{\lbrace} \frac{n}{2}\ln \frac{\vert\Sigma_0\vert}{\vert\Sigma_1\vert} 
 -\frac{1}{2} \left[ (X-\mu_1)^{\top}\Sigma_{1}^{-1}(X - \mu_1)
 -(X-\mu_0)^{\top}\Sigma_{0}^{-1}(X - \mu_0)\right]\Big{\rbrace} \varphi_1(X)\, dX =
 $$
 $$
-= \frac{n}{2}\ln \frac{|\Sigma_0|}{|\Sigma_1|}  -\frac{1}{2} \int (X-\mu_1)^{\top}\Sigma_{1}^{-1}(X - \mu_1) \, \varphi_1(X) \, dX+
+= \frac{n}{2}\ln \frac{\vert\Sigma_0\vert}{\vert\Sigma_1\vert}  -\frac{1}{2} \int (X-\mu_1)^{\top}\Sigma_{1}^{-1}(X - \mu_1) \, \varphi_1(X) \, dX+
 $$
 $$
 + \frac{1}{2}\int(X- \mu_1 + \mu_1 - \mu_0)^{\top}\Sigma_{0}^{-1}(X - \mu_1 + \mu_1 - \mu_0) dX
@@ -1369,7 +1381,7 @@ Consider that the first integrand function is a scalar, and a scalar trivially e
 =-\frac{1}{2} \mathrm{tr} \left( \int (X-\mu_1)  (X - \mu_1)^{\top}  \, \varphi_1(X) \, dX \right)
 \Sigma_1^{-1}=
 \\
-=-\frac{1}{2} \mathrm{tr} \left( \mathrm{VAR}[X|X \sim N( \mu_1, \Sigma_1)] \Sigma_1^{-1} \right) = -\frac{n}{2}
+=-\frac{1}{2} \mathrm{tr} \left( \mathrm{VAR}[X\vert X \sim \mathcal{N}( \mu_1, \Sigma_1)] \Sigma_1^{-1} \right) = -\frac{n}{2}
 \end{align*}
 %
 Regarding the second integral, we can write it as:
@@ -1380,16 +1392,16 @@ $$
 The first of these three addenda can be simplified to:
 \begin{align*}
 \frac{1}{2}\int (X - \mu_1)^{\top} \Sigma_0^{-1} (X - \mu_1)\varphi_1(X) \, dX=\\
-=\frac{1}{2} \mathrm{tr}\left( \mathrm{VAR}[X|X \sim N( \mu_1, \Sigma_1)] \Sigma_0^{-1}\right) =
+=\frac{1}{2} \mathrm{tr}\left( \mathrm{VAR}[X\vert X \sim N( \mu_1, \Sigma_1)] \Sigma_0^{-1}\right) =
 \frac{1}{2} \mathrm{tr}\left(\Sigma_1 \Sigma_0^{-1} \right)
 \end{align*}
 
-The second addendum is proportional to $\mathbb{E}[X - \mu_1 | X \sim N(\mu_1, \Sigma_1)] := 0$ and cancels out by definition
+The second addendum is proportional to $\mathbb{E}[X - \mu_1 \vert X \sim N(\mu_1, \Sigma_1)] := 0$ and cancels out by definition
 
 Putting together these results, we get:
 \begin{equation}
-\mathrm{KLD}(\varphi_1(X) || \varphi_0(X)) = 
-\frac{n}{2} \ln \frac{|\Sigma_0|}{|\Sigma_1|} - \frac{n}{2} + \frac{1}{2} \mathrm{tr}\left( \Sigma_1 \Sigma_0^{-1} \right)
+\mathrm{KLD}(\varphi_1(X) \vert\vert \varphi_0(X)) = 
+\frac{n}{2} \ln \frac{\lvert\Sigma_0 \rvert}{ \lvert\Sigma_1\rvert} - \frac{n}{2} + \frac{1}{2} \mathrm{tr}\left( \Sigma_1 \Sigma_0^{-1} \right)
 + \frac{1}{2} (\mu_1 - \mu_0)^{\top} \Sigma_0^{-1} (\mu_1 - \mu_0)
 \label{eq:KLDNorm}
 \end{equation}
@@ -1401,7 +1413,7 @@ Putting together these results, we get:
 %% --------                   Third Chapter                 --------------------- %%
 %% ------------------------------------------------------------------------------ %%
 %
-\chapter[SchoolDataIT]{The SchoolDataIT R Package} \label{chapter:SchoolDataIT}
+\chapter[SchoolDataIT]{A Comprehensive Analysis of the Italian School System using the SchoolDataIT R Package} \label{chapter:SchoolDataIT}
 %% -------- Introduction -------------------------------- %%
 \section{Introduction} \label{section:SchoolDataIT:intro}
 
@@ -1418,7 +1430,7 @@ Thus, allocating adequate resources is a sensitive challenge for policymakers, a
 Motivated by the previous considerations, we believe that a structured set of multidimensional data about the Italian school system gathered from several institutional sources, along with georeferenced information, would be a valuable tool to detect the main areas of vulnerability and to plan appropriate development policies across the country. To this aim, we have developed \texttt{SchoolDataIT}, a software written in the \texttt{R} programming language \citep{R} which retrieves and harmonizes some relevant institutional databases at the territorial level of either municipalities (LAU hereinafter) and provinces \citep[NUTS-3 henceforth, ][]{NUTS2024}. 
 The \texttt{SchoolDataIT} package is intended as a contribution to a broader repository, namely the AMELIA platform (\url{https://grins.it/progetto/piattaforma-amelia}), an open-data platform designed to produce and harmonize high-quality statistical data and analyses, managed by the \textit{Growing Resilient, Inclusive, and Sustainable} (GRINS) Foundation, a multidisciplinary initiative funded by the NextGenerationEU (NGEU) Recovery Plan \citep{CrescenziEtAl2021, DeLaPorteJensen2021}. Some simple datasets were loaded in Amelia in April 2025 and regard classroom size, Invalsi scores, and a selecion of variables from the school buildings database. The relevant usage example and the full R codes, alongside with the complete metadata in \texttt{.csv} format can be found at this link: \url{https://github.com/lcef97/AMELIA_datasets}.
 
-Data providers are the Italian Ministry of Education (formerly MIUR, Ministry of Education, University and Research) \citep{MIUR}, the Institute for the Evaluation of the Education System (hereinafter Invalsi) \citep{Invalsi_IS}, the Italian National Institute of Statistics \citep[ISTAT,][]{InnerAreas, Situas, Shapefiles}, and the in-house company Infratel SPA on behalf of the Italian Ministry of Enterprises and Made in Italy \citep[MIMIT,][]{BB}, which is responsible of implementing and managing the ultra-broad band strategic plan. Since all of the data we take as input are open and publicly accessible, we retrieve them via web scraping, allowing for real-time updated inputs while requiring no storage space in the local machine of the user.
+Data providers are the Italian Ministry of Education (formerly MIUR, Ministry of Education, University and Research) \citep{MIUR}, the Institute for the Evaluation of the Education System (hereinafter Invalsi) \citep{Invalsi_IS}, the Italian National Institute of Statistics \citep[ISTAT,][]{InnerAreas, Situas, Shapefiles}, and the in-house company Infratel SPA on behalf of the Italian Ministry of Enterprises and Made in Italy \citep[MIMIT,][]{BB}, which is responsible of implementing and managing the ultra-broad band strategic plan. Since all of the data we take as input are open and publicly accessible, we retrieve them via web scraping, allowing for real-time updated inputs while requiring no permanent storage space in the local machine of the user.
 
 The \texttt{SchoolDataIT} software is currently available under version 0.2.12, released on December 17th 2025 on the Comprehensive R Archive Network \href{https://cran.r-project.org/web/packages/SchoolDataIT/index.html}{(CRAN)}. To ensure constant package maintenance, experimental versions are hosted on \href{https://github.com/lcef97/SchoolDataIT}{my GitHub webpage}.
 
@@ -1443,9 +1455,6 @@ Lastly, both \cite{Garlaschi} and \cite{BDI} stress the importance of the endowm
 Based on the information provided by the Ministry of Education, one can observe that the overall distribution of school infrastructure endowment is affected indeed by patterns of territorial vulnerability. Henceforth, one could then reasonably expect that these territorial disparities are reflected in terms of student outcomes, provided the role of school infrastructure in learning processes. Such assertion is confirmed by \cite{Bratti}, who show that infrastructural variables can contribute to explaining part of the North-South divide in Programme for International Student Assessment (PISA) test scores \citep{OECD_PISA2024}.
 
 
-
-
-
 %% -------- Package workflow ---------------------------- %%
 \section{Package workflow} \label{section:Workflow}
 The \texttt{SchoolDataIT} package is organised according to a chained sequence of steps. Except for the mapping functions, all outputs are \texttt{data.frame} objects, specifically structured as \texttt{tibbles} \citep{tibble}, thus fully compatible with the \texttt{Tidyverse} \citep{tidyverse}. Figure \ref{fig:Flowchart} presents a flowchart illustrating the skeleton of the package.
@@ -1457,7 +1466,7 @@ The \texttt{SchoolDataIT} package is organised according to a chained sequence o
   \label{fig:Flowchart}
 \end{figure}
 
-The first step involves retrieving school system data from institutional sources through the \texttt{\detokenize{Get_}} functions. The user specifies some key requests in function calls, such as the school year of interest for school buildings or student counts data. The software can thus navigate to the webpage of the data provider, inspect its HTML structure and identify the static links to the raw data to be downloaded. Raw data are then converted to \texttt{.csv} and eventually into \texttt{R} objects. In doing so, it is needful to recall that no storage space is required on the local machine of the user. 
+The first step involves retrieving school system data from institutional sources through the \texttt{\detokenize{Get_}} functions. The user specifies some key requests in function calls, such as the school year of interest for school buildings or student counts data. The software can thus navigate to the webpage of the data provider, inspect its HTML structure and identify the static links to either the raw data to be downloaded, or some static \texttt{.zip} folders including the relevant inputs. Raw data are then converted to \texttt{.csv} and eventually into \texttt{R} objects, while \texttt{.zip} objects are handled in temporary folders which are deleted immediately after \texttt{R} acquires data. In doing so, it is needful to recall that no permanent storage space is required on the local machine of the user outside the working environment of the \texttt{R} working session. 
 
 The main retrieval functions are the following; reported data availability is assessed on April 3rd 2025.
 \begin{itemize}
@@ -1481,7 +1490,7 @@ Lastly, the \texttt{\detokenize{Map_}} functions render aggregated data with sta
  
 %% -------- CRAN ---------------------------------------- %%
 \section{Static web scraping} \label{section:Scraping}
-\textcolor{blue}{R packages can be easily distributed and made available to the general public. For instance, the integrated development environment (IDE) R-Studio \citep{RStudio}, which is frequently employed by R users, even provides a window dedicated to sharing working directories on GitHub, hence R packages can be posted on GitHub and downloaded via the R function \texttt{\detokenize{devtools::install_github(...)}}. While this is the most practical approach on the developer side, on the user side we deem more effective to employ the canonical repository of \texttt{R} extensions, namely the CRAN archive. \texttt{R} packages can be download from CRAN immediately and the fact of being hosted on CRAN guarantees user safety automatically. Since \texttt{R} is compatible with several operating systems, so must be all packages hosted on CRAN. This is ensured with the remote checks \citep[][Chapter 22]{RPackages} constantly run on 13 different operating systems; checks fail each time an exported function crashes or returns any error, or if the package exceeds the size of 5 megabytes. As soon as the package violates the checks on any operating system, an alert is sent to maintainers who are given 10-15 days to solve all issues, otherwise the package is removed from CRAN.} 
+\textcolor{blue}{R packages can be easily distributed and made available to the general public. For instance, the integrated development environment (IDE) R-Studio \citep{RStudio}, which is frequently employed by R users, even provides a window dedicated to sharing working directories on GitHub, hence R packages can be posted on GitHub and downloaded via the R function \texttt{\detokenize{devtools::install_github(...)}}. While this is the most practical approach on the developer side, on the user side we deem more effective to employ the canonical repository of \texttt{R} extensions, namely the CRAN archive. \texttt{R} packages can be download from CRAN immediately. Since \texttt{R} is compatible with several operating systems, so must be all packages hosted on CRAN. This is ensured with the remote checks \citep[][Chapter 22]{RPackages} constantly run on 13 different operating systems; checks fail each time an exported function crashes or returns any error, or if the package exceeds the size of 5 megabytes. As soon as the package violates the checks on any operating system, an alert is sent to maintainers who are given 10-15 days to solve all issues, otherwise the package is removed from CRAN.} 
 
 \textcolor{blue}{Avoiding system crashes is a particularly sensible issue when \texttt{R} interferes with external programs or even more so with internet navigation. The present package relies on scraping static data objects from the web, hence it operates two requests. The first one consists in looking for the hyper-references in the data provider webpage. The second consists in downloading the relevant object including the data to retrieve. An insufficient but necessary condition to send web requests is the availability of a working internet connection. The \texttt{AutoAbort=TRUE} option of \texttt{\detokenize{Get_}} functions is used to abort the whole operation when connection lacks; otherwise the user will be asked to give the system some time to wait for a connection to be established by using the R command line. }
 %The message has this appearance:
@@ -1537,7 +1546,7 @@ The function \texttt{\detokenize{Util_DB_MIUR_num}} converts strings to Boolean 
 
 Observations can be aggregated with the function \texttt{\detokenize{Group_DB_MIUR}}. Numeric and Boolean variables are summarized by their mean and qualitative variables by their mode. Since territorial averages provide no information about missing values, by default the function returns two additional data frames providing the number of missing observations of each variable per area.
 
-Finally, for better insight into the general infrastructural state, we add the Inner Areas taxonomy, published by the Italian Institute of Statistics (ISTAT) and updated every six years \citep{InnerAreas}. It divides Italian municipalities into six classes: A, B and C are considered central areas, while D, E, and F classes are labeled as "inner" (i.e. peripheral) areas. Class A identifies standalone pole municipalities, characterized by a comprehensive and self-sufficient combination of school, health, and transport infrastructure \citep{InnerAreas}; class B identifies inter-municipality poles, i.e. clusters of neighbouring municipalities which, taken together, fulfill the requirements of pole municipalities. The remaining classes are defined based on increasing road travel time to the closest pole: Class C: $0' - 27'42''$; Class D: $27'42'' - 40'54''$; Class E: $40'54'' - 1h \, 6' 54''$; Class F: $> 1h \, 6' 54''$.
+Finally, for better insight into the general infrastructural state, we add the Inner Areas taxonomy, published by the Italian Institute of Statistics (ISTAT) and updated every six years \citep{InnerAreas}. It divides Italian municipalities into six classes: A, B and C are considered central areas, while D, E, and F classes are labeled as "inner" (i.e. peripheral) areas. Class A identifies standalone pole municipalities, characterised by a comprehensive and self-sufficient combination of school, health, and transport infrastructure \citep{InnerAreas}; class B identifies inter-municipality poles, i.e. clusters of neighbouring municipalities which, taken together, fulfill the requirements of pole municipalities. The remaining classes are defined based on increasing road travel time to the closest pole: Class C: $0' - 27'42''$; Class D: $27'42'' - 40'54''$; Class E: $40'54'' - 1h \, 6' 54''$; Class F: $> 1h \, 6' 54''$.
 
 In Figure \ref{fig:TPU23} we show the percentage of schools served by public transport in 2022/23 at the province and municipality level, in this latter case only for the Apulia region, which is the region with the highest share of municipalities hosting at least one high school ($124$ over $257$). As mentioned in Section \ref{section:Data}, though northern and central regions have a higher proportion of schools served by urban public transport, regions like Abruzzo in the South or Veneto and Emilia-Romagna in the North are in contrast the general trend. In the provinces of Aosta, Trieste, La Spezia (North), Massa (Center) and Chieti (South) all schools are reached by public transport, while this percentage is higher than $95\%$ in the provinces of Pavia, Bergamo (North), Pesaro-Urbino, Pisa, Lucca and Latina (Center). On the other hand, in the province of Salerno in Southern Italy only $0.07\%$ of schools is served by public transport; this percentage is lower than $40\%$ in the provinces of Ferrara and Pordenone in the North and Crotone, Foggia and Naples in the South.%The negative record belongs to the provinces of Salerno and Naples in Campania and Crotone in Calabria.
 
@@ -1609,7 +1618,7 @@ A case-study with more details on the Invalsi census survey is provided in Chapt
 %% -------- Example ------------------------------------- %%
 \section[Usage Example]{Student outcomes in Mathematics and classroom size: an example using the SchoolDataIT package} \label{section:Example}
 
-Here we provide an example of spatial statistical application to the data covered by the \texttt{SchoolDataIT} package. Following Section \ref{par:nstud}, suppose the user is interested in studying to what extent classroom size is associated with student outcomes. We can first map the two variables.
+Here we provide an example of spatial statistical application to the data covered by the \texttt{SchoolDataIT} package. Following Section \ref{par:nstud}, suppose the user is interested in studying to what extent classroom size is associated with student outcomes, say, in Mathematics at the last year of middle school, for the school year 2023/24. We can start by mapping the Invalsi scores and the average classroom size in figure \ref{fig:invalsi_nstud8}.
 %
 \begin{figure}
   \centering
@@ -1618,19 +1627,9 @@ Here we provide an example of spatial statistical application to the data covere
   \label{fig:invalsi_nstud8}
 \end{figure}
 %
-Concerning the last year of middle school in 2023/2024, we regress the Invalsi score in Mathematics on the average classroom size at the municipality level. To ease model results interpretation, classroom size is scaled to zero mean and unit variance. Additionally, schools with an average class size of less than $10$ or more than $40$ students have been removed from the dataset. 
-In this case, observational length is equal to $n = 780$ municipalities, i.e. those for which Invalsi scores and classroom size were both available at 2025/04/03.
+The easiest kind of analysis is regressing Invalsi scores on the average classroom size at the municipality level. To ease model results interpretation, classroom size is scaled to zero mean and unit variance. Additionally, schools with an average class size of less than $10$ or more than $40$ students have been removed from the dataset; the choice of this interval ensures more classroom size variability than the narrower legal limits, which are, however, subjected to a regime of waivers. With these data at hand, observational length is equal to $n = 780$ municipalities, i.e. those for which Invalsi scores and classroom size were both available at 2025/04/03.
 
-OLS regression would result in an expected effect of classroom size equal to $4.153$, with standard error $0.407$. If no additional information is taken into account, classroom size would then appear to have a positive and statistically significant relationship with Invalsi scores.
-%Under the OLS specification, the stochastic representation of the Invalsi score, which we denote as $y$, is
-%\begin{equation}
-%y = \beta_0 +  \beta_\mathrm{nstud} X_\mathrm{nstud} + \varepsilon
-%\label{eq:OLS}
-%\end{equation}
-
-%where $\beta_0$ is the intercept, $X_\mathrm{nstud}$ is classroom size, $\beta_\mathrm{nstud}$ is the effect of classroom size, and $\varepsilon$ is a Gaussian IID error such that $\varepsilon \sim \mathcal{N}  (0, \sigma_{\varepsilon}^2 I_n)$. 
-
-%If no additional information is taken into account, classroom size appears to have a positive and statistically significant association with the Invalsi score, as seen in \ref{tab:OLS}:
+Preliminary results from the ordinary least squares (OLS) regression return an estimated coefficient for classroom size equal to 4.153, with standard error 0.407. If no additional information is taken into account, classroom size would then appear to have a positive and statistically significant relationship with Invalsi scores. Such a counter-intuitive outcome could stem from either the lack of other explanatory variables, or from the possible selection bias caused by the exclusion of municipalities with a single middle school from the Invalsi data record. 
 %
 % \begin{table}
 % \centering
@@ -1645,7 +1644,7 @@ OLS regression would result in an expected effect of classroom size equal to $4.
 %\label{tab:OLS}
 %\end{table}
 %
-A closely linked result, namely the significantly positive association of Invalsi scores with the students/teacher ratio, was noticed by \cite{Barbieri}, always in the context of middle schools, and attributed to the impact of schools reputation on their attractiveness. Interestingly, when an instrumental variable relating to teachers' mobility was taken into account in their regression model, the estimated effect of the student-to-teacher ratio was not significant anymore.
+A closely linked result, namely the significantly positive association of Invalsi scores with the students/teacher ratio, was noticed by \cite{Barbieri}, always in the context of middle schools, and attributed to the impact of schools reputation on their attractiveness. Interestingly, when an instrumental variable relating to teachers' mobility was taken into account in their regression model, the estimated effect of the student-to-teacher ratio appeared to be no longer significant. This may be suggesting an omitted variable bias in our OLS results. 
 
 Given the greater amount of information at our disposal, it would be na{\"i}ve to limit the analysis to this amount of information. First, considering what we have seen in \ref{fig:nstud_bp_8}, the user may be interested in adding the inner areas taxonomy as an explanatory variable in the simplest possible way, namely classifying municipalities among central (A, B, C) and inner (C, D, E) areas. Moreover, the territorial structure of the dataset suggests to include spatial terms in the regression model. Considering the number of municipalities for which data are available ($780$ over a national total of $7901$), the spatial structure is rather sparse and we would need to define some neighbouring rules in alternative to shared borders. To overcome this issue, we choose to treat the municipality-level average Invalsi score as a point-referenced process, thus assuming that the data-generating process is defined on a continuous spatial domain. Specifically, we postulate that the locations at which this process is observed are the centroids of municipalities as defined on January 1st, 2023.
 Spatial information is taken into account through a linear spatial trend and a spatially structured Gaussian process $u(s)$, with $s \in [1, 780]$, whose autocorrelation decays as distance increases. The model becomes thus:
@@ -1683,9 +1682,7 @@ Now, \cite{Whittle} shown that a stochastic process $u(s)$ with this kind of cov
 \label{spde}
 \end{equation}
 
-Where $\Delta$ is the Laplacian operator and $\epsilon(s)$ denotes a spatial Gaussian white noise process; this equation \textcolor{red}{does describe indeed a Gaussian autoregressive process on an infinite lattice}.
-
-Parameters $\nu$ and with $\kappa$ are linked to the global variance $\sigma^2$ through the relationship:
+Where $\Delta$ is the Laplacian operator and $\epsilon(s)$ denotes a spatial Gaussian white noise process. Parameters $\nu$ and with $\kappa$ are linked to the global variance $\sigma^2$ through the relationship:
 $$
 \sigma^2 = \frac{\Gamma(\nu)}{\Gamma(\nu +1) 4 \pi \kappa^{2 \nu} \tau^2}
 $$
@@ -1697,7 +1694,7 @@ A potential solution is offered by the Stochastic Partial Differential Equation 
 
 The point-referenced field $u(s)$ is replaced by $A z$ where $A$ is an $n \times N$ matrix to project observation locations onto the mesh, and $z$ is a Gaussian Markov random field of length $N$ defined on the mesh which, in our case, has $N = 1384$ nodes. Markov properties, together with the Normal distribution, ensure the precision matrix of $z$ has a number of nonzero entries in the order of $N$ \citep{GMRFs}, as seen in Section \ref{section:GMRFs}. 
 
-Mapping the Matérn field onto a GMRF shrinks the computational cost to $\boldsymbol{\theta}(N^{3/2})$, due to the sparse precision structure of processes defined on bi-dimensional domains.
+Mapping the Matérn field onto a GMRF shrinks the asymptotic computational cost to $\boldsymbol{\theta}(N^{3/2})$, due to the sparse precision structure of processes defined on bi-dimensional domains.
 
 For model fitting, we firstly need to define the mesh and index all its nodes; in our case the mesh is chosen to have more nodes than the observation points. This procedure can be entirely handled internally to \texttt{R-INLA}.
 
@@ -1711,7 +1708,7 @@ For model fitting, we firstly need to define the mesh and index all its nodes; i
 %Based on prior knowledge and ignoring information available from explorative data analysis, we are assuming here that the range, namely the distance at which the correlation of the random fields is shrunk under a $0.10$ threshold is smaller than $400$ kilometers with $95\%$ probability, and at the same probability the standard deviation of the random field exceeds $6$ points.
 
 
-The hierarchical model in equation \ref{eq:spde} also requires prior assumptions on the distribution of its hyperparameters. Error precision $\sigma_{\varepsilon}^{-2}$ is assumed to follow a Gamma distribution with shape parameter $1$ and rate parameter $ 5 \cdot 10^{-5}$. Moreover, we define a penalized complexity (PC) prior \citep{PC} on the range $r$ and the global standard deviation $\sigma$ of the latent spatial field. The behaviour of these distributions is described in \cite{SPDEPC}. We select two fixed values, $\sigma_0$ and $r_0$ such that, for two fixed values $p_\sigma$ and $p_r$, $prob \left( r < r_0 \right) = p_r $ and $prob \left( \sigma > \sigma_0 \right) = p_\sigma$. 
+The hierarchical model in equation \ref{eq:spde} also requires prior assumptions on the distribution of its hyperparameters. Error precision $\sigma_{\varepsilon}^{-2}$ is assumed to follow a Gamma distribution with shape parameter $1$ and rate parameter $ 5 \cdot 10^{-5}$. Moreover, we define a penalized complexity (PC) prior \citep{PC} on the range $r$ and the global standard deviation $\sigma$ of the latent spatial field. The behaviour of these distributions is described in \cite{SPDEPC}, who notably show that the joint density factorises into the relevant marginals. We select two fixed values, $\sigma_0$ and $r_0$ such that, for two fixed values $p_\sigma$ and $p_r$, $\mathrm{prob} \left( r < r_0 \right) = p_r $ and $\mathrm{prob} \left( \sigma > \sigma_0 \right) = p_\sigma$. 
 
 Based on prior knowledge and ignoring the information available from exploratory data analysis, we assume that the range, namely the distance at which the correlation of the random fields is shrunk under a $0.10$ threshold, is smaller than $300$ kilometers with $5\%$ probability, and the standard deviation of the random field is higher than $4$ points with $5\%$ probability. Again, for the sake of model results interpretation, classroom size, latitude and longitude are scaled to mean $0$ and variance $1$.  The summaries of covariate effects are reported in Table \ref{tab:betaSP}.
 %
@@ -1733,7 +1730,7 @@ Based on prior knowledge and ignoring the information available from exploratory
 %
 Employing this amount of information, the effect of classroom size no longer appears to be significant, while belonging to an inner area still implies an expected disadvantage of $2.329 $ points in Invalsi scores compared to central areas (either infrastructural poles or municipalities close to them). The evidence for the North-South divide is very strong, as the current model suggests that being located one standard deviation of the northing distribution ($\approx 291.25$ km) further north than a reference location implies an expected advantage of $8.997$ Invalsi points. To visualize the extent to which the spatial structure influences Invalsi scores, we plot the expected value of the linear trend ($\beta_\ell \ell + \beta_\phi \phi$) and the latent Gaussian process ($u$) in Figure \ref{fig:trends}.
 
-The darker zones in the right panel (lower values of $\boldsymbol{E}[u|y]$) can be interpreted as areas of educational vulnerability net of classroom size, general infrastructural conditions, and net of the North-South trend as well. Most critical areas include the urban area of Naples and the upper Ionian coast in Calabria. Conversely, brighter areas represent relatively advantaged territories, such as much of  Central inland and the Salento Peninsula.
+The darker zones in the right panel (lower values of $\boldsymbol{E}[u\vert y]$) can be interpreted as areas of educational vulnerability net of classroom size, general infrastructural conditions, and net of the North-South trend as well. Most critical areas include the urban area of Naples and the upper Ionian coast in Calabria. Conversely, brighter areas represent relatively advantaged territories, such as much of  Central inland and the Salento Peninsula.
 
 \begin{figure}
   \centering
@@ -2059,7 +2056,7 @@ The remainder of this chapter is structured as follows. In Section \ref{section:
 
 
 %% --------- Data --------------------------------------- &&
-\section{Student outcome data and infrastructural endowement} \label{section:Invalsi:data}
+\section{Student outcome data and infrastructural endowment} \label{section:Invalsi:data}
 In this Section, the data on high school student outcomes together with some auxiliary data on the state of the infrastructure of Italian municipalities are described. 
 Notice that Italian municipalities for which all relevant data are available amount to $873$ over $7904$ for the school year 2022/2023, the last school year for which all data are available on October 29, 2024. Data are obtained through the \texttt{SchoolDataIT} package, described in Chapter \ref{chapter:SchoolDataIT}. 
  
@@ -2083,11 +2080,12 @@ Auxiliary information considered herein has been selected to synthesize the gene
 \paragraph{Inner Areas}\label{par:inner} The taxonomy of inner areas is published by the Italian National Institute of Statistics \citep{InnerAreas} and includes six classes, defined as in Chapter \ref{chapter:SchoolDataIT}. Municipalities in classes A and B, namely the ones serving as destination poles, are labelled as central. Municipalities in classes C-D and E-F are labelled as intermediate and peripheral respectively. Dummy variables "Central" and "Peripheral" are defined according to this distinction.
 
 \subsection{Spatial structure} \label{par:graph}
-Considering $873$ municipalities over $7904$ leads to a sparse pattern of observational units. For the forthcoming analysis, we opt to to define a less sparse spatial structure at the higher spatial aggregation level of macro-areas (see below). Say the total observational length is $N = 873$ municipalities, the number of macro-areas is $n$, and the number of municipalities within the $i$-th macro-area is $N_i$, then $N = \sum_{i=1}^{n} N_i$.
 
-Two alternative definitions of the macro-areas are used, corresponding to two spatial models. The first level are provinces (NUTS-3 units), amounting to $n = 105$ macro-areas. Alternatively, infrastructural catchment areas are considered, defined as the ensemble of an infrastructural pole and all the intermediate and peripheral municipalities for which that pole is the destination pole. Infrastructural catchment areas amount to $n = 206$ units.
+Considering $873$ municipalities over $7904$ leads to a sparse pattern of observational units. For the forthcoming analysis, it is thus convenient to define a less sparse spatial structure at the higher spatial aggregation level of macro-areas (see below). Say the total observational length is $n_y = 873$ municipalities, the number of macro-areas is $n_z$, and the number of municipalities within the $i$-th macro-area is $m_i$, then $N = \sum_{i=1}^{n} m_i$.
 
-Macro-areas can be treated as the nodes of a graph $\mathcal{G}$ with $G = 3$ connected components, namely the continent and the islands of Sicily and Sardinia. The neighbourhood structure of $\mathcal{G}$ is described by the binary proximity matrix $\boldsymbol{W}$.
+Two alternative definitions of the macro-areas are used, corresponding to two spatial models. The first level are provinces (NUTS-3 units), i.e., $n_z = 105$ macro-areas. Alternatively, infrastructural catchment areas are considered, defined as the ensemble of an infrastructural pole and all the intermediate and peripheral municipalities for which that pole is the destination pole. Infrastructural catchment areas amount to $n = 206$ units.
+
+Macro-areas can be treated as the nodes of a graph $\mathcal{G}$ with $G = 3$ connected components, namely the continent and the islands of Sicily and Sardinia. The neighbourhood structure of $\mathcal{G}$ is described by the binary and symmetric neighbourhood matrix $\boldsymbol{W}$.
 
 \subsection{Spatial exploratory analysis of explanatory variables} \label{par:X}
 
@@ -2106,19 +2104,7 @@ The values of $I$ and $I_\mathrm{std}$ are computed with the \texttt{spdep} \tex
     Lower panel: ultra-broadband availability (left) and urban transport accessibility (right) per province.}
     \label{fig:Xprov}
 \end{figure}
-%\begin{figure}
-  %\centering
-  %\includegraphics[width=0.9\textwidth]{Invalsi/X_prov_1.pdf} 
-  %\caption{Proportion of central (left) and peripheral (right) municipalities per province}
-  %\label{fig:Xprov1}
-%\end{figure}
-%\begin{figure}
- % \centering
-  %\includegraphics[width=0.9\textwidth]{Invalsi/X_prov_2.pdf} 
-  %\caption{Ultra-BroadBand availability (left) and urban transport accessibility (right) per province}
-  %\label{fig:Xprov2}
-%\end{figure}
-%
+
 \begin{table}[ht]
 \centering
 \begin{tabular}{lrr}
@@ -2133,7 +2119,7 @@ Urban transport & 0.0662 & 1.1072  \\
 \label{tab:MoranProv}
 \end{table}
 
- When averaging covariates across infrastructural catchment areas, the values of $I_{std}$ are generally higher, and we find evidence for spatial autocorrelation also for the proportion of schools served by urban public transport.
+ When averaging covariates across infrastructural catchment areas, the values of $I_\mathrm{std}$ are generally higher, and we find evidence for spatial autocorrelation also for the proportion of schools served by urban public transport.
 
 %\begin{figure}
 %  \centering
@@ -2167,8 +2153,7 @@ Urban transport &  0.3051 & 6.7238    \\
 \section{A bivariate spatial model for student scores}\label{section:Model_outline}
 
 In this Section, the general features of the bivariate spatial model for the Invalsi scores in Mathematics and Italian are outlined and general notation is introduced.
-Assume the Invalsi scores in Mathematics and Italian $y = (y_1^{\top}, \, y_2^{\top})^{\top}$ are defined as a vector of length $2N$ and modelled as follows:\\
-%$y := (y_1, \, y_2)$ are modelled as follows:\\
+Assume the Invalsi scores in Mathematics and Italian $y = (y_1^{\top}, \, y_2^{\top})^{\top}$ are defined as a vector of length $2n_y$ and modelled as follows:
 \begin{equation}
 y =  \boldsymbol{\tilde{X}}  \, \beta \,  + 
 \tilde{\boldsymbol{\xi}} \, \boldsymbol{\tilde{C}} \, \beta_C \,  +
@@ -2181,26 +2166,26 @@ y =  \boldsymbol{\tilde{X}}  \, \beta \,  +
 \end{equation}
 
 
-where $\boldsymbol{\tilde{X}} := \boldsymbol{I}_2 \otimes \boldsymbol{X}$, $\tilde{\boldsymbol{\xi}} := I_2 \otimes \boldsymbol{\xi}$ and $\boldsymbol{\tilde{C}} := \boldsymbol{ I}_2 \otimes \boldsymbol{C}$. $\boldsymbol{X}$ is the $N \times 4$ matrix of auxiliary variables (see Section \ref{Covariates}), and $\beta$ is a vector of fixed effects of length $8$. The $N \times n$ matrix $\xi$ is binary and maps the $n$ macro-areas onto $N$ municipalities. The $n \times 3$ matrix $\boldsymbol{C}$ is also binary and denotes which connected component (continent, Sicilia, Sardinia) each macro-area belongs to, $\beta_C$ is the vector of component-specific intercepts of length $6$. The bivariate latent spatial field $z = (z_1^{\top}, \, z_2^{\top})^{\top}$ is defined at the macro-area level and accounts for both the spatial variation and the correlation between Mathematics and Italian scores. Finally $\varepsilon = (\varepsilon_1^{\top} , \, \varepsilon_2^{\top})^{\top}$ is the matrix-valued random error, following the distribution:
+where $\boldsymbol{\tilde{X}} := \boldsymbol{I}_2 \otimes \boldsymbol{X}$, $\tilde{\boldsymbol{\xi}} :=\boldsymbol{ I_2 }\otimes \boldsymbol{\xi}$ and $\boldsymbol{\tilde{C}} := \boldsymbol{ I}_2 \otimes \boldsymbol{C}$. $\boldsymbol{X}$ is the $n_y \times 4$ matrix of auxiliary variables net of intercepts (see Section \ref{Covariates}), and $\beta$ is a vector of fixed effects of length $8$. The $n_y \times n_z$ matrix $\boldsymbol{\xi}$ is binary and maps the $n_z$ macro-areas onto $n_y$ municipalities; each row of $\boldsymbol{\xi}$ is a unit vector in the $n_z$-dimensional space. The $n_z \times 3$ matrix $\boldsymbol{C}$ is also binary and denotes which connected component (continent, Sicily, Sardinia) each macro-area belongs to, $\beta_C$ is the vector of subject-specific and component-specific intercepts of length $6$. The bivariate latent spatial field $z = (z_1^{\top}, \, z_2^{\top})^{\top}$ is defined at the macro-area level and accounts for both the spatial variation and the correlation between Mathematics and Italian scores. Finally $\varepsilon = (\varepsilon_1^{\top} , \, \varepsilon_2^{\top})^{\top}$ is the bivariate random error, following the distribution:
 
 
 \begin{equation}
 \left\{
 \begin{array}{ll}
-\varepsilon_{1} \mid \omega_1 \overset{\text{iid}}{\sim}
+\varepsilon_{1} \vert \omega_1 \overset{\text{iid}}{\sim}
 \mathcal{N}(\boldsymbol{0}, \omega_1)\\
-\varepsilon_{2} \mid \omega_2, \alpha 
-\overset{\text{iid}}{\sim} SN(m_{\omega_2, \alpha}, s_{\omega_2, \alpha}, \alpha)  
+\varepsilon_{2} \vert \omega_2, \alpha 
+\overset{\text{iid}}{\sim} \mathrm{SN}(m_{\omega_2, \alpha}, s_{\omega_2, \alpha}, \alpha)  
 \end{array}
 \right.
 \label{eq:errors}
-\end{equation} \\
-$SN(\cdot)$ in \ref{eq:errors} denotes the Skew-Normal distribution \citep{SN} with location and scale parameters $m_{\alpha, \omega_2}$ and $ s_{\alpha, \omega_2}$ defined to ensure that $\mathbb{E}[\varepsilon_2 | \alpha] = 0 $ and $VAR[\varepsilon_2 | \alpha] = \omega_2$, and $\alpha$ is the shape parameter., i.e.
+\end{equation} 
+$\mathrm{SN}(\cdot)$ in \ref{eq:errors} denotes the Skew-Normal distribution \citep{SN} with location and scale parameters $m_{\alpha, \omega_2}$ and $ s_{\alpha, \omega_2}$ defined to ensure that $\mathbb{E}[\varepsilon_2 \vert \alpha] = 0 $ and $VAR[\varepsilon_2 \vert \alpha] = \omega_2$, and $\alpha$ is the shape parameter., i.e.
 $$
-\pi(\varepsilon_2 \mid \omega_2, \alpha) = \frac{2}{\omega_2}
-\varphi\left(\frac{\varepsilon_2 - m_{\omega_2,\alpha}}{\omega_2}
+\pi(\varepsilon_2 \vert \omega_2, \alpha) = \frac{2}{\sqrt{\omega_2}}
+\varphi\left(\frac{\varepsilon_2 - m_{\omega_2,\alpha}}{\sqrt{\omega_2}}
 \right) \Phi \left( 
-\alpha \frac{\varepsilon_2 - m_{\omega_2,\alpha}}{\omega_2}
+\alpha \frac{\varepsilon_2 - m_{\omega_2,\alpha}}{\sqrt{\omega_2}}
 \right)
 $$
 This choice is due to the negative skewness in municipality-level Italian scores that neither auxiliary variables or spatial effects can explain (see Fig. \ref{fig:kernel} below). For interpretation reasons, in the remainder of this paper, we consider a transformation of $\alpha$, namely the skewness parameter $\gamma_1$, that has the property of lying approximately in the interval $]-1, 1[$:
@@ -2213,25 +2198,25 @@ Following \cite{SNprior}, $\alpha$ is assigned a Penalised Complexity prior with
 $\lambda = 4$ is chosen based on empirical considerations, i.e. balancing model complexity and fit. However, the posterior distribution of the skewness parameter does not appear to be sensitive to the choice of $\lambda$ \citep{SNprior}.\\
 
 Covariate effects $\beta$ have $N(0, 10^3)$ non-informative priors, while priors for intercepts in $\beta_C$ are set as $N(180, 10^3)$, according to the expected global mean of Invalsi ability scores (Section \ref{Par:Invalsi}).
-Precision parameters for the error terms, namely $\omega_{1}$ and $\omega_2$, have independent Gamma vague priors with shape $10^{-3}$ and rate $10^{-3}$.
+Error variances $\omega_{1}$ and $\omega_2$ have independent Gamma vague priors with shape $10^{-3}$ and rate $10^{-3}$.
 
 \subsection{Modelling the spatial component} \label{par:ICAR}
 Considering the neighbourhood structure outlined in Section \ref{par:graph}, $z$ is modelled as a bivariate ICAR defined on the graph $\mathcal{G}$, following the prior defined in equation \ref{eq:icarconditional}
 In this case, considering the graph structure, the joint prior distribution of the ICAR field becomes
 \begin{equation}
-\pi\left(z\mid \boldsymbol{\Lambda} \right) =
+\pi\left(z\vert \boldsymbol{\Lambda} \right) =
 \left( \frac{1}{2 \pi} \right)^{n-3}
-\sqrt{\mid \boldsymbol{\Lambda} \otimes\boldsymbol{L}  \mid_{+}} \, \, 
+\sqrt{\vert \boldsymbol{\Lambda} \otimes\boldsymbol{L}  \vert_{+}} \, \, 
  e^{\displaystyle{-\tfrac{1}{2}
 (\mathrm{vec} \, \boldsymbol{z})^\top(\boldsymbol{\Lambda} \otimes \boldsymbol{L} ) \mathrm{vec}\, \boldsymbol{z}}}
 \label{eq:ICAR}
 \end{equation}
 
-where $\boldsymbol{L} := \boldsymbol{D} - \boldsymbol{W}$ is the Laplacian matrix of the graph $\mathcal{G}$ with $3$ connected components and $\boldsymbol{D} = \mathrm{diag}(d_1, d_2 \ldots d_n)$ is the degree matrix of $\mathcal{G}$ (as discussed more in detail in Chapter \ref{chapter:theory}). The matrix $\boldsymbol{\Lambda} =\boldsymbol{ \Sigma}^{-1}$ is the $2 \times 2$ precision parameter. 
-Since $\boldsymbol{L}$ is singular with rank deficiency $3$ \citep{Hodges2003}, it is necessary to constrain $z$ to sum to zero within each connected graph component \citep{ICAR}. 
-This is the reason for adopting component-specific intercepts $\beta_C$ in equation \ref{eq:model}.
+where $\boldsymbol{L} := \boldsymbol{D} - \boldsymbol{W}$ is the Laplacian matrix of the graph $\mathcal{G}$ with $3$ connected components and $\boldsymbol{D}$ is the diagonal degree matrix of $\mathcal{G}$ (as discussed more in detail in Chapter \ref{chapter:theory}). The matrix $\boldsymbol{\Lambda} =\boldsymbol{ \Sigma}^{-1}$ is the $2 \times 2$ precision parameter. 
+Since $\boldsymbol{L}$ is singular with rank deficiency $3$ \citep{Hodges2003}, it is necessary to constrain $z$ to sum to zero within each connected graph component \citep{ICAR}. This is the reason for adopting component-specific intercepts $\beta_C$ in equation \ref{eq:model}.
 
-To ease the interpretation of $\boldsymbol{\Lambda}$ as the precision parameter of $z$, it is possible to cleanse it from the effect of the neighbourhood structure by defining a scaled version of $\boldsymbol{L}$ \cite{Sorbye} and reparametrising the precision of $z$ accordingly. The scaling procedure is described in subsection \ref{subsection:scaling}.
+To ease the interpretation of $\boldsymbol{\Lambda}$ as the precision parameter of $z$, it is possible to cleanse it from the effect of the neighbourhood structure by defining a scaled version of $\boldsymbol{L}$ \cite{Sorbye} and reparametrising the precision of $z$ accordingly. The scaling procedure is described in subsection \ref{subsection:scaling}; this procedure allows to compare the precision parameter across the connected components of the graph.
+
 Since $\mathcal{G}$ is disconnected, each component-specific block of $\boldsymbol{L}$ is multiplied by the relevant typical variance, namely the geometric mean of the diagonal of the corresponding block of its pseudoinverse, following the methodology proposed by \cite{Freni}. It is therefore possible to define a precision parameter $\boldsymbol{\Lambda}_\mathrm{scaled}$ which is not confounded with graph-induced effects. The scaled precision is assigned a Wishart prior \citep{Gelman} with $2k+1$ degrees of freedom and scale parameter equal to the identity matrix, i.e. $\boldsymbol{\Lambda}_\mathrm{scaled} \sim \mathrm{Wishart}_{k}( I_k, 2k+1)$, with $k=2$ \citep{INLAMSM}.
 
 In \texttt{R-INLA}, precision scaling is implemented automatically for intrinsic models, like the univariate ICAR, through the option \texttt{scale.model} within the \texttt{inla()} function call; otherwise the scaled structure matrix for each component can be computed as a standalone object with \texttt{inla.scale.model()}. In the multivariate case, \texttt{INLAMSM} provides readily-defined models for which the user is required to provide the neighbourhood matrix $\boldsymbol{W}$ instead of the Laplacian (as different models with the same neighbourhood matrix have different structure matrices). Hence, to scale a multivariate ICAR model we derive $\boldsymbol{W}$ from the scaled Laplacian.
@@ -2243,7 +2228,7 @@ In our multilevel framework, the value of the $m$-th covariate $\boldsymbol{X_{\
 $$
 x_{ih;m} = \bar{x}_{i;m} + \Delta x_{ih;m}
 $$
-being $\bar{x}_{i;m}$ the unweighted average value of the covariate within the $i$-th macro-area; the term $\Delta x_{ih;m}$ represents municipality-level noise. In matrix form, this decomposition is: $\boldsymbol{X}= \xi \bar{\boldsymbol{X}} + \boldsymbol{\Delta X}$, where $\bar{\boldsymbol{X}} = (\xi ^{\top} \xi)^{-1} \xi^{\top} \boldsymbol{X}$.
+being $\bar{x}_{i;m}$ the unweighted average value of the covariate within the $i$-th macro-area; the term $\Delta x_{ih;m}$ represents municipality-level noise. In matrix form, this decomposition is: $\boldsymbol{X}= \boldsymbol{\xi} \bar{\boldsymbol{X}} + \boldsymbol{\Delta X}$, where $\bar{\boldsymbol{X}} = (\boldsymbol{\xi} ^{\top} \boldsymbol{\xi})^{-1} \boldsymbol{\xi}^{\top} \boldsymbol{X}$.
 We can then apply the Spatial+2.0 procedure \citep{Urdangarin24} described in Section \ref{subsection:Spatial+}. Consider the eigendecomposition of the Laplacian matrix:
 $$
 \boldsymbol{L} = \boldsymbol{V \Gamma V}^{\top}
@@ -2251,15 +2236,13 @@ $$
 where the eigenvalues in $\boldsymbol{\Gamma}$ are in decreasing order and the eigenvectors in $\boldsymbol{V}$ have a decreasing number of oscillations. 
 
 Within a generic component of the connected graph, the eigenvector associated with the lowest non-null eigenvalue follows a linear spatial trend (i.e. the Fiedler vector of the relevant subgraph), the one related to the second non-null eigenvalue follows a quadratic trend (one oscillation), and so on.
-For an appropriately chosen $n \times 4$ matrix $\boldsymbol{B}$, we have $\boldsymbol{\bar{X}} = \boldsymbol{VB}$, and the spatial component of $\boldsymbol{\bar{X}}$ is thus determined by the last columns of $\boldsymbol{V}$ \citep{Urdangarin24}: without loss of generality, $\boldsymbol{\bar{X}}$ is decomposed into:
+For an appropriately chosen $n_z \times 4$ matrix $\boldsymbol{B}$, we have $\boldsymbol{\bar{X}} = \boldsymbol{VB}$, and the spatial component of $\boldsymbol{\bar{X}}$ is thus determined by the last columns of $\boldsymbol{V}$ \citep{Urdangarin24}: without loss of generality, $\boldsymbol{\bar{X}}$ is decomposed into:
 $$
 \boldsymbol{\bar{X} }= \boldsymbol{\bar{X}^{(NS)}} + \boldsymbol{\bar{X}^{(S)}} +\boldsymbol{ \bar{X}^{(0)}}
 $$
-where $\boldsymbol{\bar{X}^{(NS)}}$ is the nonspatial component, given by the linear combination of the first $n-G-K$ eigenvectors (with $G=3$ connected graph components), $\boldsymbol{\bar{X}^{(s)}}$ is the combination of the eigenvectors associated with the last $K$ nonzero eigenvalues and represents the spatial component, and $\boldsymbol{\bar{X}^{(0)}}$ is the combination of the $G=3$ eigenvectors in the null space of the Laplacian matrix, constant within each connected component. To remove spatial confounding, it is sufficient to consider $\xi \left(\boldsymbol{\bar{X}^{(NS)}} \right) + \boldsymbol{ \Delta X}$ as the covariate matrix in the regression model. 
+where $\boldsymbol{\bar{X}^{(NS)}}$ is the nonspatial component, given by the linear combination of the first $n_z-G-K$ eigenvectors (with $G=3$ connected graph components), $\boldsymbol{\bar{X}^{(s)}}$ is the combination of the eigenvectors associated with the last $K$ nonzero eigenvalues and represents the spatial component, and $\boldsymbol{\bar{X}^{(0)}}$ is the combination of the $G=3$ eigenvectors in the null space of the Laplacian matrix, constant within each connected component. To remove spatial confounding, we consider $\xi \left(\boldsymbol{\bar{X}^{(NS)}} \right) + \boldsymbol{ \Delta X}$ as the covariate matrix in the regression model. 
 
-For the present data, the Spatial+2.0 methodology implies a shift in the value of explanatory variables by an additive correction defined at the macro-area level, namely $\boldsymbol{\bar{X}^{(S)}} + \boldsymbol{\bar{X}^{(0)}}$. For instance, for a generic $h$-th covariate the corresponding deconfounded values are $x_{i;h} -x_{i;h}^{(S)}-x_{i;h}^{(0)}$. Subsequently, to allow model comparisons addressed in Section \ref{Par:results}, deconfounded covariates are scaled to have the same global variance as the input ones.
-
-%$if a generic $h$-th covariate is binary, taking values $x_{i,j;h} \in \lbrace{0, 1\rbrace}$, the corresponding deconfounded values would belong to the couple $\lbrace -x_{i;h}^{(S)}-x_{i;h}^{(0)}, \, 1 -x_{i;h}^{(S)}-x_{i;h}^{(0)}\rbrace$. Subsequently, deconfounded covariates are then scaled to have the same global variance as the input ones.
+For the present data, the Spatial+2.0 methodology implies a shift in the value of explanatory variables by an additive correction defined at the macro-area level, namely $\boldsymbol{\bar{X}^{(S)}} + \boldsymbol{\bar{X}^{(0)}}$. For a generic $h$-th covariate the corresponding deconfounded values are $x_{i;h} -x_{i;h}^{(S)}-x_{i;h}^{(0)}$; if the variable is binary, taking values $x_{i,j;h} \in \lbrace{0, 1\rbrace}$, the corresponding deconfounded values would belong to the couple $\lbrace -x_{i;h}^{(S)}-x_{i;h}^{(0)}, \, 1 -x_{i;h}^{(S)}-x_{i;h}^{(0)}\rbrace$. Subsequently, to allow model comparisons addressed in Section \ref{Par:results}, deconfounded covariates are scaled to have the same global variance as the input ones.
 
 In Figure \ref{fig:eigen_prov} we plot the two lowest-frequency eigenvectors of $\boldsymbol{L}$ at the macro-area level of provinces and varying across the continent. Eigenvectors are ordered decreasingly with respect to corresponding eigenvalues. It is possible to see that the 101st eigenvector follows a quadratic trend with one oscillation, whereas the 102nd eigenvector follows a linear North-South trend.  
 
@@ -2270,12 +2253,12 @@ In Figure \ref{fig:eigen_prov} we plot the two lowest-frequency eigenvectors of 
   \label{fig:eigen_prov}
 \end{figure}
 
-%\begin{figure}
-%  \centering
-%  \includegraphics[width = 105mm]{Invalsi/eigen_pole.pdf} 
-%  \caption{Lowest frequency eigenvectors, infrastructural catchment areas}
-%  \label{fig:eigen_pole}
-%\end{figure}
+\begin{figure}
+  \centering
+  \includegraphics[width = 105mm]{Invalsi/eigen_pole.pdf} 
+  \caption{Lowest frequency eigenvectors, infrastructural catchment areas}
+  \label{fig:eigen_pole}
+\end{figure}
 
 \subsubsection{Identification of the spatial variation in the covariates}\label{par:k}
 The Spatial+ procedure requires the choice of the number $K$ of eigenvectors to define $\boldsymbol{\bar{X}^{(NS)}}$. A documented approach \citep{Urdangarin24, Lamouroux} is to choose the value of $K$ minimizing the Watanabe-Akaike Information Criterion \citep[WAIC,][]{WAIC}. Based on this method, our first strategy is searching for the optimal number of eigenvectors to be removed for each explanatory variable, subject to the following constraints.
@@ -2284,7 +2267,7 @@ When $z$ is defined at the province level (91 areas in the continent, 9 in Sicil
 
 As an alternative strategy, we removed the smallest number of eigenvectors for $\boldsymbol{\bar{X}^{(NS)}}$ not to display evidence of autocorrelation according to Moran's $I$ index, whose use is encouraged by its robustness to non-Normality \cite{Griffith2010} in datasets with at least $100$ observations. For the first three variables at the province level, removing the last $4$ eigenvectors leads to small standardized $I$ values ($0.79697$, $1.3854$, $1.2397$), suggesting that spatial structure in these variables is driven by a linear trend over the continent, as seen in Figure \ref{fig:Xprov}. For infrastructural catchment areas, doing the same thing with the proportion of central and peripheral municipalities would lead to standardized $I$ values of $1.2522$ and $0.4598$ respectively; again, this can be interpreted as the presence of a linear trend. For the last two covariates, instead, it is necessary to remove a higher amount of eigenvectors, which suggests the presence of spatial variation on a smaller scale before accepting the hypothesis of no spatial autocorrelation.
 
-Details on the removal patterns are shown. The continent has 91 provinces and 186 infrastructural catchment areas; Sicily has 9 provinces and 13 infrastructural catchment areas; Sardinia has 5 provinces and 7 infrastructural catchment areas. The last eigenvector is constant within each component.
+The continent has 91 provinces and 186 infrastructural catchment areas; Sicily has 9 provinces and 13 infrastructural catchment areas; Sardinia has 5 provinces and 7 infrastructural catchment areas. The last eigenvector is constant within each component.
 Patterns S+(1) and S+(3) are the simplest ones allowing to shrink the value of the standardised Moran's index below the $95$-th percentile of the Standard Normal distribution. At the province level, it is sufficient to remove the last 4 eigenvectors; at the level of infrastructural catchment areas this is only sufficient for the first two covariates, while more eigenvectors, corresponding to higher order trends, need to be removed for what concerns the other two variables. Pattern S+(2) allows, to the best of our findings, for the best ICAR fitting at the province level; S+(4) does the same at the level of infrastructural catchment areas; S+(5) and S+(6) serve the same purposes but for the PCAR model. In Figure \ref{fig:X_prov_nosp_1} the first two columns of $\boldsymbol{\bar{X}^{(NS)}}$ are shown, i.e. the province-level proportion of central and peripheral municipalities, using the S+(2) correction. Original values of these variables are in the upper panel of Figure \ref{fig:Xprov}.
 
 
@@ -2340,35 +2323,34 @@ Pattern & level & Component & Central & Peripheral & BB Activation & Urban trans
 In this Section, some alternative model formulations are compared using a set of selection criteria internally computed by \texttt{R-INLA}: the negative Log Pseudo Marginal Likelihood \citep[LPML,][]{Geisser, Gelfand}, i.e. minus the logarithmic sum of the Conditional Predictive Ordinates \citep{CPO, CPOINLA}, and the Watanabe-Akaike Information criterion \citep[WAIC,][]{WAIC}, following the formulation of \cite{GelmanWAIC}, the Deviance Information Criterion \citep[DIC,][]{DIC}, alongside with the Mean Squared Error of posterior predictive response averages.
 
 
-The Conditional Predictive Ordinate is a leave-one-out cross-validatory diagnostic given for a generic $j$-th observation from the $h$-th variable, with $j \in [1, N]$ and $h \in [1,2]$, by: 
+The Conditional Predictive Ordinate is a leave-one-out cross-validatory diagnostic given for a generic $j$-th observation from the $h$-th variable, with $j \in [1, n_y]$ and $h \in [1,2]$, by: 
 $$
-\mathrm{CPO}_{j,h} := \pi(y_{j,h} \mid y_{-(j,h)})
+\mathrm{CPO}_{j,h} := \pi(y_{j,h} \vert y_{-(j,h)})
 $$  %% = \frac{\pi(y)}{\pi(y_{-j})}
-Low CPO values denote "surprising" observations and, hence, possible outliers. Details on how the CPO is computed in \texttt{R-INLA} are provided by \cite{CPOINLA}. Here, we compare models through the LPML \citep{Geisser}, i.e.  $\mathrm{LPML} :=\displaystyle{- \sum_{h=1}^2 \sum_{j = 1}^N \ln \mathrm{CPO}_{j,h}}$.
+Low CPO values denote "surprising" observations and, hence, possible outliers. Details on how the CPO is computed in \texttt{R-INLA} are provided by \cite{CPOINLA}. Here, we compare models through the LPML \citep{Geisser}, i.e.  $\mathrm{LPML} :=\displaystyle{- \sum_{h=1}^2 \sum_{j = 1}^{n_y} \ln \mathrm{CPO}_{j,h}}$.
 
 The Deviance Information Criterion (DIC, \cite{DIC}) is given by:
 $$
-\mathrm{DIC} := P_D + \mathbb{E}[D(\vartheta, \psi) \mid y]
+\mathrm{DIC} := P_D + \mathbb{E}[D(\vartheta, \psi) \vert y]
 $$
-Where $$P_D = \mathbb{E}[D(\vartheta, \psi)] - D(\hat{\vartheta}, \hat{\psi})$$ denotes the effective number of parameters or unconstrained parameters and measures model complexity, $D(\vartheta, \psi) = -2 \ln \pi(y \mid \vartheta, \psi)$ being the model deviance, whose expectation measures the goodness of fit. Following \cite{INLA} we define $\hat{\vartheta}$ as $\mathbb{E}[\vartheta | y]$ and $\hat{\psi}$  as the posterior mode of $\psi$, this latter choice being due to the skewness in $\pi(\psi | y)$. We show both the effective number of parameters and the expected deviance alongside the DIC.
+Where $$P_D = \mathbb{E}[D(\vartheta, \psi)] - D(\hat{\vartheta}, \hat{\psi})$$ denotes the effective number of parameters or unconstrained parameters and measures model complexity, $D(\vartheta, \psi) = -2 \ln \pi(y \vert \vartheta, \psi)$ being the model deviance, whose expectation measures the goodness of fit. Following \cite{INLA} we define $\hat{\vartheta}$ as $\mathbb{E}[\vartheta \vert y]$ and $\hat{\psi}$  as the posterior mode of $\psi$, this latter choice being due to the skewness in $\pi(\psi \vert y)$. We show both the effective number of parameters and the expected deviance alongside the DIC.
  
-The Watanabe-Akaike Information Criterion \cite{WAIC}, also known as Widely Applicable Information Criterion, is also useful in balancing model complexity and goodness of fit, the former being measured as $\mathrm{Var}[\mathrm{ln} \pi(y |\vartheta, \psi)]$. An interesting feature of the WAIC is given by its averaging the likelihood over $\vartheta$ and $\Phi$ rather than using point estimates (\cite{GelmanWAIC}). We use the formulation provided by \cite{GelmanWAIC}. \\
+The Watanabe-Akaike Information Criterion \cite{WAIC}, also known as Widely Applicable Information Criterion, is also useful in balancing model complexity and goodness of fit, the former being measured as $\mathrm{Var}[\mathrm{ln} \pi(y \vert\vartheta, \psi)]$. An interesting feature of the WAIC is given by its averaging the likelihood over $\vartheta$ and $\Phi$ rather than using point estimates (\cite{GelmanWAIC}). We use the formulation provided by \cite{GelmanWAIC}. \\
  
 
 $$
-WAIC = 2 \sum_{j=1}^N VAR[\ln \pi(y_j |\vartheta, \psi)]
-- 2 \sum_{j=1}^N  \ln \mathbb{E}[\pi(y_j | \vartheta, \psi)]
+WAIC = 2 \sum_{j=1}^N VAR[\ln \pi(y_j \vert\vartheta, \psi)]
+- 2 \sum_{j=1}^N  \ln \mathbb{E}[\pi(y_j \vert \vartheta, \psi)]
 $$
 
-%%Lastly we compute the Mean Square Error (MSE) of the expected value of linear predictors, a purely goodness-of-fit metric, only informative for point estimates.
-%All selection criteria, except for the MSE, are internally computed by \texttt{R-INLA}.
+Lastly we compute the Mean Square Error (MSE) of the expected value of linear predictors, a purely goodness-of-fit metric, only informative for point estimates. All selection criteria, except for the MSE, are internally computed by \texttt{R-INLA} via the option \texttt{control.compute = list(...,dic = TRUE, waic = TRUE, cpo = TRUE, ...)}
 
 Models defined with ICAR random effects are compared in Table \ref{tab:ICAR_diagnostics}. "Base" and "RSR" denote the model with no correction for spatial confounding and the RSR model respectively.
 S+(1) and S+(2) are Spatial+2.0 models with province-level latent effects with two different eigenvector removal patterns: the former is the most conservative one for which no evidence for autocorrelation in the covariates is found (see Section \ref{par:X}), the latter is the one with smallest WAIC.
 S+(3) and S+(4) are the Spatial+2.0 models developed with the same strategy but with latent effects defined at the level of infrastructural catchment areas. Detailed eigenvector removal patterns are shown in Appendix \ref{Appendix:A}.
 
 Removing spatial autocorrelation from covariates based on Moran's test allows for some barely noticeable improvements in inference. Using finer support for the latent effects improves the fitting but this gain is outweighed by increased complexity (overall, the DIC increases).The model with province-level spatial effects is overall preferable based on all three metrics WAIC, DIC and LPML.
-%
+
 RSR appears to perform poorly in both cases if compared to the base model. Furthermore, posterior means of $\beta$ obtained by RSR result quite close to those of the nonspatial model, while credible intervals are narrower, which is consistent with the lesser coverage of Type-S errors in RSR models \citep{Khan}. 
 
 In Appendix \ref{Appendix:B} the results of a broader set of models are shown, including models with no random effects, with unstructured random effects and with two independent ICAR random effects; a focus on the estimates of $\beta$ under the nonspatial model and under RSR is in Appendix \ref{Appendix:null_RSR}. 
@@ -2401,7 +2383,7 @@ Lastly, in Appendix \ref{Appendix:C} the results of a different model, the prope
 %% --------- Findings ----------------------------------- %%
 \section{Results}\label{Par:results} \label{section:results}
 
-In Table \ref{tab:fix} the estimated effects of covariates for the province-level ICAR are resumed, under both the base formulation and the S+(2) modification. Boundaries of credible intervals correspond to the $5$-th and $95$-th percentiles. Covariates in the deconfounded model have been scaled to keep the same variance as in the base model.
+In Table \ref{tab:fix} the estimated effects of covariates for the province-level ICAR are resumed, under both the base formulation and the S+(2) modification. Boundaries of credible intervals correspond to the $2.5$-th and $97.5$-th percentiles. Covariates in the deconfounded model have been scaled to keep the same variance as in the base model.
 
 \begin{table}[ht]
 \resizebox{\textwidth}{!}{
@@ -2435,7 +2417,7 @@ Continent & MAT & 191.399 & 0.961 & 189.515 & 193.285 & 193.332 & 0.855 & 191.65
 Modelling Italian scores appears to be generally subject to higher uncertainty. For both subjects, differences between the continent and the islands are strong: almost $15$ Invalsi points on average between the continent and Sicily, more than $15$ points between the continent and Sardinia, with non-overlapping credible intervals. Central municipalities have an expected advantage of $2.706$ points over intermediate municipalities in Mathematics test, while this expectation slightly falls to $2.527$ points once the share of infrastructural poles in each province is corrected with S+(2). The relative effect of central municipalities on Italian scores is comparable and slightly lower. The difference between intermediate and peripheral municipalities is lower in expected value and not even significant for Italian scores. A municipality in which all schools are provided with ultra-broadband connection has an expected advantage of more than $3$ Invalsi points in the Mathematics score over one in which the connection is completely lacking, the effect being weaker on Italian scores (and possibly not significant once the spatial structure is removed from the covariate). Lastly, the availability of urban public transport is associated with a significant advantage in Invalsi scores, since a municipality where all schools are reachable has an expected advantage of almost $2.5$ points in Mathematics scores and about $2.8$ points in Italian scores. 
 
 In Figure \ref {fig:zprov} the expected spatial effect $\mathbb{E}[z|y]$ under the S+(2) model is plotted. %Also taking into account the four auxiliary variables, 
-Territorial gaps in Invalsi scores are severe, as one can argue from the range of $\mathbb{E}[z|y]$. Focusing on the continent, the Calabria region appears particularly vulnerable, while Lombardia turns out to be the most advantaged region. 
+Territorial gaps in Invalsi scores are severe, as one can argue from the range of $\mathbb{E}[z\vert y]$. Focusing on the continent, the Calabria region appears particularly vulnerable, while Lombardia turns out to be the most advantaged region. 
 
 In Figure \ref{fig:yhatmun} the predicted values of $y$ are shown, using the same model. The model captures the spatial trend, but still leaves a high municipality-level noise unexplained, as the high error variances suggest ($\omega_1$ and $\omega_2$ in Table \ref{tab:hyperpar}). 
 
@@ -2462,8 +2444,7 @@ Lowest scores in Mathematics are estimated in the municipalities of La Maddalena
 \end{figure}
 
 Finally, in Table \ref{tab:hyperpar} the posterior summaries for hyperparameters $\psi$ are displayed. Please notice that the precision of $z$ has been scaled, hence variances $\sigma_1^2$ and $\sigma_2^2$ do not depend on the graph-induced effect. The variance of spatial effects is higher in Mathematics scores ($\sigma_1^2$), while Italian scores have a higher amount of unexplained noise ($\omega_2$). Correlation between the two scores is taken into account through the correlation between the two ICAR fields $\rho$, which turns out to be high, consistent with Figure \ref{fig:zprov}.
-Lastly, the choice of modelling Italian scores as a Skew-Normal variable is corroborated by the posterior distribution of $\gamma_1$, whose credible interval ranges far from zero. Kernel density estimation of residuals in Italian scores % \textcolor{gray}{i.e. the difference between observed and predicted scores (SERVE SPECIFICARE?)} 
-is shown in Figure \ref{fig:kernel}. Negative skewness is easily noticeable. Density is estimated by the Gaussian kernel, using the Silverman's thumb rule to define the bandwidth \citep[][Section 3.4.2]{Silverman}
+Lastly, the choice of modelling Italian scores as a Skew-Normal variable is corroborated by the posterior distribution of $\gamma_1$, whose credible interval ranges far from zero. Kernel density estimation of residuals in Italian scores, defined as the difference between observed and predicted scores, is shown in Figure \ref{fig:kernel}. Negative skewness is easily noticeable. Density is estimated by the Gaussian kernel, using the Silverman's thumb rule to define the bandwidth \citep[][Section 3.4.2]{Silverman}
 \begin{figure}
   \centering
   \includegraphics[width=0.6\textwidth]{Invalsi/KDE_ITA_base.pdf} 
@@ -2505,17 +2486,6 @@ Our analysis of Invalsi scores includes a spatially structured latent field defi
 Still keeping our focus on infrastructural explanatory variables, this analysis can undergo some possible developments: first and foremost it can be extended to different school grades and different years. The choice of statistical models, both in terms of likelihood and prior assumptions, could be extended as well, including more tailored models. The PCAR model, for instance, may represent a worthwhile extension, though questions like improving the interpretation of precision parameters remain open, further research being needful to this aim.
 
 Overall, the mapping of infrastructure access and social vulnerability requires adequate statistical computational methods, and \texttt{R-INLA} appears a very flexible tool to this aim.
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2676,7 +2646,7 @@ The set of explanatory variables considered in the present analysis is summarise
 
 \paragraph{Desk\_Dist} Road travel time from each municipality to the closest hosting a help desk, expressed in minutes. We do not have the complete record of active desks in each municipality, hence we needed to impute the record from 2024 to all previous years.
 
-\paragraph{ELI} Ventile of the distribution of the municipality-level share of employees working in low productivity units in the fabric and services sectors. Labour productivity is defined as the ratio of value added per employee and is classified "low" if smaller than the first quartile of its distribution,
+\paragraph{ELI} Ventile of the distribution of the municipality-level share of employees working in low productivity units in the fabric and services sectors. Labour productivity is defined as the ratio of value added per employee and is classified "low" if smaller than the first quartile of its distribution.
 
 \paragraph{PGR} Population growth rate in years 2011--2021, i.e. total net migration in 2011--2021 over resident population at the end of 2011.
 
@@ -2731,27 +2701,28 @@ This spatio-temporal model employs only one scale parameter $\sigma^2$ and one c
 
 The regression model outlined in the previous section features a spatial component described by the matrix $\Omega$. In this study, we compare four alternative spatial models, corresponding to as many specifications of the matrix $\Omega$:
 
-\textbf{Intrinsic Conditional Auto Regressive} \citep[ICAR,][]{Besag1995} 
+\textbf{Intrinsic Conditional Auto Regressive} \citep[ICAR,][]{ICAR} 
 \begin{equation}\label{eq:ICAR}
 \Omega := L^+=(D-W)^+
 \end{equation}
 where $L^+$ is the Moore-Penrose pseudoinverse of the $n \times n$ Laplacian matrix of the graph $D-W$, $W$ is the binary neighbourhood or adjacency matrix, with $w_{ij} = 1$ if municipalities $i$ and $j$ share a border and $w_{ij}=0$ otherwise and by convention, $w_{ii}=0$; $D$ is the diagonal degree matrix, in which for each $i = 1, ..., n$, $d_{ii} = \sum_{j=1}^n w_{ij}$. To make this model identifiable, we constrain $Z_t$ to sum to zero for each $t$.
 \\
 
-\textbf{Proper Conditional Auto Regressive} \citep[PCAR,][]{Gelfand2003} 
+\textbf{Proper Conditional Auto Regressive} \citep[PCAR,][]{PCAR_Gelfand} 
 \begin{equation}\label{eq:PCAR}
 \Omega := (D - \rho W)^{-1}
 \end{equation}
 A more flexible extension of the ICAR in which the autocorrelation parameter $\rho \in [0, 1]$ is introduced to control the strength of spatial association; the limit case for $\rho = 1$ is the ICAR, while $\rho = 0$ implies an independent but not identically distributed Gaussian random field. Even though this model does not require the sum-to-zero constraint, we apply it in analogy with other models to make results comparable. 
 \\
 
-\textbf{Leroux proper Conditional Auto Regressive} \citep[LCAR,][]{Leroux1999} 
+\textbf{Leroux proper Conditional Auto Regressive} \citep[LCAR,][]{Leroux} 
 \begin{equation}\label{eq:LCAR}
 \Omega := \left(\lambda L + (1-\lambda) I_n \right)^{-1}
 \end{equation}
 Another extension of the ICAR introducing the precision mixing parameter $\lambda \in [0, 1]$; the limit case for $\lambda = 1$ is again the ICAR, while for $\lambda = 0$ the model reduces to an IID Standard Normal field. Even though this is not a singular model, we follow \cite{Goicoa} and apply the sum-zero constraint to ensure that the model is identifiable and that no confounding occurs with the intercept. 
+\\
 
-\textbf{Besag-York-Mollié} \citep[BYM,][]{Besag1991,BYM2}  
+\textbf{Besag-York-Mollié} \citep[BYM,][]{BYM,BYM2}  
 \begin{equation}\label{eq:BYM2}
 Z_t = \sigma \sqrt{\phi}U_t + \sigma \sqrt{1-\phi} V_t
 \end{equation}
@@ -2759,28 +2730,28 @@ Here $U_t$ is an ICAR process with precision matrix given by the scaled Laplacia
 
 \subsection{The PC-prior framework} \label{subsec:PC}
 
-The regression model outlined so far features a latent spatio-temporal effect, which implies a potentially high degree of complexity. In the context of Bayesian hierarchical models, an organic approach to measuring and penalising model complexity is provided by PC-priors \citep{PC}. The basic idea behind the PC-prior for a given parameter $\theta$ is to penalise \textit{a priori} the departure of a flexible model $\mathcal{M}_1$ with random $\theta$ against a base model $\mathcal{M}_0$ in which $\theta$ is fixed. \cite{PC} propose to measure the departure between two models with the distance function $\sqrt{2 \mathrm{KLD}(\mathcal{M}_1 || \mathcal{M}_0)}$, where $\mathrm{KLD}\left(\cdot||\cdot \right)$ denotes the Kullback-Leibler divergence. Additionally, they propose to penalise the distance between the two models by assigning an exponential prior to the distance function.
+The regression model outlined so far features a latent spatio-temporal effect, which implies a potentially high degree of complexity. In the context of Bayesian hierarchical models, an organic approach to measuring and penalising model complexity is provided by PC-priors \citep{PC}. The basic idea behind the PC-prior for a given parameter $\theta$ is to penalise \textit{a priori} the departure of a flexible model $\mathcal{M}_1$ with random $\theta$ against a base model $\mathcal{M}_0$ in which $\theta$ is fixed. \cite{PC} propose to measure the departure between two models with the distance function $\sqrt{2 \mathrm{KLD}(\mathcal{M}_1 || \mathcal{M}_0)}$, where $\mathrm{KLD}\left(\cdot\vert\vert\cdot \right)$ denotes the Kullback-Leibler divergence. Additionally, they propose to penalise the distance between the two models by assigning an exponential prior to the distance function.
 %
 The exponential prior depends on a rate parameter $\psi$ that can be tuned to assume \textit{a priori} that $\theta$ is smaller than a boundary value $U$ with a given probability $\alpha$.
 
 In this application, we define a joint PC-prior setup for the whole hyperparameter set. For the spatio-temporal ICAR model, hyperparameters are only the temporal autocorrelation $r$ and the standard deviation $\sigma$. The latter three models employ an additional hyperparameter $\xi \in \lbrace \alpha, \lambda, \phi \rbrace$. 
 To the best of our knowledge the PC-priors for the LCAR precision mixing parameter $\lambda$ and for the PCAR spatial autocorrelation $\rho$ constitute a novelty; we then test the Uniform prior on $\xi$ as a more familiar alternative. Overall, the joint prior on the whole hyperparameter set reads as:
 $$
-\pi(r, \sigma, \xi) =\pi(r \mid \sigma, \xi) \pi(\xi\mid\sigma) \pi(\sigma)
+\pi(r, \sigma, \xi) =\pi(r \vert \sigma, \xi) \pi(\xi\vert\sigma) \pi(\sigma)
 $$
 As these hyperparameters prove to be independent \textit{a priori}, it can be shown that using the PC-priors allows us to factor the joint prior into the three marginals. The PC-prior for $\sigma$ has been described by \cite{PC} and proved to coincide with an Exponential prior. In the following sections, we provide some details on the computation of the KLD for $r$, $\rho$, and $\lambda$ in the AR(1), PCAR, and LCAR cases, respectively. In the BYM case, where $\xi = \phi$, the PC-prior has already been described by both \cite{BYM2} and \cite{PC}.
 
 We obtain the KLD for the temporal autocorrelation parameter $r$ in the AR(1) model (\ref{eq:AR1}) penalising $r \in [-1, 1]$ against $r=0$. Hence the KLD becomes:
   %
   \begin{equation}
- \mathrm{KLD}(r||r=0) =   \frac{n}{2}
+ \mathrm{KLD}(r\lvert\rvert r=0) =   \frac{n}{2}
  \left( \ln(1-r^2)
  +T  \frac{r^2}{1-r^2} \right)
  \end{equation}
   %
 The KLD is a U-shaped even function of $r$, with a minimum at 0 for $r=0$ and tending to infinity for $\mathrm{abs}(r)$ approaching 1. These findings generalise the KLD of the purely temporal autocorrelation parameter developed and discussed by \cite{Sorbye2017}.
 %  
-Additionally, in the spatio-temporal case, the PC-prior can be proved to be independent of $n$. This is indeed a desirable property, as it would make no sense for the temporal autocorrelation parameter $r$ to depend on the number of areas $n$. For the scope, consider $\mathrm{KLD}(r||r=0) = \frac{n}{2}h(r)$ where $h(r)$ does not depend on $n$; then, assuming an $\mathrm{exp}(\psi)$ distribution on $\sqrt{2\mathrm{KLD}(r||r=0)}$ and parametrising the PC-prior through the left-tail probability $\alpha$ and the upper boundary $U$,% then $\alpha = \mathrm{Prob} \lbrace \sqrt{2\mathrm{KLD}(r||r=0)} \leq \sqrt{2\mathrm{KLD}(U||r=0)}\rbrace =1-e^{-\psi U}$. Hence, 
+Additionally, in the spatio-temporal case, the PC-prior can be proved to be independent of $n$. This is indeed a desirable property, as it would make no sense for the temporal autocorrelation parameter $r$ to depend on the number of areas $n$. For the scope, consider $\mathrm{KLD}(r\vert\vert r=0) = \frac{n}{2}h(r)$ where $h(r)$ does not depend on $n$; then, assuming an $\mathrm{exp}(\psi)$ distribution on $\sqrt{2\mathrm{KLD}(r\vert\vert r=0)}$ and parametrising the PC-prior through the left-tail probability $\alpha$ and the upper boundary $U$,% then $\alpha = \mathrm{Prob} \lbrace \sqrt{2\mathrm{KLD}(r\vert\vert r=0)} \leq \sqrt{2\mathrm{KLD}(U|| r=0)}\rbrace =1-e^{-\psi U}$. Hence, 
  we obtain $\psi = \ln \frac{1}{1-\alpha} \frac{1}{\sqrt{n h(U)}}$. It follows that:
 %$$
 %  \pi(r) = \ln \left(\frac{1}{ 1-\alpha} \right)\frac{1}%ì{\sqrt{n h(U)}} e^{
@@ -2921,7 +2892,7 @@ The three strongest predictors across the years in scope appear to be the travel
 %
 Additionally, the density of productive units (UIS) has a positive effect, and the credibility interval of such effect ranges entirely away from zero. 
 
-The negative association between AVC accesses and distance from AVCs can be read as a symptom of the persisting physical barrier to seeking help. The magnitude of the coefficient may be interpreted as follows: an increase in the travel time to the closest AVC by one standard deviation, i.e. approximately $13'40''$ is associated, \textit{ceteris paribus}, with a decrease of about $17.7\%$ in the frequency of accesses to AVCs (since $\exp\lbrace E\left[\beta_\mathrm{AVC\_Dist}|y \right]\rbrace = 0.823$). The expected association with the distance from the closest help desk (Desk dist) is negative, consistent with the distance from the closest AVC, but the magnitude of such expected association is smaller, and, most importantly, the credible interval includes zero. This result may suggest that the distance from help desks is less prohibitive than the distance from AVCs in seeking assistance, which is not surprising considering how widespread help desks are.
+The negative association between AVC accesses and distance from AVCs can be read as a symptom of the persisting physical barrier to seeking help. The magnitude of the coefficient may be interpreted as follows: an increase in the travel time to the closest AVC by one standard deviation, i.e. approximately $13'40''$ is associated, \textit{ceteris paribus}, with a decrease of about $17.7\%$ in the frequency of accesses to AVCs (since $\exp\lbrace E\left[\beta_\mathrm{AVC\_Dist}| y \right]\rbrace = 0.823$). The expected association with the distance from the closest help desk (Desk dist) is negative, consistent with the distance from the closest AVC, but the magnitude of such expected association is smaller, and, most importantly, the credible interval includes zero. This result may suggest that the distance from help desks is less prohibitive than the distance from AVCs in seeking assistance, which is not surprising considering how widespread help desks are.
 % 
 In light of the twofold process generating AVC accesses, a tentative yet intuitive interpretation of the negative association with both low education and employment rate could be that women victims of violence have a lower propensity to access AVCs in poor educational contexts, but the incidence of violence may become lower in contexts of higher economic development. This latter consideration should be interpreted in light of the state-of-the-art evidence that both women's and partners' unemployment are associated with higher violence occurrence, as reviewed by \citep[][chapter 2]{bettio2017violence}.
 The positive association of accesses with the density of productive units (UIS), instead, is less intuitive, as a higher number of firms does not imply \textit{per se} higher economic development, even though it has a negative weight in determining the frailty index of Italian municipalities.
@@ -2962,7 +2933,7 @@ may contribute to improving interpretability and stabilising the INLA-based infe
 \begin{appendices}
 
 \section{Maps of Explanatory Variables} \label{Appendix:X_maps}
-In this section, we display some additional maps, i.e. the components of the Municipality Frailty Index (MFI) included as explanatory variables in the analytical model described in section \ref{section:STPoisson}, and the distance from municipalities hosting a help desk, which equals to zero for about 40\% of municipalities (105 over 256), as they have at least one. The pupulation growth rate map does not include the municipality of Anzano di Puglia (FG) due to its extreme record ($ -311\%$)
+In this section, we display some additional maps, i.e. the components of the Municipality Frailty Index (MFI) included as explanatory variables in the analytical model described in section \ref{section:STPoisson}, and the distance from municipalities hosting a help desk, which equals to zero for about 40\% of municipalities (105 over 256), as they have at least one. The population growth rate map does not include the municipality of Anzano di Puglia (FG) due to its extreme record ($ -311\%$)
 
 \begin{figure}
 \subfloat{\includegraphics[width = 2.5in]{VAW/Fig6.pdf}} 
