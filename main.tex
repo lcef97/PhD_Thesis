@@ -46,6 +46,38 @@
 \maketitle
 \tableofcontents
 
+\section{General Introduction}
+The present doctoral thesis is aimed at analysing the matter of territorial disparities in the Italian context by means of Bayesian spatial statistics, through two main fields of application, namely education and assistance to violence against women; a total of three case studies correspond to such application fields. 
+
+Even though the attention to territorial vulnerability is not unprecedented in the history of a country like Italy, whose society has never ceased to be marked by dramatic territorial divides, the current post-pandemic political context has been calling out throughout all Europe for a coordinated wave of systematic territorial planning efforts. %which are institutionally embodied in the Next Generation EU program \citep{DeLaPorteJensen2021}.
+Such a framework of coordinated data-informed policy intervention could naturally integrate statistical analysis as an upstream operational phase, and this work has been developed indeed in the wake of measuring infrastructure and service gaps at the local level. 
+
+One out of infinitely many legitimate questions would be: why statistics, why Bayesian, and why spatial? To our judgement, while the relevance of statistics in decision processes is enhanced by the abundance of data characterising the contemporary society, yet we should not exempt from considering that statistical inference is not the sole way in which researchers can take advantage of the information extracted by data, due to the remarkable leaps automated learning and artificial intelligence are making in the complex task of prediction. Therefore, as statisticians, we deem more appropriate to concentrate on the interpretation of the relationships amongst observed phenomena, rather than guessing what we are yet to observe. Moreover, a statistical model describing a phenomenon depends on a set of unobserved variables, called parameters, on which researchers can only formulate some prior beliefs, namely the model assumptions before processing the observed data.
+
+Then, once data are processed, we deem useful to evaluate the likelihood of model assumptions \textit{a posteriori}, by computing the posterior probability distribution of parameters. This is what Bayesian inference does at the very core of its workflow. Treating model parameters as random variables and comparing their prior and posterior probability densities is a normative choice, not universally more legitimate than seeking for the closest estimator to the true value of such parameters, but only more convenient in the context of this work, also considering the increased flexibility implied by the choice of the prior distribution of parameters, which becomes crucial as model complexity grows.
+
+Lastly, in contexts such as of addressing territorial vulnerability, the position of an observational unit in space becomes itself a relevant part of information. The idea traditionally conveyed to justify on an intuitive basis the application of spatial statistical models is the so-called fist law of geography famously `invoked` by \cite{Tobler1970}: \textit{everything is related to everything else, but near things are more related than distant things}. In mathematical terms, a simple formalisation of this generic principle could be allowed after defining the probabilistic model describing the spatial process in scope.
+
+Spatial statistics distinguishes three main classes of processes \citep[see e.g.][]{Cressie1993, Banerjee}: \emph{i)} point-referenced or geostatistical data, i.e. stochastic processes defined over a bounded and continuously indexed spatial domain; \emph{ii)} areal data, i.e. stochastic processes defined over a discrete spatial domain partitioned into a countable set of areas; \emph{iii)} point patterns, i.e. processes consisting in the occurrence of a given event over a random point in space; in this latter case it is not the value a variable takes in space that is modelled. Models for point-referenced data (ibidem) are usually characterised by the covariance between pairs of observations, which under some regularity assumptions is a non-increasing function of distance. In areal data models, the most popular definitions of the dependence between nearby sites consist in the simultaneous and conditional autoregression \citep[see e.g.][]{ICAR, Cressie1993}; in both cases, the value an autoregressive process is expected to take over a site only depends on the values of the neighbouring sites, as we will see in more detail. 
+
+In the case studies presently covered, territory is intended as partitioned into non-overlapping administrative boundaries, specifically in municipalities, which constitutes a discrete and irregular spatial domain. As anticipated, two model classes can be employed to describe areal data \cite{CAR}, simultaneous and conditional autoregressions. Simultaneous autoregressive (SAR) processes are defined as depending \textit{jointly} on their spatially lagged values. Locally, a SAR random field observed in a given site is the combination of the averaged values in neighbouring sites and a stochastic error term. Conditional autoregressive (CAR) processes are defined locally through their \textit{conditional} distribution on neighbouring sites, which imply a different joint distribution from the SAR \citep{CAR}.
+
+ \textcolor{red}{Something more on normative part.} Operationally speaking, conditional autoregressive models are typically \textcolor{red}{better if add source} used as residual terms in regression models. 
+
+The present thesis gathers three original research works, each of them providing a case-study on territorial vulnerability mapping. Chapters \ref{Chapter:Invalsi} and \ref{Chapter:VAW} are two applied spatial analyses based on the same methodological and computational frameworks. For this reason, we dedicate the first two chapters of this thesis to the theoretic and computational aspects of these works. 
+
+Chapter \ref{chapter:theory} is mostly theoretical, and provides an overview on four standard multivariate conditional autoregressive (CAR) areal models, starting from the simplest Intrinsic CAR \citep{CAR, ICAR}, then describing three possible extensions of it: the proper CAR \citep{PCAR_Gelfand}, which can be considered the conditional equivalent to the Simultaneous Autoregressive \citep{Cressie1993, Wall2004, VerHoef2018}, the Leroux proper CAR \citep{Leroux} and the scaled Besag-York-Mollié convolution model \citep{BYM, BYM2}. Throughout this thesis, the main reference for the proper CAR will be considered \cite{PCAR_Gelfand}, even though the model can be traced back in a more general formulation at least to \cite{Cressie1993}; this choice is due to the more specific model construction provided by the former reference. We focus on multivariate model definitions, while univariate case can be easily derived by deduction. The chapter is not intended as a compendium on areal data modelling, as it would inevitably result redundant with the most notable handbooks in the field, such as \cite[chapters 6 and 7 of][]{Banerjee}, \cite[chapters 4, 10 and 11 of][]{Banerjee}, \cite[chapters 5 to 9 of][]{Martinez-Beneito2019}. Chapter \ref{chapter:theory} is intended instead as a short summary of the theory on which the remainder of the thesis relies. 
+
+Fitting hierarchical Bayesian models implies to derive the posterior distribution of unknown estimand variables and, often, of fitted values. Evaluating posterior distributions in the present setting is hardly possible with analytical solutions, hence we rely on approximate inference. In the case of hierarchical regression models where one layer of parameters is assumed \textit{a priori} to be Normal an extremely convenient way to carry out approximate Bayesian inference is using the Integrated Nested Laplace Approximation or INLA \citep{INLA}. For models with a high dimensionality of latent Gaussian variables, the INLA proves to be particularly efficient when such latent Gaussian variables have a sparse precision matrix \textit{a priori} (ibidem). Chapter \ref{chapter:INLA} is dedicated to the INLA and its primary field of application, namely Gaussian Markov Random Fields. We firstly characterise Gaussian Markov Random Fields, illustrating how the local Markov property implies a sparse precision structure; then, we describe all the phases of the INLA algorithm, joining the theory behind it and the practical functioning of a popular software implementing the INLA for a broad class of likelihoods and any possible Gaussian random field prior model, namely the \texttt{INLA} \texttt{R} package.
+
+Remaining chapters constitute original research outputs. Chapter \ref{chapter:SchoolDataIT} presents a mostly descriptive overview on the status of the public school system in Italy, directing attention to regional disparities in school infrastructural system and to the availability of detailed data provided by institutions themselves. The availability of validated and open territorial data motives us to construct an organic set of territorial data merging the information provided by all the relevant sources, namely the Ministry of Education, the Ministry of Enterprises and the Italian National Institute for the Evaluation of the Education System - INVALSI, in Italian. To this aim, we developed a dedicated \texttt{R} package, named \texttt{SchoolDataIT} and published it on the Comprehensive R Archive Network. The third chapter provides a broad description of the package functioning and includes a simple usage example to define a dataset which will subsequently employed for a statistical analysis application, consisting in the spatial modelling of middle school INVALSI scores.
+
+Chapter \ref{Chapter:Invalsi} describes a case study in the wake of territorial gaps in education quality and school infrastructure. Leveraging on the data shared by institutional sources and processed using the \texttt{SchoolDataIT} library, we conduct a spatial analysis of INVALSI scores in high schools defined at the municipal level, studying territorial patterns and association with some indicators of the infrastructural state of municipalities. Throughout this study, we propose a spatial statistics approach to the analysis of education quality and students achievements. On the methodological side, we rely on multilevel spatial regression, motivated by the sparse structure of observations, and address the issue of avoiding correlation between a latent spatial effect and some explanatory variables by extending the a graph-based version of the Spatial+ methodology \citep{Dupont} proposed by \cite{Urdangarin24} to a multi-level framework. Applying such a methodology requires to fit a high number of regression models, which makes efficient model fitting strategies necessary. The use of INLA proves crucial to match such a requirement. A general finding of this work of research is that infrastructural poles exhibit a significant advantage with respect to the remainder of the country, even when spatial trends are modelled explicitly.
+
+Lastly, Chapter \ref{Chapter:VAW} addresses the challenge of modelling the spatial variability in violence against women across municipalities in the Apulia region by proposing a Bayesian spatio-temporal Poisson regression model. Using data on access to Local Anti-Violence Centers in the Apulia region from 2021 to 2024, we investigate the impact of municipality-level socioeconomic characteristics and local vulnerabilities on both the incidence and reporting of gender-based violence, by comparing the four standard autoregressive models, ICAR, PCAR, LCAR and BYM. We extend the penalised complexity prior for the AR(1) autocorrelation parameter \citep{Sorbye2017} to the spatio-temporal case, and fill the gap in literature for prior distributions on the PCAR and LCAR hyperparameters by introducing the PC prior for the spatial autoregressive and precision mixing parameters respectively. Our findings indicate that access to support services decreases with distance from the residential municipality, highlighting spatial constraints in reporting and the strategic importance of support center location. Furthermore, lower education levels appear to contribute to under-reporting in disadvantaged areas, while higher economic development may be associated with a lower incidence of reported violence. This study emphasises the critical role of spatial modelling in capturing reporting dynamics and informing policy interventions.
+
+
+
 %
 % 
 %
@@ -58,7 +90,7 @@
 %% -------- Introduction --------------------------------- %%
 \section{Introduction}
 
-In this chapter, we provide an overview of the statistical methodology followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox of spatial autoregressive modelling, with specific applications in chapter \ref{Chapter:Invalsi} and \ref{Chapter:VAW}. Since multivariate applications are frequent in practice, and the context of chapter \ref{Chapter:Invalsi} is multivariate as well, most of the attention of this chapter is devoted to multivariate models, keeping in mind that once the multivariate model is defined, the univariate one follows straightforwardly. 
+In this chapter, we summarise the statistical modelling framework followed throughout the following chapters. In particular, this chapter is intended as a minimal toolbox of spatial autoregressive modelling, with specific applications in chapters \ref{Chapter:Invalsi} and \ref{Chapter:VAW}. Since multivariate applications are frequent in practice, and the context of chapter \ref{Chapter:Invalsi} is multivariate as well, most of the attention of this chapter is devoted to multivariate models, keeping in mind that once the multivariate model is defined, the univariate one follows straightforwardly. 
 
 We start by introducing the simplest and most intuitive model, the Intrinsic Conditional Autoregressive \citep{Mardia}, which generalises to the multivariate case the seminal paper of \cite{CAR}. We then introduce some simple extensions of the ICAR which may be needful to handle random noise. 
 
@@ -68,14 +100,13 @@ When a spatial effect is included in a regression model to account for unmeasure
 
  
 
+\section{Spatial structure}
 
+Areal data can be considered as random variables taking values over a discrete spatial domain represented as an undirected graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{S} := \lbrace s_i \rbrace_{i=1}^{n_z}$ the set of nodes (sites) of size $n_z$; $\mathcal{E}$ is the set of edges, such that a generic element $\epsilon_{ij}$ denotes the edge between sites $s_i$ and $s_j$; and $\partial_i := \lbrace s_j :\epsilon_{ij} \in \mathcal{E}\rbrace$ is the set of neighbours of site $i$. 
 
-%% -------- ICAR ----------------------------------------- %%
-\section{The intrinsic CAR model} \label{section:icar}
-
-Consider a $k$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})'$ taking values over the $i$-th node of a graph $\mathcal{G}=(\mathcal{S}, \mathcal{E})$ where $\mathcal{E}$ is the set of edges, such that a generic element $\epsilon_{ij}$ denotes the edge between sites $s_i$ and $s_j$;  $\mathcal{S} := \lbrace s_i \rbrace_{i=1}^{n_z}$ the set of nodes (sites) of size $n_z$, and $\partial_i := \lbrace s_j :\epsilon_{ij} \in \mathcal{E}\rbrace$ is the set of neighbours of site $i$.  The graph can be described by:
+The graph can be described by:
 \begin{itemize}
-\item The binary neighbourhood matrix $\boldsymbol{W}$, with $w_{ij} = 1 \Longleftrightarrow s_j \in \partial s_i$ and $w_{ij}=0$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs}).
+\item The binary neighbourhood matrix $\boldsymbol{W}$, with $w_{ij} = 1 \Longleftrightarrow s_j \in \partial s_i$ and $w_{ij}=0$ otherwise; notice that by convention, $w_{ii}=0$ (cfr Chapter \ref{section:GMRFs}). 
 \item The diagonal degree matrix $\boldsymbol{D}$, whose elements correspond to the number of edges of each node or, alternatively, to the row or column sums of $\boldsymbol{W}$, hence $d_i = \sum_{j=1}^{n_z} w_{ij} = \mathrm{card}(\partial s_i)$
 \item The Laplacian matrix $\boldsymbol{L} =\boldsymbol{ D} - \boldsymbol{W}$, which is singular by construction and more precisely has rank deficiency equal the number of connected components in $\mathcal{G}$, \citep[see e.g.][]{ICAR, Hodges2003}. 
 \end{itemize}
@@ -83,28 +114,32 @@ Consider a $k$-variate random variable $z_i = (z_{i,1},   \, \ldots, \, z_{i,p})
 In this work, we will assume that graphs are undirected and the neighbourhood matrix is binary and symmetric. As a consequence, the resulting Laplacian will be symmetric as well. Some authors refer to it a the \textit{unweighted} Laplacian. We will omit this specification as no other definition of Laplacian matrix will be employed presently.
 
 
-Following \cite{Mardia}, see also chapter 10 of \cite{Banerjee}, we suppose that $z_i$ follows this prior conditional distribution:
+%% -------- ICAR ----------------------------------------- %%
+\section{The intrinsic CAR model} \label{section:icar}
+
+
+A $k$-variate intrinsic CAR field defined over an undirected graph of order $n_z$ is a random variable taking values $z_i \in \mathbb{R}^k$ at each $i$-th node, for $i \in \{1, n_z\}$, whose conditional probability distribution, following \cite{Mardia}, \cite[see also][chapter 10]{Banerjee}, is expressed as follows:
 %
 \begin{equation}
-z_i \vert z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \boldsymbol{\Sigma}\right)
+z_i \vert z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N}_k \left(\sum_{j=1}^{n_z} \frac{w_{ij}}{d_i}z_{j}, \frac{1}{d_i} \boldsymbol{\Sigma}\right)
 \label{eq:icarconditional}
 \end{equation}
 %
-Where $\boldsymbol{\Sigma}$ is a $k \times k$ variance-covariance matrix between ICAR fields. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i \vert z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} B_{ij} z_{i}, \frac{1}{d_i} \boldsymbol{\Sigma} \right)$ and presented $B_{ij} = \frac{w_{ij}}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1). 
+Here, $\boldsymbol{\Sigma}$ denotes the a $k \times k$ variance-covariance matrix between ICAR fields. Please notice that this formulation corresponds to a special case of the CAR model by \cite{Mardia}, who originally proposed the more general form $z_i \vert z_{-i}, \boldsymbol{\Sigma} \sim \mathcal{N} \left(\sum_{j=1}^{n_z} B_{ij} z_{i}, \frac{1}{d_i} \boldsymbol{\Sigma} \right)$ and presented $B_{ij} = \frac{w_{ij}}{d_i} I_p$ as a simplifying assumption (see Corollary 2 to Theorem 2.1, ibidem). 
 
 The joint distribution of a multivariate ICAR field is:
 %
 \begin{equation}
 \pi \left(z \vert \boldsymbol{\Sigma} \right)= 
 \left( \frac{1}{2 \pi} \right)^{\frac{k(n_z-G)}{2}}\sqrt{\lvert \boldsymbol{\Sigma}^{-1} \otimes
-\boldsymbol{L} \rvert} 
+\boldsymbol{L} \rvert_+} 
 \, \, e^{\displaystyle{-\tfrac{1}{2}
 z^\top\left(\boldsymbol{\Sigma^{-1}} \otimes \boldsymbol{L} \right) z}}
 %z\vert\boldsymbol{\Sigma} \sim \mathcal{N}_{kn_z} \left( 0, \boldsymbol{\Sigma} \otimes \boldsymbol{L}^{+}\right)
 \label{eq:icarjoint}
 \end{equation}
 %
-The exponent in the normalising constant depends on the rank deficiency $G$ of the Laplacian, as proved by \cite{Hodges2003}. In Appendix \ref{appendix:icar} we show how the precision matrix is derived. 
+Namely an improper Normal distribution with zero mean and singular precision given by $\boldsymbol{\Sigma}^{-1} \otimes \boldsymbol{L}$. In Appendix \ref{appendix:icar} we show how the precision matrix is derived. The exponent in the normalising constant depends on the rank deficiency $G$ of the Laplacian, as proved by \cite{Hodges2003}.  The $\vert \cdot\vert_+$ symbol denotes the pseudo-determinant of a matrix, i.e. the product of its non-zero eigenvalues.
 
 \subsection{Precision scaling} \label{subsection:scaling}
 
@@ -139,7 +174,7 @@ The ICAR model has a relatively small number of parameters, i.e. $k(k+1)/2$, cor
 
 \subsection{The Proper CAR} \label{subsection:pcar}
 
-Thinking analogously as time series analysts, an intuitive generalisation of the ICAR would be to introduce a parameter, say $ \rho \in [0, 1[$, controlling for spatial autocorrelation \citep[][chapter 10]{Banerjee}. This would yield the conditional prior distribution:
+An intuitive generalisation of the ICAR would be to introduce a parameter, say $ \rho \in [0, 1[$, controlling for spatial autocorrelation \citep[][chapter 10]{Banerjee}. This would yield the conditional prior distribution:
 %
 $$
 z_i \vert z_{-i}, \Sigma \sim \mathcal{N}_{k} \left(\sum_{j=1}^{n_k} \frac{w_{ij}}{d_i}\rho z_{j}, \frac{1}{d_i} \Sigma \right)
@@ -155,6 +190,28 @@ z\vert\Sigma, \rho \sim \mathcal{N}_{kn_z} \left( 0, \Sigma \otimes (\boldsymbol
 On a side note, in absence of singletons, i.e. nodes with zero neighbours, this is a proper distribution in that for $\rho \in[0,1[$ the within-fields precision matrix is symmetric and positive definite \footnote{For this reason, this model has been known in the literature as the 'proper' CAR. Properness is far from an exclusive feature of this model, and is not even limited to the models listed in this section, yet this naming has become a convention, and we respect this convention for notation brevity.}. This can be easily seen starting from the eigendecomposition of the row-stochastic matrix $\boldsymbol{D^{-1}W}$. The Gershgorin disk theorem \citep[][section 6.1]{HornJohnson} implies all its eigenvalues lie within the unit disk. This matrix is similar to $ \boldsymbol{D^{-1/2}WD^{-1/2}}$, hence these two matrices share the same eigenvalues. If $\rho \in [0,1[$, the eigenvalues of the symmetric matrix $\boldsymbol{I}_{n_z} - \rho \boldsymbol{D^{-1/2}WD^{-1/2}}$ must then be all strictly positive. The within-fields precision matrix is given by the quadratic form $\boldsymbol{D^{1/2}} \left(\boldsymbol{I}_{n_z} - \rho \boldsymbol{D^{-1/2}WD^{-1/2}} \right)\boldsymbol{D^{1/2}}$ and, if $\rho \in[0,1[$, is positive definite for any full-rank degree matrix $\boldsymbol{D}$ \cite[see also][Observation 7.1.8]{HornJohnson}.
 
 One advantage of this model is the ease in interpretation, as $\rho$ quantifies the extent to which the value of $z_j$ depends on the neighbouring sites. Clearly, the limit case for $\rho = 1$ is the ICAR, while the limit case for $\rho = 0$ is an independent but \textit{not} identically distributed model, in which the variance is proportional to the inverse degree matrix $\boldsymbol{D}^{-1}$, hence a site with a higher number of neighbours will have a smaller prior conditional variance.
+
+%\paragraph{Comparison: the Simultaneous Autoregressive model}  \label{par:SAR}
+%For additional context, it is possible to compare the PCAR to the Simultaneous Autoregressive or SAR. We denote by $y_i$ the $i$-th realisation of a univariate SAR process, taking values over the nodes of a graph of order $n_y$ and characterised by the adjacency matrix $\boldsymbol{W}$. 
+%$$
+%\left \{ \begin{array}{ll}
+%y_i = \rho_s \sum_{j=1}^{n_y} \frac{w_{ij}}{d_i}y_j + \varepsilon_i \\
+%\varepsilon_i \sim \mathcal{N}_1 \left(0, \sigma_{s}^2\right)
+%\end{array} \right.
+%$$
+%for any $i \in \lbrace1, \dots, n_y\rbrace$, given a scale parameter $\sigma_s^2$ and an autocorrelation parameter $\rho_s$. Please notice that here we are postulating a homoskedastic error term. Alternatively, we can consider $\sum_{j=1}^{n_y}\frac{w_{ij}}{d_i}y_j \equiv \left(\boldsymbol{D^{-1}W}\right)_{i\cdot}y$, where $(\boldsymbol{A})_{i\cdot}$ denotes the $i$-th row of a matrix $\boldsymbol{A}$. For comparison, in a PCAR model we would have $\mathbb{E}[z_i\vert z_{-i}, \rho]=\rho\left(\boldsymbol{D^{-1}W}\right)_{i\cdot}z$. The stochastic representation of the vector $y$ would then be:
+%$$
+%y = \rho_s \boldsymbol{D}^{-1}\boldsymbol{W} y + \varepsilon \quad \longrightarrow \quad 
+%\left( \boldsymbol{I} - \rho_s\boldsymbol{D}^{-1}\boldsymbol{W}\right)^{-1}y = \varepsilon
+%$$
+%This formula explains the model denomination clearly, as this is an autoregressive regarding \textit{simultaneously} the whole process, and not the local units \textit{conditionally} on all other units. The homoskedastic error hypothesis implies $\varepsilon \sim \mathcal{N}_{n_z}\left(0, \sigma_s^2  \boldsymbol{I}_{n_z} \right)$, leading to this joint distribution:
+%$$
+%y \sim \mathcal{N}_{n_y} \left( 0,  \sigma_s^2 
+%\left(\boldsymbol{I} - \rho_s\boldsymbol{D}^{-1}\boldsymbol{W} \right)^{-1}
+%{\left(\boldsymbol{I} - \rho_s\boldsymbol{D}^{-1}\boldsymbol{W} \right)^{-1}}^\top
+%\right)
+%$$
+%Here, the variance matrix is a quadratic form, and requiring $\boldsymbol{I} - \rho_s \boldsymbol{D}^{-1}\boldsymbol{W}$ to be nonsingular suffices to guarantee a symmetric positive definite variance matrix. If the hypothesis of homoskedastic errors is released in the SAR representation, each SAR covariance matrix can be represented as a PCAR covariance matrix and vice versa
 
 \subsection{The Leroux proper CAR} \label{subsection:lcar}
 
@@ -474,9 +531,9 @@ Where $\boldsymbol{P_\bot}$ is the orthogonal complement to the projection matri
 
 We can recall that, in concept, spatial confounding arises when one or more observed covariates are linearly dependent with an unmeasured covariate, which needs being estimated with a latent spatial model. Both restricted regression and the methodology from \cite{HughesHaran} set some conditions on the latent spatial field. The copernican revolution of treating spatial confounding came from \cite{Dupont}, who proposed, on the contrary, to remove the spatial trend from observed covariates. Authors labelled this methodology as \textit{Spatial+}. The original application of Spatial+ regarded thin plate (TP) splines; authors fitted a TP-spline on the covariate and employed the resulting residual as the new explanatory variable. However, the method can be extended with no effort to areal models, provided the appropriate prior model specification \citep{BayesianSpatial+}. 
 
-In Bayesian inference, Spatial+ requires to assume a prior spatial model on covariates. On the one side, this tends to propagate uncertainty \citep{BayesianSpatial+} and complicate the probabilistic structure of the model, as the covariate itself is now treated as a stochastic process. On the other side, modelling assumptions are needed. 
+In Bayesian inference, Spatial+ requires to assume a prior spatial model on covariates. On the one side, this tends to propagate uncertainty \citep{BayesianSpatial+} and complicate the probabilistic structure of the model, as the covariate itself is now treated as a stochastic process. On the other side, applying the Spatial+ approach requires to define a nested parametric model on covariates.
 
-A variant of Spatial+ has recently been proposed by \cite{Urdangarin24} to circumvent the specification of a nested parametric model on covariates, though in the specific context of graph-based models. In line with \citep{Lamouroux}, we label this method as \textit{Spatial+2.0}. As we have seen in the previous paragraph, the graph itself can be informative about the spatial structure of a variable defined over it. The Spatial+2.0 method provides a non-parametric solution to spatial confounding which does not add any layer of uncertainty to covariates. The concept of this methodology is based on the spatial trends generated by the smoothest eigenvectors of the Laplacian matrix. 
+A variant of Spatial+ has recently been proposed by \cite{Urdangarin24} to circumvent spatial modelling of  covariates, though in the specific context of graph-based models. In line with \citep{Lamouroux}, we label this method as \textit{Spatial+2.0}. As we have seen in the previous paragraph, the graph itself can be informative about the spatial structure of a variable defined over it. The Spatial+2.0 method provides a non-parametric solution to spatial confounding which does not add any layer of uncertainty to covariates. The concept of this methodology is based on the spatial trends generated by the smoothest eigenvectors of the Laplacian matrix. 
 
 The intuition that spatial confounding arises when covariates are not independent on the smoothest Laplacian eigenvectors can be traced back to \cite{RHZ} and is also briefly discussed by \cite{Khan}. The use of Laplacian eigenvectors, on the other hand, is a milestone in the spatial clustering culture, as thoroughly discussed by \cite{SpectralClust}. 
 
@@ -510,7 +567,7 @@ To compute the joint density $\pi(y\vert\boldsymbol{\Sigma})$ we rely on the Bro
  } \, \pi(x)
  \label{eq:brookslemma}
  \end{equation}
-Where $x$ is a set of known variables with the same cardinality ass $z$ and satisfying the positivity condition \citep{CAR}. Also, notice  $\pi(x)$ is a constant term we can treat a a normalising constant. Then, consider:
+Where $x$ is a set of known variables with the same cardinality as $z$ and satisfying the positivity condition, namely if $\pi(x_i)>0 \forall i$, then $\pi(x)>0$ as well \citep{CAR}. If the positivity condition holds,  $\pi(x)$ is a constant term we can treat a a normalising factor. Then, consider:
 %
 \begin{align}
 \ln \pi \left(z_i \vert \lbrace x_j \rbrace_{j<i} \, \cap \, \lbrace z_k \rbrace_{k>i}, \boldsymbol{\Sigma}  \right) = \\ =
@@ -593,7 +650,6 @@ $$
 %$$
 =(\mathrm{vec}_r z) ^{\top} (\boldsymbol{D} \otimes \boldsymbol{\Sigma}^{-1}) \mathrm{vec}_r z
 $$
-\\
 This proves the joint distribution of $z$ is \citep{Mardia, Banerjee, Gelfand}:
 %
 \begin{equation}
@@ -1437,6 +1493,7 @@ The \texttt{SchoolDataIT} software is currently available under version 0.2.12, 
 The remainder of this chapter is structured as follows. In Section \ref{section:SchoolDataIT:Overview}, we offer a concise yet comprehensive overview of the infrastructural state of Italian schools in light of the scientific literature on the national case and on official documents from the Ministry. In Section \ref{section:Workflow}, we describe in detail the structure of the library and the most relevant functions made available for the users. Section \ref{section:Scraping} provides some usage notes and describes how web scraping is carried out. In Section \ref{section:Data}, we describe the datasets that can be accessed through the package, while including some relevant examples and potentiality. Finally, in Section \ref{section:Example}, an empirical exercise involving the implementation of Bayesian spatial regression models is presented to investigate the student outcomes across the Italian territory.
 
 
+%% -------- Descriptive section ------------------------- %%
 \section{School infrastructure in Italy} \label{section:SchoolDataIT:Overview}
 
 
@@ -1616,7 +1673,7 @@ A case-study with more details on the Invalsi census survey is provided in Chapt
 
 
 %% -------- Example ------------------------------------- %%
-\section[Usage Example]{Student outcomes in Mathematics and classroom size: an example using the SchoolDataIT package} \label{section:Example}
+\section[Usage Example]{Example: Student outcomes in Mathematics and classroom size} \label{section:Example}
 
 Here we provide an example of spatial statistical application to the data covered by the \texttt{SchoolDataIT} package. Following Section \ref{par:nstud}, suppose the user is interested in studying to what extent classroom size is associated with student outcomes, say, in Mathematics at the last year of middle school, for the school year 2023/24. We can start by mapping the Invalsi scores and the average classroom size in figure \ref{fig:invalsi_nstud8}.
 %
@@ -2030,10 +2087,10 @@ Region & High & Middle & Primary & High & Middle & Primary \\
 %% ------------------------------------------------------------------------------ %%
 
 %% ------------------------------------------------------------------------------ %%
-%% --------                   Fourth Chapter                 --------------------- %%
+%% --------                   Fourth Chapter                 -------------------- %%
 %% ------------------------------------------------------------------------------ %%
 %
-\chapter[Invalsi spatial analysis]{Analysis of High Schools Invalsi Scores: a Spatial Approach} \label{Chapter:Invalsi}
+\chapter[Invalsi spatial analysis]{Spatial Modelling of High Schools Invalsi Scores} \label{Chapter:Invalsi}
 %% --------- Introduction ------------------------------- %%
 \section{Introduction}
 
@@ -2180,12 +2237,12 @@ where $\boldsymbol{\tilde{X}} := \boldsymbol{I}_2 \otimes \boldsymbol{X}$, $\til
 \right.
 \label{eq:errors}
 \end{equation} 
-$\mathrm{SN}(\cdot)$ in \ref{eq:errors} denotes the Skew-Normal distribution \citep{SN} with location and scale parameters $m_{\alpha, \omega_2}$ and $ s_{\alpha, \omega_2}$ defined to ensure that $\mathbb{E}[\varepsilon_2 \vert \alpha] = 0 $ and $VAR[\varepsilon_2 \vert \alpha] = \omega_2$, and $\alpha$ is the shape parameter., i.e.
+The Mathematics score is  supposed to be Normal in continuity with extant literature. $\mathrm{SN}(\cdot)$ in \ref{eq:errors} denotes the Skew-Normal distribution \citep{SN} with location and scale parameters $m_{\omega_2, \alpha}$ and $ s_{\omega_2, \alpha}^2$ defined to ensure that $\mathbb{E}[\varepsilon_2 \vert \alpha] = 0 $ and $VAR[\varepsilon_2 \vert \alpha] = \omega_2$, and $\alpha$ is the shape parameter., i.e.
 $$
-\pi(\varepsilon_2 \vert \omega_2, \alpha) = \frac{2}{\sqrt{\omega_2}}
-\varphi\left(\frac{\varepsilon_2 - m_{\omega_2,\alpha}}{\sqrt{\omega_2}}
+\pi(\varepsilon_2 \vert \omega_2, \alpha) = \frac{2}{s_{\omega_2, \alpha}}
+\varphi\left(\frac{\varepsilon_2 - m_{\omega_2,\alpha}}{s_{\omega_2, \alpha}}
 \right) \Phi \left( 
-\alpha \frac{\varepsilon_2 - m_{\omega_2,\alpha}}{\sqrt{\omega_2}}
+\alpha \frac{\varepsilon_2 - m_{\omega_2,\alpha}}{s_{\omega_2, \alpha}}
 \right)
 $$
 This choice is due to the negative skewness in municipality-level Italian scores that neither auxiliary variables or spatial effects can explain (see Fig. \ref{fig:kernel} below). For interpretation reasons, in the remainder of this paper, we consider a transformation of $\alpha$, namely the skewness parameter $\gamma_1$, that has the property of lying approximately in the interval $]-1, 1[$:
@@ -2353,9 +2410,9 @@ Removing spatial autocorrelation from covariates based on Moran's test allows fo
 
 RSR appears to perform poorly in both cases if compared to the base model. Furthermore, posterior means of $\beta$ obtained by RSR result quite close to those of the nonspatial model, while credible intervals are narrower, which is consistent with the lesser coverage of Type-S errors in RSR models \citep{Khan}. 
 
-In Appendix \ref{Appendix:B} the results of a broader set of models are shown, including models with no random effects, with unstructured random effects and with two independent ICAR random effects; a focus on the estimates of $\beta$ under the nonspatial model and under RSR is in Appendix \ref{Appendix:null_RSR}. 
+In Appendix \ref{Appendix:null_RSR} the results of a broader set of models are shown, including models with no random effects, with unstructured random effects and with two independent ICAR random effects; a focus on the estimates of $\beta$ under the nonspatial model and under RSR is in Appendix \ref{Appendix:null_RSR}. 
 
-Lastly, in Appendix \ref{Appendix:C} the results of a different model, the proper CAR \citep{PCAR_Gelfand}, are summarised. The core feature of this formulation is introducing an additional parameter to account for the strength of spatial association.
+%Lastly, in Appendix \ref{Appendix:C} the results of a different model, the proper CAR \citep{PCAR_Gelfand}, are summarised. The core feature of this formulation is introducing an additional parameter to account for the strength of spatial association.
 
 
 \begin{table}[ht]
@@ -2485,7 +2542,9 @@ Our analysis of Invalsi scores includes a spatially structured latent field defi
 
 Still keeping our focus on infrastructural explanatory variables, this analysis can undergo some possible developments: first and foremost it can be extended to different school grades and different years. The choice of statistical models, both in terms of likelihood and prior assumptions, could be extended as well, including more tailored models. The PCAR model, for instance, may represent a worthwhile extension, though questions like improving the interpretation of precision parameters remain open, further research being needful to this aim.
 
-Overall, the mapping of infrastructure access and social vulnerability requires adequate statistical computational methods, and \texttt{R-INLA} appears a very flexible tool to this aim.
+Choosing the appropriate number of spatial trends to apply the Spatial+2.0 method required to fit a high number of models, which would have been hardly feasible without an efficient computational method, as the INLA proves to be.
+
+The mapping of infrastructure access and social vulnerability requires adequate statistical computational methods, and \texttt{R-INLA} appears an excellent tool to this aim. 
 
 
 
@@ -2493,9 +2552,9 @@ Overall, the mapping of infrastructure access and social vulnerability requires 
 \begin{appendices}
 
 \section{Extensive model comparison} \label{Appendix:B}
-In Table \ref{tab:ICAR} all the models run throughout this analysis are compared. Two alternative strategies to approximate the full posterior of $\vartheta$ have been tested, namely the Variational Bayes and the Simplified Laplace approximations (respectively VB and SL, hereinafter). The former is implemented in the latest \texttt{R-INLA} framework and has been used to estimate the models whose results are summarised in Sections \ref{par:criteria} and \ref{section:results}. The latter allows to preserve information about skewness in the full conditional and is implemented in an older software framework. Due to the difficulties in locating the mode of $\psi$, $y$ required to be centered at zero in the models approximated with the SL method.
+In Table \ref{tab:ICAR} all the models run throughout this analysis are compared. Two alternative strategies to approximate the full posterior of $\vartheta$ have been tested, namely the Variational Bayes and the Simplified Laplace approximations (respectively VB and SL, hereinafter). The former is implemented by default in the current \texttt{R-INLA} framework and has been used to estimate the models whose results are summarised in Sections \ref{par:criteria} and \ref{section:results}. The latter allows to preserve information about skewness in the full conditional and is implemented in an older software framework. Due to the difficulties in locating the mode of $\psi$, $y$ required to be centered at zero in the models approximated with the SL method.
 
-Some additional model formulations are also compared: "NULL" denotes the model with no spatial effect (component-specific intercepts are still used); "IID" denotes the model with IID macroarea-level effects; "Ind. ICAR" denotes the model with two independent ICAR priors. The random intercept and the ICAR effect in the IID and independent ICAR models have an improper Uniform prior on the standard deviation. Models  S+(1), S+(2), S+(3), and S+(4)  are defined as in Appendix \ref{Appendix:A}. Alongside the selection criteria mentioned in Section \ref{par:criteria}, the two components of the DIC are shown, namely the expected deviance (Exp. Dev) and the effective number of parameters ($P_D$). The computational time of each model is shown as well, expressed in seconds. \\
+Some additional model formulations are also compared: "NULL" denotes the model with no spatial effect (component-specific intercepts are still used); "IID" denotes the model with IID macroarea-level effects; "Ind. ICAR" denotes the model with two independent ICAR priors. The random intercept and the ICAR effect in the IID and independent ICAR models have an improper Uniform prior on the standard deviation. Models  S+(1), S+(2), S+(3), and S+(4)  are defined as in Section \ref{par:k}. Alongside the selection criteria mentioned in Section \ref{par:criteria}, the two components of the DIC are shown, namely the expected deviance (Exp. Dev) and the effective number of parameters ($P_D$). The computational time of each model is shown as well, expressed in seconds. \\
 
 This comparison highlights that the ICAR is more adequate to study Invalsi scores than both the null and IID models. In this latter case, point estimates are accurate (low MSE), but the high complexity suggests this may be due to overfitting. The correlated ICAR outperforms the independent one. The VB approximation also appears to be generally preferable over the SL.
 
@@ -2619,6 +2678,7 @@ The spatial patterns of reported violence related to access to AVCs in Apulia al
 
 The remainder of this paper is structured as follows: section \ref{sec.Apulia.data} introduces the data set of accesses to AVCs in Apulia and relevant explanatory variables, section \ref{section:STPoisson} describes the Bayesian space-time statistical modelling framework and provides some generalities on the proposed PC-priors, section \ref{sec:imple} accounts for some practical implementation issues and summarises the strategy to prevent spatial confounding, section \ref{sec:results} provides some results of posterior inferences and interpretative comments.
 
+%% --------- Data --------------------------------------- %%
 \section{The Apulia Region data}\label{section:Apulia.data}
 
 This study focusses on the number of accesses to AVCs in the municipalities of the Apulia region over the years 2021--2024. Data are collected by the Statistical Section and the Welfare Department of the Apulia Region as part of a systematic monitoring program established under Regional Law No. 29/2014. Since 2013, all AVCs have been required to submit annual reports detailing women’s access to support services to monitor the effectiveness of the service and identify local problems. The resulting data collection and processing activities contribute to the Regional annual reports \citep{CAV2024report}.
@@ -2660,6 +2720,7 @@ The set of explanatory variables considered in the present analysis is summarise
 
 
 
+%% --------- ST model ----------------------------------- %%
 \section{Space-time Poisson models}\label{section:STPoisson}
 
 The counts of women residing in each Apulian municipality accessing AVCs within a given year are modelled via Poisson ecological regression. For a generic year $t \in \lbrace 2021, \dots, 2024 \rbrace$, we denote the count of women from municipality $i \in \lbrace 1, \dots, 256 \rbrace$ accessing an AVC as $y_{i,t}$, and model it as follows:
@@ -2763,10 +2824,10 @@ $$
   \ln \left(1-\alpha\right)\frac{\sqrt{ h(r)}}{ \sqrt{h(U)}} 
   }  \frac{\partial h}{\partial r}
 $$ 
+%%
 
-
-
- \section{Model implementation}\label{sec:imple}
+%% --------- Implementation ----------------------------- %%
+\section{Model implementation}\label{sec:imple}
 In this section, we first summarise the settings of the prior distributions of all model parameters, then we describe the practical procedure to estimate the space-time Poisson regression model described in section \ref{section:STPoisson}.
  
 Constant covariate effects in $\beta$ and time-dependent intercepts $\beta_{0,t}$ are assigned independent $\mathcal{N}(0, 10^3)$ priors. 
@@ -2832,8 +2893,11 @@ The four spatial structures for the space-time Poisson model presented in sectio
 %
 Differences in model performances do not appear relevant; the WAIC leads us to prefer the BYM model over the others. Neither does the treatment of spatial confounding change radically model performance, but a small improvement can be noticed if we filter out the 20 smallest-frequency eigenvectors.
 
+
+
  
- \section{Results} \label{sec:results}
+%% --------- Results ------------------------------------ %%
+\section{Results} \label{sec:results}
 In this section, we display the main results of the alternative model specifications described in Section \ref{sec:imple}, focusing on the BYM with $\phi \sim \mathrm{Unif}(0,1)$ after removing the 20 lowest-frequency Laplacian eigenvectors \cite[applying the simplified Spatial+ correction proposed by][]{Urdangarin24} from two covariates: the share of employees in low-productivity firms (ELI) and the low education incidence (ELL). All explanatory variables have been scaled to zero mean and unit variance to facilitate the interpretation of results.
 
 In Figure \ref{fig:forestplot} we show a forest plot of the 95\% posterior credible intervals of covariate effects using the non-spatial and spatial models before and after removing the 20 lowest-frequency Laplacian eigenvectors from the covariates ELI and ELL. Such a correction is justified by the difference in the posterior distributions of these two variables between the non-spatial and spatial models, which suggests the potential confounding with the latent spatial field. In particular, including the spatial field shrinks the estimated effect of ELI towards zero, while it raises in absolute value the estimated effect of ELL. Generally speaking, the inclusion of a spatial latent field increases uncertainty in the estimation of covariate effects, as can be seen from the wider credible intervals. The most noticeable differences among spatial models can be observed for ELL and the employment rate (ER); specifically, in both cases, controlling for the spatial confounding in ELI and ELL slightly reduces the covariate effect. Overall, the estimation of covariate effects does not appear to be sensitive to the spatial model choice or to spatial confounding treatment. 
@@ -2919,6 +2983,7 @@ param & mean & sd & Q0.025 & Median & Q0.975 \\
 Residual variability is balanced between spatial autocorrelation and random noise, as the variance mixing parameter has a posterior expectation of $\approx 0.6$, which means that the share of residual variability explained by the spatial structure is slightly larger. The standard deviation of the spatio-temporal latent field has a posterior expectation of $\approx 0.47$. This can be interpreted as an increment of 1 standard deviation of the latent field in a municipality implies, \textit{ceteris paribus}, a change of approximately $\exp(0.47)-1\approx59\%$ in the frequency of AVC accesses. Lastly, the temporal autocorrelation is positive, as one could expect by comparing the spatial patterns in AVC accesses in Figure \ref{fig:log_access}.
 
 
+%% --------- Conclusion --------------------------------- %%
 \section{Discussion and conclusions}\label{section:VAW.discussion}
 
 The main limitation of this research is that we employ a unique predictor combining the two processes of violence occurring and help seeking after violence occurs, which cannot be disentangled with the available data. Consequently, the effects we estimate reflect both mechanisms at once. Additional limitations include the lack of individual-level information for privacy reasons, the unavailability of service-level performance indicators, and the constraints posed by aggregated data that can mask within-area heterogeneity. 
