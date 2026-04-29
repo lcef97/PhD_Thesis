@@ -230,6 +230,8 @@ mapview::mapview(
   mapview::mapview(
     Invalsi_A_ITA, zcol = "M_Italian",
     col.regions = pal,
+    popup = paste0(SchoolDataIT:::set_popup_height(210) , 
+                   leafpop::popupTable(Invalsi_A_MAT)),   
     at = seq(125, 240, length.out = 20),
     map.types = "CartoDB.Positron",
     layer.name = "Italian score")
@@ -253,6 +255,8 @@ mapview::mapview(
   mapview::mapview(
     Invalsi_A_MAT, zcol = "M_Mathematics",
     col.regions = pal,
+    popup = paste0(SchoolDataIT:::set_popup_height(210) , 
+                   leafpop::popupTable(Invalsi_A_MAT)),
     at = seq(125, 240, length.out = 20),
     map.types = "CartoDB.Positron",
     layer.name = "Mathematics score")
