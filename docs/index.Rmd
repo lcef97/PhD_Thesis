@@ -216,11 +216,56 @@ Map_School_Buildings(data=DB25_MIUR_mun,
   
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 2: TBD
 
-Invalsi scores in Italian  
+## Chapter 2: Scope
 
-```{r Invalsi ITA, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
+  - Modelling of **municipality**-averaged **INVALSI** scores in **Italian and Mathematics** at the second year of high school during year **2022/23**
+  
+  - Explanatory variables:
+    - **Central/Intermediate/Peripheral** classification (inner areas taxonomy)
+    - % of schools provided with **Ultra-broadband** connection
+    - % of schools provided with **urban transport**
+  
+  - **Spatial autocorrelation** in observed scores $\Rightarrow$ **Intrinsic CAR** [@ICAR] latent model on **macro-areas**
+  
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+
+## Chapter 2: INVALSI scores (Maths)
+
+Scores in Mathematics (2nd grade of high school, year 2022/23)
+
+
+```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4}
+pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
+
+mapview::mapview(
+  Invalsi_NA_MAT, col.regions = "white",
+  map.types = "CartoDB.Positron",
+  legend = FALSE, layer.name = "No data") +
+  mapview::mapview(
+    Invalsi_A_MAT, zcol = "M_Mathematics",
+    col.regions = pal,
+    popup = paste0(SchoolDataIT:::set_popup_height(210) , 
+                   leafpop::popupTable(Invalsi_A_MAT)),
+    at = seq(125, 240, length.out = 20),
+    map.types = "CartoDB.Positron",
+    layer.name = "Mathematics score")
+
+
+```
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+
+
+## Chapter 2: INVALSI scores (Italian)
+
+Scores in Italian (2nd grade of high school, year 2022/23)
+
+```{r Invalsi ITA, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4}
 pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
 
 mapview::mapview(
@@ -241,30 +286,6 @@ mapview::mapview(
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 2: TBD
-
-INVALSI scores in Mathematics
-
-```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
-pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
-
-mapview::mapview(
-  Invalsi_NA_MAT, col.regions = "white",
-  map.types = "CartoDB.Positron",
-  legend = FALSE, layer.name = "No data") +
-  mapview::mapview(
-    Invalsi_A_MAT, zcol = "M_Mathematics",
-    col.regions = pal,
-    popup = paste0(SchoolDataIT:::set_popup_height(210) , 
-                   leafpop::popupTable(Invalsi_A_MAT)),
-    at = seq(125, 240, length.out = 20),
-    map.types = "CartoDB.Positron",
-    layer.name = "Mathematics score")
-
-
-```
-
-<img src="Watermark_logo.png" class="watermark-logo">
 
 
 ## Cited works
