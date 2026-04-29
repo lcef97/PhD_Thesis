@@ -1,0 +1,172 @@
+/*  TITLE SLIDE --------------------------------------------------------------*/
+
+.title-slide {
+  padding-left: 20px;
+  background-image: url('Titlepage.png'); 
+  background-size: contain;  
+  background-position: center;
+  background-repeat: no-repeat;
+  color: white;
+}
+
+.title-slide hgroup {
+  position: relative; 
+}
+
+.title-slide hgroup h1 {
+  position: absolute;
+  font-size: 56px;
+  margin-top: 180px;
+  left: 1em; 
+  word-wrap: break-word; 
+  color: #fff; 
+}
+
+.title-slide hgroup h2 {
+  position: absolute;  
+  top: 410px;  
+  left: 1.6em;  
+  font-size: 40px;
+  /*color: darkgrey;*/
+  line-height: 1.1;
+  word-wrap: break-word;  
+  white-space: normal;
+}
+
+.title-slide hgroup p {
+  position: absolute; 
+  font-size: 22px;
+  color: #fff;
+  top: calc(2em + 500px); 
+  left: 120px;
+  right: 30px; 
+  line-height: 1.01;
+  text-align: right;
+}
+
+/*  DOCUMENT BODY ------------------------------------------------------------*/
+
+/* Titles */
+slides > hgroup > h2 {
+  color: #253A6B; !important
+}
+ 
+slide:not(.title-slide) hgroup h2 {
+  color: #253A6B !important;
+}
+
+/* Main text */
+slides > .slides:not(.title-slide) {
+  background-image: url('Watermark_logo.png');
+  background-position: bottom;
+}
+
+slides > slide:not(.title-slide) article {
+  color: #4A4A4A;
+}
+
+slides > slide {
+    /* font-family: 'Poppins', sans-serif; */
+    font-size: 20pt;
+    position: absolute;
+    bottom: 24px; 
+    right: 18px; 
+    /*color: white;
+    line-height: 1.5;*/
+}
+
+
+slides > slide:not(.title-slide) strong,
+slides > slide:not(.title-slide) b {
+  color: #253A6B;
+  font-weight: 700;
+}
+
+
+slides > slide:not(.nobackground):after {
+  color: #fff;
+  right: 18px;
+  bottom: 12px;
+}
+
+/* GRAPHICS ------------------------------------------------------------------*/
+
+
+.watermark-logo {
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    background-image: url('Watermark_logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    bottom: -2px; 
+}
+
+/* FIGURES -------------------------------------------------------------------*/
+
+.leaflet-popup-content {
+    font-size: 12 px;
+    line-height: 0.8; /*padding: 10px; */
+}
+
+.leaflet-popup-content-wrapper {
+    font-size: 12 px;
+    line-height: 0.8; /*padding: 10px; */
+    max-width: 400px;  
+    width: auto;  
+}
+
+/* TABLES --------------------------------------------------------------------*/
+table.dataTable {
+    font-size: 14px;
+    /*width: 50%;  */
+    height: 180px ; 
+ }
+ 
+.scroll-table {
+  height: 240px;    
+  overflow-y: auto;
+  font-size: 20px;
+  line-height: 1.8;
+  border-spacing: 10em;
+  border: 1px solid #2B65AF;
+  padding: 5px;
+}
+ 
+thead {
+  background-color: #2B65AF;
+  color: #fff;
+}
+ 
+table th {
+  font-size: 24px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  color: #fff;
+}
+
+.dataTables_wrapper {
+    font-size: 14px;
+    /* width: 80% ;*/
+    height: 360px ; 
+    overflow: auto;
+}
+
+.small-log > pre{
+  font-size: 12px;
+  line-height: 1; 
+}
+
+.footnote {
+  position: relative;
+  bottom: 0px;
+  font-size: 0.7em;
+}
+
+.references {
+  font-size: 50%;
+  line-height: 1;
+}
+

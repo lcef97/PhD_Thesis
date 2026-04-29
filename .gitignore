@@ -1,0 +1,11 @@
+# RStudio local files
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+docs/.Rhistory
+
+# Windows metadata
+desktop.ini
+**/desktop.ini
+Thumbs.db

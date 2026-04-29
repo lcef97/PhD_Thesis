@@ -218,7 +218,7 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 
 ## Chapter 2: TBD
 
-Let us see if this works...
+Invalsi scores in Italian  
 
 ```{r Invalsi ITA, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
 pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
@@ -241,7 +241,8 @@ mapview::mapview(
 
 ## Chapter 2: TBD
 
-Let us see if this works...
+INVALSI scores in Mathematics
+
 
 ```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
 pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
