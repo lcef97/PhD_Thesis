@@ -243,7 +243,6 @@ mapview::mapview(
 
 INVALSI scores in Mathematics
 
-
 ```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
 pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
 
