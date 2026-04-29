@@ -286,6 +286,40 @@ mapview::mapview(
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
+## Chapter 2: bivariate regression model
+
+
+$$
+\begin{pmatrix}
+y_{1,i,j}\\[2pt] y_{2,i,j}
+\end{pmatrix}
+=
+\sum_{m=1}^{p+3} x_{m,i,j}
+\begin{pmatrix}
+\beta_{m1}\\[2pt]
+\beta_{m2}
+\end{pmatrix}
++
+\begin{pmatrix}
+z_{1,i}\\[2pt]
+z_{2,i}
+\end{pmatrix}
++
+\begin{pmatrix}
+\varepsilon_{1,i,j}\\[2pt]
+\varepsilon_{2,i,j}
+\end{pmatrix}
+$$
+
+   - $y_{1,i,j}$ and $y_{2,i,j}$: INVALSI scores in $j$-th **municipality** of the $i$-th **province**, in $Mathematics$ and $Italian$ respectively
+   
+   - $x$: covariates;\quad $\beta$: covariate effects. For each subject, the first 3 covariates denote the **connected component** each site belongs to; first 3 covariate effects are **component-specific intercepts**
+   
+   - $z_{1,i}$ and $z_{2,i}$: **spatial effects** in $i$-th macro-area
+   
+   - $\varepsilon$: error term.
+
+<img src="Watermark_logo.png" class="watermark-logo">
 
 
 ## Cited works
