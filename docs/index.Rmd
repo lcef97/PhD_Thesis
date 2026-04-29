@@ -1,0 +1,268 @@
+---
+title: "Stochastic Spatial Areal Models for Mapping Territorial Vulnerability"
+author: Leonardo Cefalo, PhD candidate from the Department of Economics and Finance, University of Bari Aldo Moro
+date: "2026 May 13th"
+output:
+  ioslides_presentation:
+    css: style.css
+    slide_level: 2
+subtitle: Doctoral thesis dissertation
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning= FALSE, message = FALSE)
+par(mar = c(2,2,1,1))
+library(magrittr)
+library(sf)
+library(INLA)
+
+for (file in list.files("Data", full.names = T)) load(file)
+```
+
+```{r codes for loaded data, eval = FALSE, echo = FALSE}
+#Prov24_shp <- Get_Shapefile(2024, level = "NUTS-3")
+#Mun24_shp <- Get_Shapefile(2024, level = "LAU")
+
+#input_DB25_MIUR<-Get_DB_MIUR(Year=2025 )
+
+#DB25_MIUR_mun <- Group_DB_MIUR(input_DB25_MIUR, level = "LAU")
+#DB25_MIUR_prov <- Group_DB_MIUR(input_DB25_MIUR, level = "NUTS-3")
+
+```
+
+
+
+
+## Motivation: territorial disparities and policy relevance
+
+  - Italy exhibits persistent territorial divides in infrastructure, services, and outcomes
+  
+  - PNRR / NextGenerationEU and GRINS: demand for granular, data-informed territorial planning
+  
+  - Research quest: quantify **local** disparities through interpretable models
+  
+  - Method of analysis: parametric and uncertainty-informed statistical modelling
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Methodological framework
+
+  - **Areal modelling**: spatial domain described through adjacency graphs $\Rightarrow$ **CAR-like** [@CAR] and **convolution** [@BYM] latent models
+  
+  - **Bayesian** inference for interpretable uncertainty, flexible prior setup and model comparison
+  
+  - Computation: **Integrated Nested Laplace Approximation** [@INLA], [@VBINLA2024] 
+  
+  - Recurring issues: **hyperprior interpretability** $\Rightarrow$ **Penalised complexity priors** [@PC];  **Spatial confounding** $\Rightarrow$ *Spatial+2.0* filtering [@Urdangarin24]
+    
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+
+
+## Chapter 1: SchoolDataIT
+
+  - Policy and research need: **harmonised**, **georeferenced open data** regarding **school infrastructure** and **student outcomes**
+  
+  - Available data come from **multiple providers** in heterogeneous formats $\Rightarrow$ missing **harmonisation**
+  
+  - **Contribution**: an R package that retrieves, cleans, harmonises, and maps data at LAU / NUTS-3 level
+  
+  - Package available 
+    - on **CRAN**, under version [0.2.12](https://CRAN.R-project.org/package=SchoolDataIT)
+    - on **GitHub** under **experimental** version [0.2.13](https://github.com/lcef97/SchoolDataIT)
+
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Chapter 1: Data providers
+
+  - **Ministry of Education**: 
+    - National school **registry** 
+    - **School buildings DB** $\Rightarrow$ school **infrastructure**
+    - Counts of **students per class** $\Rightarrow$ classroom size
+    - Average **teachers per class** (only at **province** level)
+  
+  - **INVALSI**: census survey indicators $\Rightarrow$ spatially homogeneous indicator of **student outcomes**
+  
+  - **ISTAT**: inner areas taxonomy $\Rightarrow$ synthetic indicator of municipality **infrastructural** state
+  
+  - **Infratel/MIMIT**: ultra-broadband activation status
+  
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Chapter 1: Web scraping
+
+  - **Static scraping**: find provider links $\rightarrow$ download $\rightarrow$ parse into `R`
+
+  - **Real-time** data retrieval and **no storage space** consumed on the **user local** machine
+  
+  - **CRAN quality policy**: R packages must *fail gracefully*
+    
+    - connection issues, invalid URLs, corrupted files $\Rightarrow$ clean **abort** mechanism: `R` functions return `NULL`, avoiding **crashes** (`ERROR` output)
+  
+  - **Emergency** fixes: instant repair on the GitHub experimental version (just contact the maintainer, i.e., me)
+
+<img src="Watermark_logo.png" class="watermark-logo">
+    
+
+## Chapter 1: package workflow
+```{r flowchart, echo = F}
+package.scheme <- function(width = 900) {
+  return(DiagrammeR::grViz("digraph {
+    graph [layout = dot, splines = ortho, rankdir = TB, nodesep = 1.5, overlap = false ]
+
+    node [shape = parallelogram, style = filled, fillcolor = \"#D0DFF4\", fontcolor = black , color = \"#253A6B\", fontsize = 22 ]
+    zero[label = 'User-defined input']
+    end1[label = 'Merged database']
+    end2[label = 'Maps']
+
+    node [shape = rectangle, style = filled, fillcolor = \"#D0DFF4\", fontcolor = black, color = \"#253A6B\", fontsize = 22, width = 3.4]
+    F1[label = 'Get_ functions']
+    F2[label = 'Util_ functions']
+    F3[label = 'Group_ functions']
+    F4[label = 'Set_DB']
+    F5[label = 'Map_ functions']
+
+    node [shape = oval, style = filled, fillcolor = \"#D0DFF4\", fontcolor = black,   color = \"#253A6B\", fontsize = 22, width = 3.4]
+    O1[label = 'Raw datasets']
+    O2[label = 'Spatial\ngeometries']
+    O3[label = 'Edited datasets']
+    O4[label = 'Aggregated datasets']
+
+    # Invisible helper nodes for spacing
+    node [shape = point, width = 0, height = 0, label = '']
+    spacer2
+    spacer1
+
+    # Align nodes into ranks
+    {rank = same; F1; O1}
+    {rank = same; spacer1; F2}
+    {rank = same; F3; spacer2; O4}
+    {rank = same; F4; end1}
+
+    # Edges and directions
+    zero -> F1 [dir = forward]
+    F1 -> O1  
+    F1 -> O2  
+    O1 -> spacer1 [dir = none]   
+    spacer1 -> F2
+    O1 -> F4 [style = dashed]
+    O2 -> F5 [dir = forward]
+    F2 -> O3  
+    #F2 -> spacer2 [style = invisible]   
+    F2 -> O4 
+    O3 -> F3 [direction = forward]
+    F3 -> O4 [dir = forward]
+    O4 -> F4 [dir = forward]
+    O4 -> F5 [dir = forward, style = dashed]
+    F4 -> end1 [dir = forward]
+    end1 -> F5 [dir = forward]
+    F5 -> end2 [dir = forward]
+
+  }", width = width))
+}
+
+package.scheme()
+```
+
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Chapter 1: school buildings DB (example)
+
+Example of infrastructural variable: availability of public transport in 2024/25 at the province level 
+```{r transport map prov, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3 }
+library(SchoolDataIT)
+Map_School_Buildings(data=DB25_MIUR_prov,
+                     field="Urban_public_transport",
+                     input_shp=Prov24_shp,level="NUTS-3",
+                     order="High",plot="mapview",
+                     InnerAreas=FALSE, verbose = FALSE)
+
+```
+<img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 1: urban transport availability
+
+Same variable, but at the finer level of municipalities (in the Apulia region in this case)
+
+```{r transport map mun, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3 }
+library(SchoolDataIT)
+Map_School_Buildings(data=DB25_MIUR_mun,
+                     field="Urban_public_transport",
+                     input_shp=Mun24_shp,level="LAU",
+                     order="High",region_code=16,
+                     plot="mapview",InnerAreas=FALSE, verbose = FALSE)
+
+```
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Chapter 1: contributions
+
+  - `SchoolDataIT` package output enabling both **descriptive** and **inferential** analysis
+  
+  - Observational length growing with time $\Rightarrow$ potential for panel analysis
+  
+  - In general, we can observe how **education disparities** aligns with more **general territorial vulnerability patterns** $\Rightarrow$ let us see it more in detail in the next chapter
+
+  - Mainly **upstream** contribution: data access + harmonisation + reproducibility
+  
+<img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 2: TBD
+
+Let us see if this works...
+
+```{r Invalsi ITA, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
+pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
+
+mapview::mapview(
+  Invalsi_NA_ITA, col.regions = "white",
+  map.types = "CartoDB.Positron",
+  legend = FALSE, layer.name = "No data") +
+  mapview::mapview(
+    Invalsi_A_ITA, zcol = "M_Italian",
+    col.regions = pal,
+    at = seq(125, 240, length.out = 20),
+    map.types = "CartoDB.Positron",
+    layer.name = "Italian score")
+
+
+```
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 2: TBD
+
+Let us see if this works...
+
+```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
+pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
+
+mapview::mapview(
+  Invalsi_NA_MAT, col.regions = "white",
+  map.types = "CartoDB.Positron",
+  legend = FALSE, layer.name = "No data") +
+  mapview::mapview(
+    Invalsi_A_MAT, zcol = "M_Mathematics",
+    col.regions = pal,
+    at = seq(125, 240, length.out = 20),
+    map.types = "CartoDB.Positron",
+    layer.name = "Mathematics score")
+
+
+```
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Cited works
+  
+ 
