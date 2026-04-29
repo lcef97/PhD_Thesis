@@ -14,19 +14,18 @@ integrated in the \texttt{SchoolDataIT} R package,
 which downloads and harmonises information from multiple data sources and is available on CRAN.
 
 The second research work studies the relationship between the students' abilities in the second year of high school,
-measured by INVALSI scores, and the infrastructural endowment in Italian municipalities. 
-We employ an intrinsic conditional autoregressive latent model, defined alternatively at a higher aggregation level, 
-and find that alongside a significant association with infrastructural indicators chosen as explanatory variables,
-spatially structured latent effects are still necessary to explain the variability of student outcomes across municipalities.
+measured with INVALSI scores, and the infrastructural endowment in Italian municipalities, 
+by means of multilevel Bayesian regression including an intrinsic CAR latent effect, 
+finding a significant association with infrastructural indicators.
 
 The third research work analyses the access to local anti-violence centres in Apulia in 2021--2024 by spatio-temporal Poisson regression,
-proposing a joint penalised complexity prior construction for all the models employed. 
+proposing a joint penalised complexity prior construction. 
 Results suggest the presence of spatial constraints in seeking help from anti-violence centres,
-with access declining as distance from anti-violence centres increases; 
-in addition, lower education levels may also contribute to under-reporting in disadvantaged areas,
-while higher economic development may be associated with lower incidence of reported violence.
+with access declining as distance from anti-violence centres increases.
 
-Overall, this thesis shows how Bayesian spatial modelling can be useful to quantify uncertainty, stabilise inference in sparse territorial settings, and suggest policy-relevant insights on territorial inequalities in Italy. 
+Overall, this thesis shows how Bayesian spatial modelling can be useful to quantify uncertainty, 
+stabilise inference in sparse territorial settings, and suggest policy-relevant insights
+on territorial inequalities in Italy. 
 
 The thesis is done and I am going to publish it on IRIS as soon as possible; once a link exists I will paste it here.
 
