@@ -39,219 +39,53 @@ Some text: \lipsum[4]
   Another example
 \end{example}
 
-\section{PC-prior derivation in M-models} \label{section:Unpublished}
 
-In this section, we derive the PC-prior for the parameters controlling spatial dependence in the LCAR, PCAR and BYM2 models in the most general and flexible formulation, namely M-models. This general proof goes beyond the block-factorisable structure discussed in this chapter, in which the parameter is univariate, and while the univariate BYM2 case has already been already covered \citep{BYM2, PC}, the univariate case for PCAR and LCAR follows easily by deduction. 
-
-To overcome the difficulties in deriving analytically a PC-prior for a multivariate parameter $\Psi$ of dimension $n_\Psi>1$, we factorise the joint prior using the chain rule, and for convenience we choose the same conditioning value, say $\psi_0$, for all conditionals:
-$$
-\pi(\Psi) = \pi(\psi_1 \vert \psi_2 =  \dots = \psi_{n_\Psi} = \psi_0) \,
-\pi(\psi_2 \vert \psi_3 = \dots = \psi_{n_\Psi} = \psi_0) \, 
-\pi(\psi_{n_\Psi-1} \vert \psi_{n_\Psi}=\psi_0)
-$$
-By doing so, we are employing a stepwise conditioning: at each $j$-th step, we allow an additional parameter $\psi_j$ to vary in the model, and test the flexible model $\mathcal{M}_j\left(z\vert\psi_1, \dots, \psi_{j-1}, \psi_j, \psi_{j+1}=\dots=\psi_{n_\Psi} = \psi_0\right)$ against the base model $\mathcal{M}_{j-1}\left(z\vert\psi_1, \dots, \psi_{j-1}, \psi_j = \psi_{j+1}=\dots=\psi_{n_\Psi} = \psi_0\right)$. For brevity, in the remainder of this section the flexible model proposed at a generic $j$-th step will be simply labelled as $\mathcal{M}_j$.
-
-In the context of PCAR, LCAR, and BYM models, the base model is the non-spatial one, in which either $\boldsymbol{\rho}, \boldsymbol{\Lambda}$ or $\boldsymbol{\Psi}$ are matrices of zeroes. Therefore, we will always consider $\psi_0 = 0$ in this section.
-
-Recalling the variance structure of M-models, if $n$ denotes the number of sites, we have 
-$$
-\mathbb{VAR}[z \vert \Psi] = \left( \boldsymbol{M^\top} \otimes \boldsymbol{I_n} \right) \boldsymbol{\Omega} \left( \boldsymbol{M} \otimes \boldsymbol{I_n} \right) 
-$$
-Where only the matrix $\boldsymbol{\Omega}$ depends on either $\boldsymbol{\rho}, \boldsymbol{\Lambda}$ or $\boldsymbol{\Psi}$. Therefore, at each $j$-th step, the models we compare through the distance function only differ through $\boldsymbol{\Omega}$. Specifically, at step $j$ we compare $\mathcal{M}_j$, which assumes $\boldsymbol{\Omega}=\boldsymbol{\Omega_j}$ and $\mathcal{M}_{j-1}$ which assumes $\boldsymbol{\Omega}=\boldsymbol{\Omega^{(j-1)}}$. 
-
-Since this comparison regards two zero-mean Gaussian densities, the KLD reduces to the simple form
-$$
-\mathrm{KLD}(\mathcal{M}_j \lvert \rvert \mathcal{M}_{j-1}) = 
--\frac{1}{2} \ln \lvert \boldsymbol{\mathrm{Var}_{j-1}^{-1} \mathrm{Var}_{j}}  \rvert
-- \frac{kn}{2}
-+ \frac{1}{2} \mathrm{tr}\left( \boldsymbol{\mathrm{Var}_{j-1}^{-1} \mathrm{Var}_{j}} \right)
-$$
-Where $\mathrm{Var}_j = \left( \boldsymbol{M^\top} \otimes \boldsymbol{I_n} \right) \boldsymbol{\Omega^{(j)}} \left( \boldsymbol{M} \otimes \boldsymbol{I_n} \right) $ for each $j \in \lbrace 1, \dots, k\rbrace$. From this expression, it is crucial to notice that we do not actually need to know the matrix $\mathrm{Var}_{j-1}^{-1} \mathrm{Var}_{j}$, but only its trace and determinant. For brevity, we will refer to this quantity as $\mathrm{KLD}_j$.
-
-Moreover, consider that for two full-rank square matrices $\boldsymbol{A}$ and $\boldsymbol{B}$, matrices $\boldsymbol{AB}$ and $\boldsymbol{BA}$ share the same nonzero eigenvalues. Then, we can notice that $\boldsymbol{\mathrm{Var}_{j-1}^{-1} \mathrm{Var}_{j}}$ shares the same eigenvalues of ${\boldsymbol{\Omega^{(j-1)}}}^{-1} \boldsymbol{\Omega^{(j)}}$ (equivalently, this is a pair of similar matrices), so only the trace and determinant of this latter matrix need to be known to compute the KLD.
-
-In the context of INLA, requiring several computation of hyperparameter posterior, which in turn requires to compute the prior as we have seen in section \ref{subsection:INLA_int} we need the computational cost of the PC-prior to be negligible; otherwise, this distribution would be of no practical use. On the other hand, computing the eigenvalues of the dense matrix of ${\boldsymbol{\Omega^{(j-1)}}}^{-1} \boldsymbol{\Omega^{(j)}}$ is in $\Theta \left( (kn)^3\right)$. For each model, we thus need the KLD to be available in closed formula, but also to require a low computational cost, by leveraging on the properties of the model-specific $\boldsymbol{\Omega}$ matrices. Both these conditions hold for the univariate BYM2 mixing parameter \citep{BYM2, PC}. We will see that this is also the case of the models in scope. Moreover, the KLD corresponding to a single parameter is independent on all other parameters, implying that the conditional prior reduces to the relevant marginal. Taking the PCAR as an example, we have thus that
-$$
-\pi(\boldsymbol{\rho}) = \pi(\rho_1)\, \pi(\rho_2)\,\dots \,  \pi(\rho_k)
-$$
-
-\subsection{PCAR Model}
-We start with the PCAR. Here, at the $j$-th step, we compare the models:
-$$
-\mathcal{M}_j: \boldsymbol{\rho} = \boldsymbol{\rho^{(j)}} = \mathrm{diag}\left(\rho_1, \dots, \rho_{j-1}, \rho_j, 0, \dots, 0 \right)
-$$
-Against
-$$
-\mathcal{M}_{j-1}: \boldsymbol{\rho} = \boldsymbol{\rho^{(j-1)}} = \mathrm{diag}\left(\rho_1, \dots, \rho_{j-1},0, \dots, 0 \right)
-$$
-
-We assume that the graph degree matrix $\boldsymbol{D}$ is invertible. Considering the alternative models above, we can see that the KLD for the $j$-th step is
-\begin{equation}
-\label{eq:KLD_pcar}
-\mathrm{KLD}_j =  \frac{1}{2}\sum_{i=1}^n \left( \frac{1}{1-\rho_j h_i}
-- \ln \frac{1}{1 - \rho_j h_i}- 1\right)
-\end{equation}
-Where $\boldsymbol{H} = \mathrm{diag}\left(h_1, h_2, \dots, h_{n}\right)$ are the eigenvalues of $\boldsymbol{D^{-1/2}WD^{-1/2}}$, equal to the eigenvalues of $\boldsymbol{D^{-1}W}$, which as we have briefly mentioned in section \ref{subsection:pcar} are all inside the unit disk. Hence, for $\rho \in [0,1[$, the summands are non-negative\footnote{they are of the form $x-\ln x-1$ whose minimum is $0$ at $x=1$}, the KLD is monotonically non-decreasing and it ranges from $0$ to $\infty$. Moreover, the derivative is:
-$$
-\frac{d\mathrm{KLD}_j}{d \rho_j} =  -\frac{1}{2}\sum_{i=1}^n  \frac{h_i}{1 - \rho_j h_i} +
-\frac{1}{2}\sum_{i=1}^n \frac{h_i}{(1-\rho_j h_i)^2}
-= \frac{\rho_j}{2}\sum_{i=1}^n \frac{ h_i^2}{(1-\rho_j h_i)^2}
-$$
-which for $\rho_j \in ]0,1[$ is always strictly positive.
-
-Importantly, the matrix $\boldsymbol{D^{-1/2}WD^{-1/2}}$ is deterministic, and its eigenvalues only need to be determined once. Hence the calculation of $\pi(\boldsymbol{\rho})$ is scalable.
-
-
-\subsection{LCAR Model}
-For the LCAR model at the $j$-th step, we compare the models: 
-$$\mathcal{M}_j: \boldsymbol{\Lambda} = \boldsymbol{\Lambda^{(j)}} = \mathrm{diag}\left(\lambda_1, \dots, \lambda_{j-1}, \lambda_j, 0, \dots, 0 \right)$$
-Against 
-$$\mathcal{M}_{j-1}: \boldsymbol{\Lambda} = \boldsymbol{\Lambda^{(j-1)}} = \mathrm{diag}\left(\lambda_1, \dots, \lambda_{j-1},0, \dots, 0 \right)$$
-In this case, the KLD reads as
-\begin{equation}
-\mathrm{KLD}_j = \frac{1}{2} \sum_{i=1}^n \left(
-\frac{1}{1+\lambda_j (\ell_i-1)} - \ln \frac{1}{1+\lambda_j (\ell_i-1)} - 1 \right)
-\label{eq:KLD_LCAR}
-\end{equation}
-Where $\lbrace \ell_j \rbrace_{i=1}^n$ are the eigenvalues of the Laplacian matrix. In analogy with the PCAR model, we can see that the summands are non-negative, and the KLD is a monotonically non-decreasing function of $\lambda_j$, ranging from 0 (with $\lambda_j=0$) to $\infty$. With some algebra we can see that the derivative is
-$$
-\frac{d \mathrm{KLD}_j}{d \lambda_j} = \frac{\lambda_j}{2} \sum_{i=1}^n
-\frac{ (\ell_i - 1)^2}{(1+\lambda_j (\ell_i - 1) )^2}
-$$
-As in the previous case, the Laplacian eigenvalues are deterministic and must be computed once, hence this function is scalable in computational terms.
-
-\subsection{BYM2 model}
-Lastly, for the BYM2 model at each step we compare:
-$$\mathcal{M}_j: \boldsymbol{\Phi} = \boldsymbol{\Phi^{(j)}} = \mathrm{diag}\left(\phi_1, \dots, \phi_{j-1}, \phi_j, 0, \dots, 0 \right)$$
-Against 
-$$\mathcal{M}_{j-1}: \boldsymbol{\Phi} = \boldsymbol{\Phi^{(j-1)}} = \mathrm{diag}\left(\phi_1, \dots, \phi_{j-1},0, \dots, 0 \right)$$
-We then obtain the KLD as
-\begin{equation}
-\mathrm{KLD}_j = \sum_{i=1}^{n-G} \left[
-\ln\left( 1 -\phi_j \frac{\ell_i^*-1}{\ell_i^*}\right)
--\phi_j \left(\frac{\ell_i^*-1}{\ell_i^*} \right)
-\right] + G\left[ -\ln(1-\phi_j) - \phi_j\right]
-\end{equation}
-Which equals the univariate case already covered by \cite{BYM2} and \cite{PC}. Therefore, for the BYM2, we have simply shown that using a stepwise procedure to define the multivariate PC-prior, it reduces to the product of univariate marginals, which are already a known functional form.
+ %% -------- Unpublished  ---------------------------------- %%
 
 
 
 
-\section{Detail of KLD calculations}
-In this section, we prove the results of the KLD for the parameters of spatial dependence of the models in scope. In this appendix, we use the $1_n$ notation for a vector of ones of length $n$.
-\subsection{PCAR}
-In this case, we have
-$$
-\boldsymbol{{\Omega^{(j-1)}}^{-1}}\boldsymbol{\Omega^{(j)}} = 
-\left( \boldsymbol{I_k} \otimes \boldsymbol{D} \right)
-\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j-1)}}\otimes \boldsymbol{D^{-1}W}\right)
-\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j)}}\otimes \boldsymbol{D^{-1}W}\right)^{-1}
-\left( \boldsymbol{I_k} \otimes \boldsymbol{D} \right)^{-1}
-$$
-This matrix has the same eigenvalues of $\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j-1)}}\otimes \boldsymbol{D^{-1}W}\right)
-\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j)}}\otimes \boldsymbol{D^{-1}W}\right)^{-1}$. Let us define $\boldsymbol{\chi}$ as the eigenvector matrix of $\boldsymbol{D^{-1/2}WD^{-1/2}}$, and $\boldsymbol{H}$ as its eigenvalues. Then, we have
-$$
-\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j-1)}}\otimes \boldsymbol{D^{-1}W} = 
-\left( \boldsymbol{I_k} \otimes\boldsymbol{D^{-1/2}\chi}\right)
-\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j-1)}} \otimes \boldsymbol{H} \right)
-\left( \boldsymbol{I_k} \otimes\boldsymbol{D^{-1/2}\chi}\right)^{-1}
-$$
-This matrix can be seen to commute with $\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j)}}\otimes \boldsymbol{D^{-1}W}\right)^{-1}$. Therefore, the eigenvalue matrix of $\boldsymbol{{\Omega^{(j-1)}}^{-1}}\boldsymbol{\Omega^{(j)}} $ is given by $\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j-1)}} \otimes \boldsymbol{H} \right)\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j)}} \otimes \boldsymbol{H} \right)^{-1}$. Consider that, for each $j$, factors of the eigenvalue matrix are thus structured:
-$$
-\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j)}}\otimes \boldsymbol{D^{-1}W}\right) =
-\left( \begin{array}{cccc:c}
-\left(\boldsymbol{I_n} - \rho_1\boldsymbol{H}\right) 
-& \boldsymbol{0_{n \times n}} & \dots & \boldsymbol{0_{n \times n}} & \boldsymbol{0_{n\times(k-j)n}} \\
-\boldsymbol{0_{n \times n}}& \left(\boldsymbol{I_n} - \rho_2\boldsymbol{H}\right) 
-& \dots & \boldsymbol{0_{n \times n}} & \boldsymbol{0_{n\times(k-j)n}} \\
-\vdots & \vdots & \ddots & \vdots & \vdots\\
-\boldsymbol{0_{n \times n}} & \boldsymbol{0_{n \times n}} & \dots & \left(\boldsymbol{I_n} - \rho_j\boldsymbol{H}\right) & \boldsymbol{0_{n\times(k-j)n}} \\
-\hdashline
-\boldsymbol{0_{(k-j)n\times n}} & \boldsymbol{0_{(k-j)n\times n}} & \dots & \boldsymbol{0_{(k-j)n\times n}} & \boldsymbol{I_{(k-j)n}}
-\end{array} \right)
-$$
-Therefore, the eigenvalue matrix we are looking for will read as follows:
-\begin{align*}
-\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j-1)}} \otimes \boldsymbol{H} \right)\left(\boldsymbol{I_{kn}} - \boldsymbol{\rho^{(j)}} \otimes \boldsymbol{H} \right)^{-1} = \\ =
-\left( \begin{array}{cccc:c}
-\boldsymbol{I_n} & \boldsymbol{0_{n \times n}} & \dots & \boldsymbol{0_{n \times n}} & \boldsymbol{0_{n\times(k-j)n}} \\
-\boldsymbol{0_{n \times n}}& \boldsymbol{I_n} & \dots & \boldsymbol{0_{n \times n}} & \boldsymbol{0_{n\times(k-j)n}} \\
-\vdots & \vdots & \ddots & \vdots & \vdots\\
-\boldsymbol{0_{n \times n}} & \boldsymbol{0_{n \times n}} & \dots & \left(\boldsymbol{I_n} - \rho_j\boldsymbol{H}\right)^{-1} & \boldsymbol{0_{n\times(k-j)n}} \\
-\hdashline
-\boldsymbol{0_{(k-j)n\times n}} & \boldsymbol{0_{(k-j)n\times n}} & \dots & \boldsymbol{0_{(k-j)n\times n}} & \boldsymbol{I_{(k-j)n}}
-\end{array} \right)
-\end{align*}
-It is easy to see that these eigenvalues do not depend on any other value of $\boldsymbol{\rho}$ except from $\rho_j$. Hence the KLD for $\rho_j$ will be independent on other autocorrelation parameters. 
-To sum up, we can notice that for the determinant in the KLD formula we have
-$$
-\lvert\boldsymbol{\mathrm{Var}_{j-1}^{-1}\mathrm{Var}_j} \rvert = 
-\prod_{i=1}^n  \Big{\{ }\prod_{r=1}^{j} (1 - \rho_r h_i)^{-1} \prod_{r=1}^{j-1} (1 - \rho_r h_i) \Big{ \}} = \prod_{i=1}^{n} (1 - \rho_j h_i)^{-1}
-$$
+\section{chunks}
 
-For the trace, we have instead:
 $$
-\mathrm{tr}\left( \boldsymbol{\mathrm{Var}_{j-1}^{-1}\mathrm{Var}_j} \right)= (k-1)n + \sum_{i=1}^n
-\frac{1}{1- \rho_j h_i}
+\ln \pi(z \vert \boldsymbol{\Sigma}) = C + \frac{1}{2}\sum_{i=1}^{n} d_i z_i ^{\top} \boldsymbol{\Sigma}^{-1} z_i -
+\frac{1}{2}\sum_{i=1}^{n_z} \sum_{k=1}^{n_z}\rho w_{ik} z_i^{\top} \boldsymbol{\Sigma}^{-1} z_k
 $$
-Therefore, the KLD reads as in equation \ref{eq:KLD_pcar}. For $\rho_j=0$ the KLD is clearly zero, as the distance between two identical models is zero by definition. 
-
-\subsection{LCAR}
-
-For convenience, the between-fields spatial variance-covariance matrix can be rewritten, at each step $j$, as $\boldsymbol{\Omega^{(j)}} = \left[ \boldsymbol{\Lambda_j} \otimes\left( \boldsymbol{L} - \boldsymbol{I_n} \right)+\boldsymbol{I_{kn}} \right]^{-1}$. Then, we can notice that
-\begin{align*}
-\boldsymbol{{\Omega^{(j-1)}}^{-1}}\boldsymbol{\Omega^{(j)}} = \\ =
-\left( \begin{array}{cccc:c}
-\boldsymbol{I_n} & \boldsymbol{0_{n \times n}} & \dots & \boldsymbol{0_{n \times n}} & \boldsymbol{0_{n\times(k-j)n}} \\
-\boldsymbol{0_{n \times n}}& \boldsymbol{I_n} & \dots & \boldsymbol{0_{n \times n}} & \boldsymbol{0_{n\times(k-j)n}} \\
-\vdots & \vdots & \ddots & \vdots & \vdots\\
-\boldsymbol{0_{n \times n}} & \boldsymbol{0_{n \times n}} & \dots & \left[\lambda_j\left( \boldsymbol{L}-\boldsymbol{I_n} \right) + \boldsymbol{I_n}\right]^{-1} & \boldsymbol{0_{n\times(k-j)n}} \\
-\hdashline
-\boldsymbol{0_{(k-j)n\times n}} & \boldsymbol{0_{(k-j)n\times n}} & \dots & \boldsymbol{0_{(k-j)n\times n}} & \boldsymbol{I_{(k-j)n}}
-\end{array} \right)
-\end{align*}
-The eigenvalues of this matrix are
+%
+Where $C$ is an additive constant independent on $z$. Let us introduce the row-wise vectorising operator $\mathrm{vec}_r$, which stacks row-wise the elements of a $n \times k$ matrix into a $kn \times 1$ vector. The first sum then reads as:
 $$
-\left(
-1_{(j-1)n}, \frac{1}{1+\lambda_j (\ell_1-1)}, \dots , \frac{1}{1+\lambda_j (\ell_n-1)}, 1_{(p-j)n}
-\right)
+ \sum_{i=1}^{n_z} d_i z^{\top}_i \boldsymbol{\Sigma}^{-1} z_i = 
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+\end{pmatrix}^{\top}
+\begin{pmatrix}
+d_1 \boldsymbol{\Sigma}^{-1} & 0 & \ldots & 0 \\
+0 & d_2 \boldsymbol{\Sigma}^{-1} & \ldots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \ldots & d_{n_z} \boldsymbol{\Sigma}^{-1}
+\end{pmatrix}
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+\end{pmatrix}  = 
+(\mathrm{vec}_rz) ^{\top} (\boldsymbol{D} \otimes \boldsymbol{\Sigma}^{-1}) \mathrm{vec}_r z
 $$
-Where $\lbrace \ell_j \rbrace_{i=1}^n$ are the eigenvalues of the Laplacian matrix; recalling the Laplacian matrix properties, these eigenvalues are all non-negative, and the number of zero eigenvalues is given by the number of graph connected components. Therefore, it is easy to see that the KLD then reads as in equation \ref{eq:KLD_LCAR}
-%$$
-%\mathrm{KLD}_j = - \frac{1}{2} \sum_{i=1}^n \ln \frac{1}{1+\lambda_j (\ell_i - 1)} + \frac{1}{2} \sum_{i=1}^n \frac{1}{1+\lambda_j %%(\ell_i - 1)} - \frac{n}{2}
-%$$
-
-
-
-\subsection{BYM2}
-
-In analogy with the LCAR, the between-fields spatial variance-covariance matrix can conveniently be rewritten, at each step $j$, as $\boldsymbol{\Omega^{(j)}} =  \boldsymbol{\Phi_j} \otimes\left( \boldsymbol{L}_s^+ - \boldsymbol{I_n} \right)+\boldsymbol{I_{kn}} $, where $\boldsymbol{L_s}$ is the scaled Laplacian. In this case, we can see that
-\begin{align*}
-\boldsymbol{{\Omega^{(j-1)}}^{-1}}\boldsymbol{\Omega^{(j)}} = \\ =
-\left( \begin{array}{cccc:c}
-\boldsymbol{I_n} & \boldsymbol{0_{n \times n}} & \dots & \boldsymbol{0_{n \times n}} & \boldsymbol{0_{n\times(k-j)n}} \\
-\boldsymbol{0_{n \times n}}& \boldsymbol{I_n} & \dots & \boldsymbol{0_{n \times n}} & \boldsymbol{0_{n\times(k-j)n}} \\
-\vdots & \vdots & \ddots & \vdots & \vdots\\
-\boldsymbol{0_{n \times n}} & \boldsymbol{0_{n \times n}} & \dots & \phi_j\left( \boldsymbol{L_s^+}-\boldsymbol{I_n} \right) + \boldsymbol{I_n} & \boldsymbol{0_{n\times(k-j)n}} \\
-\hdashline
-\boldsymbol{0_{(k-j)n\times n}} & \boldsymbol{0_{(k-j)n\times n}} & \dots & \boldsymbol{0_{(k-j)n\times n}} & \boldsymbol{I_{(k-j)n}}
-\end{array} \right)
-\end{align*}
-This formula includes the eigenvalues of the (scaled) pseudo-inverse of the Laplacian. Let us denote $\lbrace\ell_i^*\rbrace_{i=1}^{n}$ the eigenvalues of the scaled Laplacian and, with no loss of generality, order them decreasingly. By doing so, we have $\ell_i^* > 0 \quad \forall i \in \lbrace1, \dots, n-G\rbrace$ and $\ell_i^* = 0 \quad \forall i \in \lbrace n-G+1, \dots, n\rbrace$, where $G$ are the graph connected components. Now, the first $n-G$ eigenvectors of $\boldsymbol{L_s^+}$ are simply given by $\lbrace 1/ \ell_i^* \rbrace_{i=1}^{n-G}$, while the last $G$ eigenvectors of $\boldsymbol{L_s^+}$ are zeroes. Now, the eigenvalues of $\boldsymbol{{\Omega^{(j-1)}}^{-1}}\boldsymbol{\Omega^{(j)}}$ matrix are given by
-\begin{equation}
-\left(
-1_{(j-1)n}, 1-\phi_j \frac{\ell_1^*-1}{\ell_1^*},  \dots,1-\phi_j \frac{\ell_{n-G}^*-1}{\ell_{n-G}^*},
-(1-\phi_j)1_G, 1_{(p-j)n}
-\right)
-\label{eq:eigen_KLD_BYM}
-\end{equation}
-We can see that the eigenvalues depending on Laplacian eigenvalues are all positive if $\psi_j \in ]0,1[$. For any $i \in \lbrace1, \dots, n-G\rbrace$ let us consider three cases:
-\begin{enumerate}
-\item $\ell_i \in \left]0,1 \right[$. In this case, $\frac{\ell_i^*-1}{\ell_i^*}$ is positive and therefore $-\phi_j \frac{\ell_i^*-1}{\ell_i^*} > 1$.
-\item $\ell_i = 1$ In this case, $1-\phi_j \frac{\ell_i^*-1}{\ell_i^*} = 1$.
-\item $\ell_i > 1$ In this case, $\frac{\ell_1^*-1}{\ell_1^*} \in \, ]0, 1[$, hence $1-\phi_j \frac{\ell_i^*-1}{\ell_i^*}  \in ]0, 1[$
-\end{enumerate}
-In equation \ref{eq:eigen_KLD_BYM}, $(k-1)n$ eigenvalues are ones; as a consequence, their contribution to the KLD is zero. Therefore, we obtain a formula for the $\mathrm{KLD}(\phi_j)$ equivalent to the univariate case covered by \cite{BYM2} in Appendix A2.2 or \cite{PC} in Appendix A.2
-
-%% -------- Unpublished  ---------------------------------- %%
+And the second sum reads as:
+$$
+ \sum_{i=1}^{n_z} \sum_{k=1}^{n_z} \rho w_{ik} z^{\top}_i \boldsymbol{\Sigma}^{-1} z_k = 
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+\end{pmatrix}^{\top}\rho
+\begin{pmatrix}
+\boldsymbol{0_{k \times k}} & w_{12} \boldsymbol{\Sigma}^{-1} & \ldots & w_{1n_z} \boldsymbol{\Sigma}^{-1}\\
+w_{21} \boldsymbol{\Sigma}^{-1} & \boldsymbol{0_{k \times k}} & \ldots & w_{2n_z} \boldsymbol{\Sigma}^{-1}\\
+\vdots & \vdots & \ddots & \vdots \\
+w_{n_z1} \boldsymbol{\Sigma}^{-1} & w_{n_z2} \boldsymbol{\Sigma}^{-1} & \ldots & \boldsymbol{0_{k \times k}}
+\end{pmatrix}
+\begin{pmatrix}
+z_{11} \\ \vdots \\ z_{1k} \\ z_{21} \\ \vdots \\ z_{2k} \\ \vdots \\z_{n_z1} \\ \vdots \\ z_{n_zk}
+\end{pmatrix}  = 
+$$
+$$
+=(\mathrm{vec}_r z) ^{\top} \left( \rho \boldsymbol{W} \otimes \boldsymbol{\Sigma}^{-1} \right) \mathrm{vec}_r z
+$$
 \end{document}

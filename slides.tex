@@ -1,0 +1,126 @@
+\documentclass[13pt ]{beamer}
+
+\usepackage[utf8]{inputenc}
+
+
+\usepackage[ style=authoryear, doi=true, isbn=true, url=true, giveninits=true, uniquename = init,
+  natbib = true, maxbibnames = 50]{biblatex}
+\usepackage{geometry}
+\usepackage{xcolor}
+
+
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+%------------------------------------------------------------
+%This block of code defines the information to appear in the
+%Title page
+\title[PhD Thesis] %optional
+{Stochastic Spatial Areal Models for Mapping Territorial Vulnerability}
+
+\subtitle{A Doctoral thesis}
+
+\author[Cefalo, Leonardo] % (optional)
+{Leonardo Cefalo\inst{1} }
+
+\institute[UniBa] % (optional)
+{
+  \inst{1}%
+  Department of Economics and Finance\\
+  University of Bari Aldo Moro
+}
+
+\date[2026 May 13th] % (optional)
+{2026 May 13th}
+
+\logo{\includegraphics[height=1cm]{docs/Media/Uniba_logo.png}}
+
+\renewcommand*{\bibfont}{\tiny}
+
+\setbeamerfont{footnote}{size=\tiny}
+
+%End of title page configuration block
+%------------------------------------------------------------
+
+
+
+%------------------------------------------------------------
+%The next block of commands puts the table of contents at the 
+%beginning of each section and highlights the current section:
+
+%\AtBeginSection[]
+%{
+%  \begin{frame}
+%    \frametitle{Table of Contents}
+%    \tableofcontents[currentsection]
+%  \end{frame}
+%}
+%------------------------------------------------------------
+
+
+\usepackage[]{biblatex}
+\addbibresource{References.bib}
+
+\begin{document}
+
+%The next statement creates the title page.
+\frame{\titlepage}
+
+
+%---------------------------------------------------------
+%This block of code is for the table of contents after
+%the title page
+
+
+%\begin{frame}
+%\frametitle{Table of Contents}
+%\tableofcontents
+%\end{frame}
+%---------------------------------------------------------
+
+\begin{frame}
+\frametitle{Motivation: territorial disparities and policy relevance}
+\begin{itemize}
+  \item Italy exhibits persistent territorial divides in infrastructure, services, and outcomes
+  \item PNRR / NextGenerationEU and GRINS: demand for granular, data-informed territorial planning
+  \item Research quest: quantify \textbf{local} disparities through interpretable models
+  \item[$\Rightarrow$] Method of analysis: parametric and uncertainty-informed statistical modelling
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Methodological framework}
+\begin{itemize}
+  \item Areal (municipality/province) modelling: spatial domain described through adjacency graphs $\Rightarrow$ \textbf{CAR-like} \footcite{CAR, MacNab} and \textbf{convolution} \footcite{BYM, BYM2} latent models
+  \item Bayesian inference: interpretable uncertainty, flexible prior setup and model comparison
+  \item Computation: integrated Nested Laplace Approximation \footcite{INLA, VBINLA2024} for latent Gaussian models
+  \item Recurring issue: 
+  \begin{itemize}
+  \item Interpretation of hyperpriors $\Rightarrow$ \textbf{Penalised complexity priors} \footcite{PC}
+  \item Spatial confounding $\Rightarrow$ \textbf{Spatial+2.0} filtering \footcite{Urdangarin24}
+  \end{itemize}
+\end{itemize}
+\end{frame}
+\section{First section}
+
+%---------------------------------------------------------
+% =========================================================
+\section{Chapter 2 --- SchoolDataIT: open infrastructure data}
+% =========================================================
+
+\begin{frame}
+\frametitle{Why SchoolDataIT?}
+\begin{itemize}
+  \item Policy and research need: harmonised, georeferenced open data regarding school infrastructure and student outcome
+  \item Available open data come from multiple providers in heterogeneous formats $\Rightarrow$ missing harmonisation
+  \item Contribution: an R package that retrieves, cleans, harmonises, and maps data at LAU / NUTS-3 level
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+     \printbibliography
+ \end{frame} 
+
+\end{document}
