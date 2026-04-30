@@ -62,7 +62,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 
 
 
-## Chapter 1: SchoolDataIT
+## Chapter 2: the SchoolDataIT `R` package
 
   - Policy and research need: **harmonised**, **georeferenced open data** regarding **school infrastructure** and **student outcomes**
   
@@ -78,7 +78,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 1: Data providers
+## Chapter 2: Data providers
 
   - **Ministry of Education**: 
     - National school **registry** 
@@ -95,7 +95,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 1: Web scraping
+## Chapter 2: Web scraping
 
   - **Static scraping**: find provider links $\rightarrow$ download $\rightarrow$ parse into `R`
 
@@ -110,7 +110,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 <img src="Watermark_logo.png" class="watermark-logo">
     
 
-## Chapter 1: package workflow
+## Chapter 2: package workflow
 ```{r flowchart, echo = F}
 package.scheme <- function(width = 900) {
   return(DiagrammeR::grViz("digraph {
@@ -174,7 +174,7 @@ package.scheme()
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 1: school buildings DB (example)
+## Chapter 2: school buildings DB (example)
 
 Example of infrastructural variable: availability of public transport in 2024/25 at the province level 
 ```{r transport map prov, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3 }
@@ -188,7 +188,7 @@ Map_School_Buildings(data=DB25_MIUR_prov,
 ```
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 1: urban transport availability
+## Chapter 2: urban transport availability
 
 Same variable, but at the finer level of municipalities (in the Apulia region in this case)
 
@@ -204,7 +204,7 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 1: contributions
+## Chapter 2: contributions
 
   - `SchoolDataIT` package output enabling both **descriptive** and **inferential** analysis
   
@@ -217,7 +217,7 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 2: Scope
+## Chapter 3: Scope
 
   - Modelling of **municipality**-averaged **INVALSI** scores in **Italian and Mathematics** at the second year of high school during year **2022/23**
   
@@ -232,7 +232,7 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 
 
 
-## Chapter 2: INVALSI scores (Maths)
+## Chapter 3: INVALSI scores (Maths)
 
 Scores in Mathematics (2nd grade of high school, year 2022/23)
 
@@ -261,7 +261,7 @@ mapview::mapview(
 
 
 
-## Chapter 2: INVALSI scores (Italian)
+## Chapter 3: INVALSI scores (Italian)
 
 Scores in Italian (2nd grade of high school, year 2022/23)
 
@@ -286,7 +286,7 @@ mapview::mapview(
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 2: bivariate regression model
+## Chapter 3: bivariate regression model
 
 
 $$
@@ -313,15 +313,75 @@ $$
 
    - $y_{1,i,j}$ and $y_{2,i,j}$: INVALSI scores in $j$-th **municipality** of the $i$-th **province**, in $Mathematics$ and $Italian$ respectively
    
-   - $x$: covariates;\quad $\beta$: covariate effects. For each subject, the first 3 covariates denote the **connected component** each site belongs to; first 3 covariate effects are **component-specific intercepts**
+   - $x$: **covariates**;\quad $\beta$: **covariate effects**. The first 3 covariates denote the **connected component** each site belongs to; first 3 covariate effects are **component-specific intercepts**
    
    - $z_{1,i}$ and $z_{2,i}$: **spatial effects** in $i$-th macro-area
    
-   - $\varepsilon$: error term.
+   - $\varepsilon$: **error** term $\Rightarrow$ Mathematics: **Normal**; Italian: **Skew-Normal** [@SN]
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Chapter 3: The ICAR model
+
+$$
+\mathbf{z}  \sim \mathcal{N}\!\left(\mathbf{0},\ \boldsymbol{\Sigma} \otimes
+\boldsymbol{L^+} \right)
+$$
+  - $\Sigma$: Global **covariance** matrix $\Rightarrow$ inverse **Wishart** *a priori*
+  
+  - $\mathbf{L}$: graph **Laplacian**, given by $\boldsymbol{L}:= \mathbf{D}-\mathbf{W}$, where
+    - $\mathbf{W}$: binary **neighbourhood** matrix ($w_{ij}=1$ if areas $i$ and $j$ are neighbours, $0$ otherwise)
+    - $\mathbf{D}$: diagonal **degree** matrix ($d_i=\sum_j w_{ij}$, number of neighbours of node $i$)
+ 
+  - The **Laplacian** is singular, with **rank deficiency** given by the number of graph **connected components**
+  $\Rightarrow$ model identifiable **if** a **linear constraint** (e.g. sum to zero) is imposed within **each connected component**
+
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 3: spatial confounding
+
+  - **Dependence** between $\boldsymbol{X}$ and $\boldsymbol{z}$ $\Rightarrow$ **potential bias** in estimating $\beta$
+  
+  - **Intuitive** solution: **restricted spatial regression**/RSR $\Rightarrow$ restrict $\boldsymbol{z}$ to be orthogonal to $\boldsymbol{X}$ [@RHZ]
+  
+  - **Problem** with RSR: $\mathbb{E}[z | y]$ approximates the **nonspatial** model estimation, *and* $\mathrm{VAR}[z|y]$ is shrunk 
+  
+  - **Solution** (one of many): *Spatial+*, i.e. **remove spatial dependence** from $\boldsymbol{X}$ [@Dupont]
+  
+  
+<img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 3: Spatial+2.0 for areal models{.gif-slide}
+
+  - Simplified **variant** [@Urdangarin24]
+  
+  - Rather than **fitting** a **parametric** model on $\boldsymbol{X}$, it is possible to **filter out** from it
+  the smoothest **Laplacian eigenvectors**, which represent **spatial trends**
+  
+  - Express $\boldsymbol{X}$ as a linear combination of the Laplacian eigenvectors and only **retain** the less smooth
+  
+  <figure class="gif-box gif-small gif-right">
+    <img src="Media/Laplace_Eigenvectors.gif" alt="Laplacian eigenvectors animation">
+    <figcaption>Smoothest Laplacian eigenvectors in a 30x30 regular lattice</figcaption>
+  </figure>
+  
+<img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 3: covariate effects estimation
+
+  - Prior choice: $\boldsymbol{\Sigma}$: **inv. Wishart**; $\mathrm{Prec}[\varepsilon]$: vague **Gamma**; **skewness** in **Italian** scores: **PC-prior** [SNPrior]
+  
+  - Model implementation: `INLAMSM` [@INLAMSM]
+  
+```{r INVALSI beta post, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Invalsi_post_beta)
+```
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
 ## Cited works
-  
+
  

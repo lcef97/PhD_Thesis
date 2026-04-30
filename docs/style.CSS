@@ -89,6 +89,11 @@ slides > slide:not(.nobackground):after {
   bottom: 12px;
 }
 
+/* obnoxious, but necessary to avoid gifs to clash with text */
+slides > slide article.gif-slide {
+  padding-right: 350px;
+  box-sizing: border-box;
+}
 /* GRAPHICS ------------------------------------------------------------------*/
 
 
@@ -117,12 +122,61 @@ slides > slide:not(.nobackground):after {
     max-width: 400px;  
     width: auto;  
 }
+/* gifs (experimental) -------------------------------------------------------*/
+/* General GIF container */
+.gif-box {
+  margin: 0;
+  text-align: center;
+}
+
+.gif-box img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gif-box figcaption {
+  font-size: 12px;
+  line-height: 1.1;
+  margin-top: 4px;
+  color: #4A4A4A;
+}
+
+/* Size variants */
+.gif-small {
+  width: 300px;
+}
+
+.gif-medium {
+  width: 450px;
+}
+
+.gif-large {
+  width: 650px;
+}
+
+/* Position variants */
+.gif-right {
+  position: absolute;
+  right: 60px;
+  bottom: 100px;
+}
+
+.gif-center {
+  position: relative;
+  margin: 20px auto 0 auto;
+}
+
+.gif-fullish {
+  width: 760px;
+  position: relative;
+  margin: 20px auto 0 auto;
+}
 
 /* TABLES --------------------------------------------------------------------*/
 table.dataTable {
     font-size: 14px;
-    /*width: 50%;  */
-    height: 180px ; 
+    height: 150px ; 
  }
  
 .scroll-table {
@@ -131,17 +185,17 @@ table.dataTable {
   font-size: 20px;
   line-height: 1.8;
   border-spacing: 10em;
-  border: 1px solid #2B65AF;
+  border: 1px solid #253A6B;
   padding: 5px;
 }
  
 thead {
-  background-color: #2B65AF;
+  background-color: #253A6B;
   color: #fff;
 }
  
 table th {
-  font-size: 24px;
+  font-size: 20px;
   padding-top: 10px;
   padding-bottom: 10px;
   color: #fff;
@@ -149,7 +203,6 @@ table th {
 
 .dataTables_wrapper {
     font-size: 14px;
-    /* width: 80% ;*/
     height: 360px ; 
     overflow: auto;
 }
