@@ -117,7 +117,7 @@ package.scheme <- function(width = 900) {
     graph [layout = dot, splines = ortho, rankdir = TB, nodesep = 1.5, overlap = false ]
 
     node [shape = parallelogram, style = filled, fillcolor = \"#D0DFF4\", fontcolor = black , color = \"#253A6B\", fontsize = 22 ]
-    zero[label = 'User-defined input']
+    zero[label = 'User request']
     end1[label = 'Merged database']
     end2[label = 'Maps']
 
@@ -174,7 +174,7 @@ package.scheme()
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 2: school buildings DB (example)
+## Chapter 2: School buildings DB (ex.)
 
 Example of infrastructural variable: availability of public transport in 2024/25 at the province level 
 ```{r transport map prov, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3 }
@@ -188,7 +188,7 @@ Map_School_Buildings(data=DB25_MIUR_prov,
 ```
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 2: urban transport availability
+## Chapter 2: School buildings DB (ex.)
 
 Same variable, but at the finer level of municipalities (in the Apulia region in this case)
 
@@ -204,7 +204,7 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 2: contributions
+## Chapter 2: Contributions
 
   - `SchoolDataIT` package output enabling both **descriptive** and **inferential** analysis
   
@@ -353,7 +353,7 @@ $$
   
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: Spatial+2.0 for areal models{.gif-slide}
+## Chapter 3: Spatial+2.0 for areal models{.pic-slide}
 
   - Simplified **variant** [@Urdangarin24]
   
@@ -362,7 +362,7 @@ $$
   
   - Express $\boldsymbol{X}$ as a linear combination of the Laplacian eigenvectors and only **retain** the less smooth
   
-  <figure class="gif-box gif-small gif-right">
+  <figure class="pic-box pic-small pic-right">
     <img src="Media/Laplace_Eigenvectors.gif" alt="Laplacian eigenvectors animation">
     <figcaption>Smoothest Laplacian eigenvectors in a 30x30 regular lattice</figcaption>
   </figure>
@@ -371,15 +371,79 @@ $$
 
 ## Chapter 3: covariate effects estimation
 
-  - Prior choice: $\boldsymbol{\Sigma}$: **inv. Wishart**; $\mathrm{Prec}[\varepsilon]$: vague **Gamma**; **skewness** in **Italian** scores: **PC-prior** [SNPrior]
+  - Model implementation: [INLAMSM](https://github.com/becarioprecario/INLAMSM) [@INLAMSM]
   
-  - Model implementation: `INLAMSM` [@INLAMSM]
+  - Spatial+2.0: **Eigenvectors removed** from each covariate: **5**; **4**; **5**; **0**
   
 ```{r INVALSI beta post, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Invalsi_post_beta)
 ```
 
 <img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 3: hyperparameter estimation
+
+  - Prior choice: $\boldsymbol{\Sigma}$: **inv. Wishart**; $\mathrm{Prec}[\varepsilon]$: vague **Gamma**; **skewness** in **Italian** scores: **PC-prior** [@SNprior]
+  
+```{r INVALSI hyper post, echo=FALSE, message=FALSE, warning=FALSE}
+DT::datatable(Invalsi_post_hyper)
+```
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 3: why the Skew-Normal? Resudual density KDE{.pic-slide}
+
+  - **Skew-symmetric distributions** are not very popular in INVALSI analysis literature, yet for aggregate scores there is **solid evidence** for skewness $\Rightarrow$ skewness cannot be explained by existing information nor can it be ignored
+  
+  - How does skewness behave at the individual level? **Open question** (Skew-Normal is not closed under convolution)
+  
+
+  <figure class="pic-box pic-small pic-right">
+    <img src="Media/Invalsi_ITA_KDE.png" 
+         alt="KDE of Italian score residuals, bandwidth determined using Silverman rule">
+         <!-- style="width:50%" -->
+    <figcaption>KDE of Italian score residuals, bandwidth determined using Silverman rule</figcaption>
+  </figure>
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Chapter 3: conclusion
+
+  - Both the **infrastructural** datum and **territorial structure** are necessary to explain disparities in Invalsi scores
+
+  - **Infrastrucural poles** have a general advantage in education quality 
+
+  - Take-home message: use **Skewed distributions** for Italian scores
+  
+  - In **multilevel** applications, **removing spatial confounding** helps improving inference but differences may be minimal (fine-level covariate variability unaffected)
+  
+  - Hints for **future research**: **causal inference**[@Bonader_DiD] on ultra-broadband activation (by today, almost all schools have it)
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+
+## Chapter 4: Modelling counts of accesses to Anti-Violence Centres
+
+  - Importance of **Anti-Violence Centers** (AVCs hereinafter):
+  
+    - **Shelter**, **legal** assistance and **psycological** support to **women** victims of **gender-based violence**
+  
+    - Systematic **records** of reported cases 
+  
+
+  - Research quest: **territorial distribution** of accesses to local Anti-violence by **residence municipality**
+  of women seeking help
+  
+  - Study region: **Apulia region**;  observation period: **2021 -- 2024**; observation units: **municipalities**.
+  
+
+  
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
 
 
 ## Cited works

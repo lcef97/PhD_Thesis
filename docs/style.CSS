@@ -90,7 +90,7 @@ slides > slide:not(.nobackground):after {
 }
 
 /* obnoxious, but necessary to avoid gifs to clash with text */
-slides > slide article.gif-slide {
+slides > slide article.pic-slide {
   padding-right: 350px;
   box-sizing: border-box;
 }
@@ -112,30 +112,30 @@ slides > slide article.gif-slide {
 /* FIGURES -------------------------------------------------------------------*/
 
 .leaflet-popup-content {
-    font-size: 12 px;
+    font-size: 10 px;
     line-height: 0.8; /*padding: 10px; */
 }
 
 .leaflet-popup-content-wrapper {
-    font-size: 12 px;
+    font-size: 10 px;
     line-height: 0.8; /*padding: 10px; */
     max-width: 400px;  
     width: auto;  
 }
 /* gifs (experimental) -------------------------------------------------------*/
 /* General GIF container */
-.gif-box {
+.pic-box {
   margin: 0;
   text-align: center;
 }
 
-.gif-box img {
+.pic-box img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-.gif-box figcaption {
+.pic-box figcaption {
   font-size: 12px;
   line-height: 1.1;
   margin-top: 4px;
@@ -143,31 +143,31 @@ slides > slide article.gif-slide {
 }
 
 /* Size variants */
-.gif-small {
-  width: 300px;
+.pic-small {
+  width: 330px;
 }
 
-.gif-medium {
+.pic-medium {
   width: 450px;
 }
 
-.gif-large {
+.pic-large {
   width: 650px;
 }
 
 /* Position variants */
-.gif-right {
+.pic-right {
   position: absolute;
   right: 60px;
-  bottom: 100px;
+  bottom: 120px;
 }
 
-.gif-center {
+.pic-center {
   position: relative;
   margin: 20px auto 0 auto;
 }
 
-.gif-fullish {
+.pic-fullish {
   width: 760px;
   position: relative;
   margin: 20px auto 0 auto;
