@@ -122,6 +122,12 @@ slides > slide article.pic-slide {
     max-width: 400px;  
     width: auto;  
 }
+
+.leaflet-control .legend {
+  transform: scale(0.8);
+  transform-origin: top right;
+    font-size: 11px;
+}
 /* gifs (experimental) -------------------------------------------------------*/
 /* General GIF container */
 .pic-box {
