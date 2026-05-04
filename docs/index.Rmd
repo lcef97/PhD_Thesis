@@ -1,12 +1,16 @@
 ---
 title: "Stochastic Spatial Areal Models for Mapping Territorial Vulnerability"
-author: Leonardo Cefalo, PhD candidate from the Department of Economics and Finance, University of Bari Aldo Moro
+subtitle: Doctoral thesis dissertation for the programme in Economics and finance of Public Administrations
+author: "Leonardo Cefalo, Department of Economics and Finance, <br>
+University of Bari Aldo Moro<br><br>
+Supervisor&#58; Prof. Alessio Pollice <br>
+Discipline&#58; STAT/01-A, former SECS-S/01 - Statistics<br>
+PhD cycle&#58; XXXVIII-bis"
 date: "2026 May 13th"
 output:
   ioslides_presentation:
     css: style.css
     slide_level: 2
-subtitle: Doctoral thesis dissertation
 bibliography: references.bib
 ---
 
@@ -36,13 +40,14 @@ for (file in list.files("Data", full.names = T)) load(file)
 
 ## Motivation: territorial disparities and policy relevance
 
-  - Italy exhibits persistent territorial divides in infrastructure, services, and outcomes
+  - Italy exhibits persistent **territorial divides** in infrastructure, services, and outcomes
   
-  - PNRR / NextGenerationEU and GRINS: demand for granular, data-informed territorial planning
+  - PNRR / NextGenerationEU and GRINS: demand for granular, data-informed **territorial** planning
   
   - Research quest: quantify **local** disparities through interpretable models
   
   - Method of analysis: parametric and uncertainty-informed statistical modelling
+  $\Rightarrow$ **areal data** = **administrative domain** for policies
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
@@ -238,7 +243,7 @@ Scores in Mathematics (2nd grade of high school, year 2022/23)
 
 
 ```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4}
-pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
+pal <- viridisLite::viridis(12, option = "G", begin = 0.15, end = 1)
 
 mapview::mapview(
   Invalsi_NA_MAT, col.regions = "white",
@@ -249,7 +254,7 @@ mapview::mapview(
     col.regions = pal,
     popup = paste0(SchoolDataIT:::set_popup_height(210) , 
                    leafpop::popupTable(Invalsi_A_MAT)),
-    at = seq(125, 240, length.out = 20),
+    at = seq(125, 240, length.out = 12),
     map.types = "CartoDB.Positron",
     layer.name = "Mathematics score")
 
@@ -266,7 +271,7 @@ mapview::mapview(
 Scores in Italian (2nd grade of high school, year 2022/23)
 
 ```{r Invalsi ITA, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4}
-pal <- viridisLite::viridis(20, option = "G", begin = 0.15, end = 1)
+pal <- viridisLite::viridis(12, option = "G", begin = 0.15, end = 1)
 
 mapview::mapview(
   Invalsi_NA_ITA, col.regions = "white",
@@ -277,7 +282,7 @@ mapview::mapview(
     col.regions = pal,
     popup = paste0(SchoolDataIT:::set_popup_height(210) , 
                    leafpop::popupTable(Invalsi_A_MAT)),   
-    at = seq(125, 240, length.out = 20),
+    at = seq(125, 240, length.out = 12),
     map.types = "CartoDB.Positron",
     layer.name = "Italian score")
 
@@ -353,7 +358,7 @@ $$
   
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: Spatial+2.0 for areal models{.pic-slide}
+## Chapter 3: Spatial+2.0 for areal models{.pic-slide-small}
 
   - Simplified **variant** [@Urdangarin24]
   
@@ -376,7 +381,8 @@ $$
   - Spatial+2.0: **Eigenvectors removed** from each covariate: **5**; **4**; **5**; **0**
   
 ```{r INVALSI beta post, echo=FALSE, message=FALSE, warning=FALSE}
-DT::datatable(Invalsi_post_beta)
+DT::datatable(Invalsi_post_beta, 
+              options = list(pageLength = 6, lengthChange = F))
 ```
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -386,12 +392,13 @@ DT::datatable(Invalsi_post_beta)
   - Prior choice: $\boldsymbol{\Sigma}$: **inv. Wishart**; $\mathrm{Prec}[\varepsilon]$: vague **Gamma**; **skewness** in **Italian** scores: **PC-prior** [@SNprior]
   
 ```{r INVALSI hyper post, echo=FALSE, message=FALSE, warning=FALSE}
-DT::datatable(Invalsi_post_hyper)
+DT::datatable(Invalsi_post_hyper, 
+              options = list(pageLength = 6, lengthChange = F))
 ```
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: why the Skew-Normal? Resudual density KDE{.pic-slide}
+## Chapter 3: why the Skew-Normal? Resudual density KDE{.pic-slide-small}
 
   - **Skew-symmetric distributions** are not very popular in INVALSI analysis literature, yet for aggregate scores there is **solid evidence** for skewness $\Rightarrow$ skewness cannot be explained by existing information nor can it be ignored
   
@@ -458,8 +465,7 @@ m2021 <- mapview::mapview(dd_2021,zcol = "Log_accesses",
     Centroids_21,  color = "#00ffff",
     col.regions = "#ff00ff",  cex = 2, legend = FALSE )
 
-m2022 <- mapview::mapview(
-  dd_2022, zcol = "Log_accesses",
+m2022 <- mapview::mapview( dd_2022, zcol = "Log_accesses",
   na.color = "white", layer.name = "Log accesses 2022",
   width = "100%",  height = 260) +
   mapview::mapview(
@@ -482,7 +488,7 @@ htmltools::browsable(
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 4: Distribution of accesses to AVCs
+## Chapter 4: Accesses to AVCs in 2023--24
 
 ```{r AVC access 2023, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.4}
 #dd_VAW$Log_accesses[which(dd_VAW$Log_accesses == -Inf)] <- NA
@@ -497,8 +503,7 @@ m2023 <- mapview::mapview(dd_2023,zcol = "Log_accesses",
     Centroids_21,  color = "#00ffff",
     col.regions = "#ff00ff",  cex = 2, legend = FALSE )
 
-m2024 <- mapview::mapview(
-  dd_2024, zcol = "Log_accesses",
+m2024 <- mapview::mapview(dd_2024, zcol = "Log_accesses",
   na.color = "white", layer.name = "Log accesses 2024",
   width = "100%",  height = 260) +
   mapview::mapview(
@@ -596,7 +601,7 @@ $$
 \boldsymbol{z} \sim \mathcal{N}_{T\times n} \left(0, \frac{\sigma^2}{1-r^2}\boldsymbol{R} \otimes \boldsymbol{\Omega }\right)
 $$
  
-  - $r$: **temporal** autocorrelation; $\sigma^2$: **scale** parameter;
+  - $r$: **temporal** autocorrelation ($R_{st}=r^{\lvert s-t \rvert}$); $\sigma^2$: **scale** parameter;
   $\boldsymbol{\Omega}$: model-spacific **spatial covariance** matrix
   
     - ICAR: $\boldsymbol{\Omega} = \boldsymbol{L^+}$; $\boldsymbol{L}$=graph Laplacian
@@ -612,17 +617,49 @@ $$
   - **Principle**: penalise *a priori* the departure of a ''proposed'' model from a 
   base one
   
-  - **Interpretation**: the parameter exceeds a **threshold value** with a **fixed probability** *a priori*
+  - **Interpretation**: the parameter $\theta$ exceeds a **threshold value** $U$ with a **tail probability** $1-\alpha$ *a priori*
   
-  - $r$, $\sigma$, $\phi$: PC-prior already developed [@Sorbye2017], [@PC] $\Rightarrow$ Gaps we fill:
+  - $r$, $\sigma$, $\phi$: PC-prior already developed [@Sorbye2017], [@PC] $\Rightarrow$ **Gaps** we fill:
     - **PCAR** model: PC-prior for $\rho$ (spatial autocorrelation)
-    - **LCAR** model: PC-prior for $\lambda$ (spatial dependence/prec. mixing)
-    - General contribution: PC-prior for $\rho$, $\lambda$ and $\phi$ in the multivariate case [@Mmod]
+    - **LCAR** model: PC-prior for $\lambda$ (spatial dependence)
+    - General contribution: PC-prior for $\rho$, $\lambda$ and $\phi$ in the multivariate case [@Mmodels]
  
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
+## Chapter 4: PC-prior for PCAR spatial dependence{.pic-slide-medium}
+
+  - Prior based on a regular lattice 
+  
+  - Three examples for boundary $U$: 0.4, 0.5, 0.6 
+  
+  - Increasing left tail probability $\rho < U$ 
+        
+  <figure class="pic-box pic-medium pic-right">
+    <img src="Media/PCAR_PC_prior.gif" alt="PC Prior for PCAR autocorrelation parameter">
+    <figcaption>PC Prior for PCAR autocorrelation parameter</figcaption>
+  </figure>
+  
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## Chapter 4: PC-prior for LCAR spatial dependence{.pic-slide-medium}
+
+  - Prior based on a regular lattice 
+  
+  - Three examples for boundary $U$: 0.5, 0.6, 0.7
+  
+  - Increasing left tail probability $\lambda < U$ 
+        
+  <figure class="pic-box pic-medium pic-right">
+    <img src="Media/LCAR_PC_prior.gif" alt="PC Prior for LCAR spatial dependence parameter">
+    <figcaption>PC Prior for LCAR spatial dependence or precision mixing parameter</figcaption>
+  </figure>
+  
+
+<img src="Watermark_logo.png" class="watermark-logo">
 
 
 ## Cited works

@@ -15,7 +15,7 @@
 
 .title-slide hgroup h1 {
   position: absolute;
-  font-size: 56px;
+  font-size: 52px;
   margin-top: 180px;
   left: 1em; 
   word-wrap: break-word; 
@@ -26,7 +26,7 @@
   position: absolute;  
   top: 410px;  
   left: 1.6em;  
-  font-size: 40px;
+  font-size: 32px;
   /*color: darkgrey;*/
   line-height: 1.1;
   word-wrap: break-word;  
@@ -35,11 +35,11 @@
 
 .title-slide hgroup p {
   position: absolute; 
-  font-size: 22px;
+  font-size: 20px;
   color: #fff;
   top: calc(2em + 500px); 
   left: 120px;
-  right: 30px; 
+  right: 0px; 
   line-height: 1.01;
   text-align: right;
 }
@@ -90,8 +90,14 @@ slides > slide:not(.nobackground):after {
 }
 
 /* obnoxious, but necessary to avoid gifs to clash with text */
-slides > slide article.pic-slide {
+slides > slide article.pic-slide-small {
   padding-right: 350px;
+  box-sizing: border-box;
+}
+
+/* obnoxious, but necessary to avoid gifs to clash with text */
+slides > slide article.pic-slide-medium {
+  padding-right: 500px;
   box-sizing: border-box;
 }
 /* GRAPHICS ------------------------------------------------------------------*/
@@ -123,7 +129,7 @@ slides > slide article.pic-slide {
     width: auto;  
 }
 
-.leaflet-control .legend {
+.leaflet-control.legend {
   transform: scale(0.8);
   transform-origin: top right;
     font-size: 11px;
@@ -154,7 +160,7 @@ slides > slide article.pic-slide {
 }
 
 .pic-medium {
-  width: 450px;
+  width: 480px;
 }
 
 .pic-large {
@@ -165,7 +171,7 @@ slides > slide article.pic-slide {
 .pic-right {
   position: absolute;
   right: 60px;
-  bottom: 120px;
+  top: 200px;
 }
 
 .pic-center {
@@ -202,8 +208,8 @@ thead {
  
 table th {
   font-size: 20px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 8px;
+  padding-bottom: 8px;
   color: #fff;
 }
 
