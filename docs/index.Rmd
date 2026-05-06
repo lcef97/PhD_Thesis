@@ -1,10 +1,10 @@
 ---
 title: "Stochastic Spatial Areal Models for Mapping Territorial Vulnerability"
-subtitle: Doctoral thesis dissertation for the programme in Economics and finance of Public Administrations
+subtitle: Doctoral programme in Economics and finance of Public Administrations
 author: "Leonardo Cefalo, Department of Economics and Finance, <br>
 University of Bari Aldo Moro<br><br>
 Supervisor&#58; Prof. Alessio Pollice <br>
-Discipline&#58; STAT/01-A, former SECS-S/01 - Statistics<br>
+Subject&#58; STAT/01-A, former SECS-S/01 - Statistics<br>
 PhD cycle&#58; XXXVIII-bis"
 date: "2026 May 13th"
 output:
@@ -83,7 +83,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 2: Data providers
+## Chapter 2: School data providers
 
   - **Ministry of Education**: 
     - National school **registry** 
@@ -209,29 +209,30 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 2: Contributions
+## Chapter 2: SchoolDataIT main achievements
 
-  - `SchoolDataIT` package output enabling both **descriptive** and **inferential** analysis
+  - Package output enabling both **descriptive** and **inferential** analysis
   
   - Observational length growing with time $\Rightarrow$ potential for panel analysis
   
   - In general, we can observe how **education disparities** aligns with more **general territorial vulnerability patterns** $\Rightarrow$ let us see it more in detail in the next chapter
 
-  - Mainly **upstream** contribution: data access + harmonisation + reproducibility
+  - Main **upstream** contribution: data access + harmonisation + reproducibility
   
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 3: Scope
+## Chapter 3: Spatial modelling of INVALSI data
 
-  - Spatial modelling **municipality**-averaged **INVALSI** scores in **Italian and Mathematics** at the second year of high school during year **2022/23**
+  - Spatial modelling **municipality**-averaged **INVALSI** scores in **Italian and Mathematics** at the second year of high school in **2022/23**
   
   - Assessment of the association with candidate **indicators** of the infrastructural state of municipalities 
   
   - **Spatial autocorrelation** in observed scores $\Rightarrow$ **Intrinsic CAR** [@ICAR] latent model
   
-  - **Sparse spatial structure** of INVALSI scores (most municipalities do not host a high school) $\Rightarrow$ **multilevel** modelling: spatial effects defined at the **province**level
+  - **Sparse spatial structure** of INVALSI scores (most municipalities do not host a high school) $\Rightarrow$ spatial effects defined at the **province** level
   
+  - Model estimation with [INLAMSM](https://github.com/becarioprecario/INLAMSM) [@INLAMSM]
   
   
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -317,11 +318,11 @@ z_{2,i}
 \end{pmatrix}
 $$
 
-   - $y_{1,i,j}$ and $y_{2,i,j}$: INVALSI scores in $j$-th **municipality** of the $i$-th **province**, in $Mathematics$ and $Italian$ respectively
+   - $y_{1,i,j}$, $y_{2,i,j}$: INVALSI scores in $j$-th **municipality** of the $i$-th **province** in $Mathematics$, and $Italian$ respectively
    
-   - $x$: **covariates**;\quad $\beta$: **covariate effects**. The first 3 covariates denote the **connected component** each site belongs to; first 3 covariate effects are **component-specific intercepts**
+   - $x$: **covariates**;\quad $\beta$: **covariate effects**. The predictor includes **site effects** specific to each **connected** graph **component** (**continent**, **Sicily**, **Sardinia**)
    
-   - $z_{1,i}$ and $z_{2,i}$: **spatial effects** in $i$-th macro-area
+   - $z_{1,i}$, $z_{2,i}$: **spatial effects** in $i$-th macro-area
    
    - $\varepsilon$: **error** term $\Rightarrow$ Mathematics: **Normal**; Italian: **Skew-Normal** [@SN]
 
@@ -334,11 +335,10 @@ $$
 \mathbf{z}  \sim \mathcal{N}\!\left(\mathbf{0},\ \boldsymbol{\Sigma} \otimes
 \boldsymbol{L^+} \right)
 $$
+  
   - $\Sigma$: Global **covariance** matrix $\Rightarrow$ inverse **Wishart** *a priori*
   
-  - $\mathbf{L}$: graph **Laplacian**, given by $\boldsymbol{L}:= \mathbf{D}-\mathbf{W}$, where
-    - $\mathbf{W}$: binary **neighbourhood** matrix ($w_{ij}=1$ if areas $i$ and $j$ are neighbours, $0$ otherwise)
-    - $\mathbf{D}$: diagonal **degree** matrix ($d_i=\sum_j w_{ij}$, number of neighbours of node $i$)
+  - $\mathbf{L}:= \mathbf{D}-\mathbf{W}$: graph **Laplacian**,where $\mathbf{W}$ is the binary **neighbourhood** matrix ($w_{ij}=1$ if areas $i$ and $j$ are neighbours, $0$ otherwise) and $\mathbf{D}$ is the diagonal **degree** matrix ($d_i=\sum_j w_{ij}$, number of neighbours of node $i$)
  
   - The **Laplacian** is singular, with **rank deficiency** given by the number of graph **connected components**
   $\Rightarrow$ model identifiable **if** a **linear constraint** (e.g. sum to zero) is imposed within **each connected component**
@@ -346,7 +346,7 @@ $$
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: Explanatory variables
+## Chapter 3: Potential drivers of INVALSI scores
 
 Defined at the **municipal** level
 
@@ -354,10 +354,10 @@ Defined at the **municipal** level
 
   - **Share** of high schools served by **ultra-broadband** connection
 
-  - ISTAT **inner areas** municipality taxonomy (**Boolean**):
-    - A – B:  **Central** (infrastructural poles) 
-    - C – D: **Intermediate** 
-    - E – F: **Peripheral**  
+  - ISTAT **inner areas** municipality taxonomy (**Dummy**):
+    - A – B:  **Central**, i.e. infrastructural poles
+    - C – D: **Intermediate** (control)
+    - E – F: **Peripheral**, i.e. municipalities at more than 40'54'' from closest pole
 
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -392,11 +392,9 @@ Defined at the **municipal** level
   
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: covariate effects estimation
+## Chapter 3: Model estimation
 
-  - Model implementation: [INLAMSM](https://github.com/becarioprecario/INLAMSM) [@INLAMSM]
-  
-  - Spatial+2.0: number of **eigenvectors removed** from each covariate: **5**; **4**; **5**; **0**
+  - Spatial+2.0: number of **eigenvectors removed** from each covariate: **5**, **4**, **5**, **0**; selection criterion: **Watanabe-Akaike** or **WAIC** [@GelmanWAIC]
   
 ```{r INVALSI beta post, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Invalsi_post_beta, 
@@ -416,7 +414,7 @@ DT::datatable(Invalsi_post_hyper,
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: why the Skew-Normal? Residual density KDE{.pic-slide-small}
+## Chapter 3: the Skew-Normal assumption{.pic-slide-small}
 
   - **Skew-symmetric distributions** are not very popular in INVALSI analysis literature, yet for aggregate scores there is **solid evidence** for skewness $\Rightarrow$ skewness cannot be explained by existing information nor can it be ignored
   
@@ -679,24 +677,91 @@ $$
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 4: Model setup - LCAR
 
-  - **Covariate** effects: independent weakly informative Gaussians $\mathcal{N}(0, 10^3)$
-  
-  - Hyperpriors $\Rightarrow$ joint PC-prior:
-    - $\sigma$: $\mathrm{Prob}\lbrace \sigma^2 \leq 1/2 \rbrace = 0.9$; 
-    - $r$:  $\mathrm{Prob}\lbrace \vert r \vert \leq 0.4 \rbrace = 0.8$;
-    - $\lambda$:  $\mathrm{Prob} \lbrace \lambda \leq 0.6 \rbrace = 0.9$ 
-  
-  - **20** smoothest Laplacian eigenvectors removed from covariates **ELL** and **ER**
-  
-  - Selection criteria: **Watanabe-Akaike** criterion [@GelmanWAIC]
+## Chapter 4 Covariate effect posterior
+
+  - **20** smoothest Laplacian eigenvectors removed from covariates **ELL** and **ER**; selection criterion: **WAIC**
+
+
+```{r VAW betas posterior, echo=FALSE, message=FALSE, warning=FALSE}
+betas.LCAR.inla   <- round(cav_LMCAR_inla.AR1.PC.strict_s20$summary.fixed, 3) %>% 
+  dplyr::select(.data$mean, .data$sd, .data$`0.025quant`, .data$`0.975quant`) %>%
+  dplyr::mutate(Effect = rownames(cav_LMCAR_inla.AR1.PC.strict_s20$summary.fixed)) %>% 
+  dplyr::relocate(.data$Effect, .before = 1) %>%  
+  dplyr::rename(Mean = .data$mean, Sd = .data$sd,
+                Q_0.025 = .data$`0.025quant`, Q_0.975 = .data$`0.975quant`)
+
+DT::datatable(betas.LCAR.inla, 
+              options = list(pageLength = 6, lengthChange = F))
+
+```
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
+## Chapter 4: covariate Effects Interpretation
+
+$y =$ <span style="color: #C00005 ;">VAW **occurrence** </span> $\times$ <span style="color: #093C92 ;"> incidents **reporting** rate </span>
+
+  - **Twofold interpretation** of covariate **effects** on AVC **accesses**
+
+  - **TEP**: either relative <span style="color: #093C92 ;"> ease in reporting violence </span> in **proximity** of AVCs, or <span style="color: #C00005 ;"> **appropriateness** of AVC **placement** </span>
+
+  - **ELL**: <span style="color: #093C92 ;"> lower **reliance** on AVCs </span> in **poor education** contexts
+
+  - **ER**: <span style="color: #C00005 ;"> lower violence **occurrence** </span> in more **developed** areas
 
 
+<img src="Watermark_logo.png" class="watermark-logo">
 
+## Chapter 4: Hyperparameter posterior
+
+Joint PC-prior:
+
+  - $\sigma$: $\mathrm{Prob}\lbrace \sigma^2 \leq 1/2 \rbrace = 0.9$; 
+  
+  - $r$:  $\mathrm{Prob}\lbrace \vert r \vert \leq 0.4 \rbrace = 0.8$;
+  
+  - $\lambda$:  $\mathrm{Prob} \lbrace \lambda \leq 0.6 \rbrace = 0.9$ 
+  
+  
+```{r VAW hyper posterior, echo=FALSE, message=FALSE, warning=FALSE}
+theta.post <- cav_LCAR_hyper_post[-3,]
+theta.post$param <- c("Spat. dependence", "Std dev", "Temporal autocorr.")
+
+DT::datatable(cav_LCAR_hyper_post, 
+              options = list(pageLength = 3, lengthChange = F))
+
+```
+  
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 4: Discussion
+
+  - **Accessibility** to AVCs is a concern: even modest distances can act as a barrier for help seeking
+  
+  - **Socio-economic context** (education, labour market) relates to observed access patterns as well
+  
+  - **Future** research directions:
+  
+    - Separate the interpretation of accesses into **incidence** and **reporting** [@Polettini] $\Rightarrow$ need for **data integration** with additional sources
+    
+    - Extend the **PC-prior** derivation in **multivariate** spatial models for **general** correlation matrices
+    
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+## General conclusions
+
+  - Multiple applied domains for a **common research concern**: measuring spatially structured territorial inequalities 
+  
+  - Relevance of **Bayesian spatial statistics**, providing **uncertainty-informed** and **interpretable** inference and allowing to **borrow strength** across neighbouring areas 
+
+  - General empirical finding: **accessibility** to services matters and **peripheries** cannot be left behind
+
+  - Future directions: **data integration** (incidence vs reporting), **multilevel/causal** extensions, and more work on multivariate PC-priors
+  
+<img src="Watermark_logo.png" class="watermark-logo">
 
 ## Cited works
 
