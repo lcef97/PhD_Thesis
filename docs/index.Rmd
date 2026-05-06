@@ -14,17 +14,6 @@ output:
 bibliography: references.bib
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning= FALSE, message = FALSE)
-par(mar = c(2,2,1,1))
-library(magrittr)
-library(sf)
-library(INLA)
-
-for (file in list.files("Data", full.names = T)) load(file)
-```
-
-
 ## Motivation: territorial disparities and policy relevance
 
   - Italy exhibits persistent **territorial divides** in infrastructure, services, and outcomes
@@ -35,6 +24,18 @@ for (file in list.files("Data", full.names = T)) load(file)
   
   - Method of analysis: parametric and uncertainty-informed statistical modelling
   $\Rightarrow$ **areal data** = **administrative domain** for policies
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning= FALSE, message = FALSE)
+par(mar = c(2,2,1,1))
+library(magrittr)
+library(sf)
+library(INLA)
+
+for (file in list.files("Data", full.names = T)) load(file)
+
+```
+
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
@@ -437,7 +438,7 @@ DT::datatable(Invalsi_post_hyper,
 
   - Take-home message: use **Skewed distributions** for Italian scores
   
-  - In **multilevel** applications, **removing spatial confounding** helps improving inference but differences may be minimal (fine-level covariate variability unaffected)
+  - In **multilevel** applications, **removing spatial confounding** helps improving inference but differences may be minimal  
   
   - Hints for **future research**: **causal inference**[@Bonader_DiD] on ultra-broadband activation (by today, almost all schools have it)
 
@@ -647,7 +648,7 @@ $$
   
   - $r$ and $\sigma$: PC-prior already developed [@Sorbye2017], [@PC] 
 
-  - **Gap we fill**: PC-prior for **spatial association parameters** in the general, **multivariate** case [@Mmodels], including the **Besag-York-Mollié** [@BYM2] $\Rightarrow$ univariate prior on $\rho$ (PCAR) and $\lambda$ (LCAR) follows **by deduction**
+  - **Gap we fill**: PC-prior for **spatial association parameters** in the general, **multivariate** case [@Mmodels], including the **Besag-York-Mollié** [@BYM2] $\Rightarrow$ univariate prior on $\rho$ (PCAR) and $\lambda$ (LCAR) follow **by deduction**
  
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -687,7 +688,7 @@ $$
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 4; Regression model estimates
+## Chapter 4: Regression model estimates
 
   - **20** smoothest Laplacian eigenvectors removed from covariates **ELL** and **ER**
 
