@@ -54,7 +54,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 
 ## Methodological framework
 
-  - **Areal modelling**: spatial domain described through adjacency graphs $\Rightarrow$ **CAR-like** [@CAR] and **convolution** [@BYM] latent models
+  - **Areal modelling**: spatial domain described through adjacency graphs $\Rightarrow$ **CAR-like** [@CAR] latent models
   
   - **Bayesian** inference for interpretable uncertainty, flexible prior setup and model comparison
   
@@ -100,7 +100,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 2: Web scraping
+## Chapter 2: Scraping data from the web
 
   - **Static scraping**: find provider links $\rightarrow$ download $\rightarrow$ parse into `R`
 
@@ -224,14 +224,15 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 
 ## Chapter 3: Scope
 
-  - Modelling of **municipality**-averaged **INVALSI** scores in **Italian and Mathematics** at the second year of high school during year **2022/23**
+  - Spatial modelling **municipality**-averaged **INVALSI** scores in **Italian and Mathematics** at the second year of high school during year **2022/23**
   
-  - Explanatory variables:
-    - **Central/Intermediate/Peripheral** classification (inner areas taxonomy)
-    - % of schools provided with **Ultra-broadband** connection
-    - % of schools provided with **urban transport**
+  - Assessment of the association with candidate **indicators** of the infrastructural state of municipalities 
   
-  - **Spatial autocorrelation** in observed scores $\Rightarrow$ **Intrinsic CAR** [@ICAR] latent model on **macro-areas**
+  - **Spatial autocorrelation** in observed scores $\Rightarrow$ **Intrinsic CAR** [@ICAR] latent model
+  
+  - **Sparse spatial structure** of INVALSI scores (most municipalities do not host a high school) $\Rightarrow$ **multilevel** modelling: spatial effects defined at the **province**level
+  
+  
   
 <img src="Watermark_logo.png" class="watermark-logo">
 
@@ -345,6 +346,23 @@ $$
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
+## Chapter 3: Explanatory variables
+
+Defined at the **municipal** level
+
+  - **Share** of high schools served by **urban public transport**
+
+  - **Share** of high schools served by **ultra-broadband** connection
+
+  - ISTAT **inner areas** municipality taxonomy (**Boolean**):
+    - A – B:  **Central** (infrastructural poles) 
+    - C – D: **Intermediate** 
+    - E – F: **Peripheral**  
+
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
 ## Chapter 3: spatial confounding
 
   - **Dependence** between $\boldsymbol{X}$ and $\boldsymbol{z}$ $\Rightarrow$ **potential bias** in estimating $\beta$
@@ -362,7 +380,7 @@ $$
 
   - Simplified **variant** [@Urdangarin24]
   
-  - Rather than **fitting** a **parametric** model on $\boldsymbol{X}$, it is possible to **filter out** from it
+  - Rather than **fitting** a **parametric** model on $\boldsymbol{X}$, it is possible to **filter out**
   the smoothest **Laplacian eigenvectors**, which represent **spatial trends**
   
   - Express $\boldsymbol{X}$ as a linear combination of the Laplacian eigenvectors and only **retain** the less smooth
@@ -378,7 +396,7 @@ $$
 
   - Model implementation: [INLAMSM](https://github.com/becarioprecario/INLAMSM) [@INLAMSM]
   
-  - Spatial+2.0: **Eigenvectors removed** from each covariate: **5**; **4**; **5**; **0**
+  - Spatial+2.0: number of **eigenvectors removed** from each covariate: **5**; **4**; **5**; **0**
   
 ```{r INVALSI beta post, echo=FALSE, message=FALSE, warning=FALSE}
 DT::datatable(Invalsi_post_beta, 
@@ -398,7 +416,7 @@ DT::datatable(Invalsi_post_hyper,
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: why the Skew-Normal? Resudual density KDE{.pic-slide-small}
+## Chapter 3: why the Skew-Normal? Residual density KDE{.pic-slide-small}
 
   - **Skew-symmetric distributions** are not very popular in INVALSI analysis literature, yet for aggregate scores there is **solid evidence** for skewness $\Rightarrow$ skewness cannot be explained by existing information nor can it be ignored
   
@@ -581,7 +599,7 @@ $$
   
 ## Chapter 4: The linear predictor
 
-  - Inclusion of a multivariate latent **spatial** effect in $\eta$ to account for **territorial variability** and **overdispersion**
+  - Inclusion of latent **spatio-temporal** effect in $\eta$ to account for **territorial variability** and **overdispersion**
   
 $$\eta_{it} := X_{it}^\top \beta + Z_{it}$$
  
@@ -589,7 +607,7 @@ $$\eta_{it} := X_{it}^\top \beta + Z_{it}$$
   
   - $Z_{it}$: spatio-temporal latent effect of size $n \times k$, where $n=256$ and $k=4$;
     - Temporal structure: **AR(1)** model  
-    - Spatial structure: **four** alternative models
+    - Spatial structure: alternative **CAR** models
 
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -602,12 +620,13 @@ $$
 $$
  
   - $r$: **temporal** autocorrelation ($R_{st}=r^{\lvert s-t \rvert}$); $\sigma^2$: **scale** parameter;
-  $\boldsymbol{\Omega}$: model-spacific **spatial covariance** matrix
+  $\boldsymbol{\Omega}$: model-specific **spatial covariance** matrix
   
-    - ICAR: $\boldsymbol{\Omega} = \boldsymbol{L^+}$; $\boldsymbol{L}$=graph Laplacian
+    - ICAR[@ICAR]: $\boldsymbol{\Omega} = \boldsymbol{L^+}$; $\boldsymbol{L}$=graph Laplacian
     - PCAR[@PCAR_Gelfand]: $\boldsymbol{\Omega} = (\boldsymbol{D}-\rho \boldsymbol{W})^{-1}$
     - LCAR[@Leroux]: $\boldsymbol{\Omega} = (\lambda \boldsymbol{L} + (1-\lambda)\boldsymbol{I})^{-1}$
-    - BYM2[@BYM2]: $\boldsymbol{\Omega} = \phi \boldsymbol{L} + (1-\phi) \boldsymbol{I}$
+    
+    <!--  BYM2[@BYM2]: $\boldsymbol{\Omega} = \phi \boldsymbol{L} + (1-\phi) \boldsymbol{I}$ -->
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
@@ -619,10 +638,9 @@ $$
   
   - **Interpretation**: the parameter $\theta$ exceeds a **threshold value** $U$ with a **tail probability** $1-\alpha$ *a priori*
   
-  - $r$, $\sigma$, $\phi$: PC-prior already developed [@Sorbye2017], [@PC] $\Rightarrow$ **Gaps** we fill:
-    - **PCAR** model: PC-prior for $\rho$ (spatial autocorrelation)
-    - **LCAR** model: PC-prior for $\lambda$ (spatial dependence)
-    - General contribution: PC-prior for $\rho$, $\lambda$ and $\phi$ in the multivariate case [@Mmodels]
+  - $r$ and $\sigma$: PC-prior already developed [@Sorbye2017], [@PC] 
+
+  - **Gap we fill**: PC-prior for **spatial association parameters** in the general, multivariate case [@Mmodels], including the Besag-York-Mollié [@BYM2] $\Rightarrow$ by deduction, univariate PC-prior on $\rho$ (PCAR) and $\lambda$ (LCAR)
  
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -660,6 +678,24 @@ $$
   
 
 <img src="Watermark_logo.png" class="watermark-logo">
+
+## Chapter 4: Model setup - LCAR
+
+  - **Covariate** effects: independent weakly informative Gaussians $\mathcal{N}(0, 10^3)$
+  
+  - Hyperpriors $\Rightarrow$ joint PC-prior:
+    - $\sigma$: $\mathrm{Prob}\lbrace \sigma^2 \leq 1/2 \rbrace = 0.9$; 
+    - $r$:  $\mathrm{Prob}\lbrace \vert r \vert \leq 0.4 \rbrace = 0.8$;
+    - $\lambda$:  $\mathrm{Prob} \lbrace \lambda \leq 0.6 \rbrace = 0.9$ 
+  
+  - **20** smoothest Laplacian eigenvectors removed from covariates **ELL** and **ER**
+  
+  - Selection criteria: **Watanabe-Akaike** criterion [@GelmanWAIC]
+
+<img src="Watermark_logo.png" class="watermark-logo">
+
+
+
 
 
 ## Cited works

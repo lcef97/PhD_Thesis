@@ -97,7 +97,7 @@ slides > slide article.pic-slide-small {
 
 /* obnoxious, but necessary to avoid gifs to clash with text */
 slides > slide article.pic-slide-medium {
-  padding-right: 500px;
+  padding-right: 480px;
   box-sizing: border-box;
 }
 /* GRAPHICS ------------------------------------------------------------------*/
@@ -160,7 +160,7 @@ slides > slide article.pic-slide-medium {
 }
 
 .pic-medium {
-  width: 480px;
+  width: 450px;
 }
 
 .pic-large {
