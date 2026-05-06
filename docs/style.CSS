@@ -1,7 +1,7 @@
 /*  TITLE SLIDE --------------------------------------------------------------*/
 
 .title-slide {
-  padding-left: 20px;
+  /*padding-left: 20px;*/
   background-image: url('Titlepage.png'); 
   background-size: contain;  
   background-position: center;
@@ -9,38 +9,42 @@
   color: white;
 }
 
+
 .title-slide hgroup {
   position: relative; 
 }
 
 .title-slide hgroup h1 {
-  position: absolute;
-  font-size: 50px;
-  margin-top: 168px;
-  left: 1em; 
+  /*position: absolute;*/
+  font-size: 48px;
+  margin-top: 162px;
+  /*left: 1em; */
+  line-height: 1.1;
   word-wrap: break-word; 
   color: #fff; 
+  text-align: center;
 }
 
 .title-slide hgroup h2 {
-  position: absolute;  
-  top: 396px;  
-  left: 1.6em;  
-  font-size: 32px;
+  /*position: absolute;  */
+  top: 400px;  
+  /*left: 1.6em;  */
+  font-size: 28px;
   line-height: 1.1;
   word-wrap: break-word;  
   white-space: normal;
+  text-align: center;
 }
 
 .title-slide hgroup p {
-  position: absolute; 
-  font-size: 20px;
+  /*position: absolute; */
+  font-size: 18px;
   color: #fff;
-  top: calc(2em + 466px); 
-  left: 120px;
+  top: calc(2em + 500px); 
+  /*left: 120px;*/
   right: 0px; 
-  line-height: 1.01;
-  text-align: right;
+  line-height: 1.6;
+  /*text-align: right;*/
 }
 
 /*  DOCUMENT BODY ------------------------------------------------------------*/
@@ -117,20 +121,39 @@ slides > slide article.pic-slide-medium {
 /* FIGURES -------------------------------------------------------------------*/
 
 .leaflet-popup-content {
-    font-size: 10 px;
-    line-height: 0.8; /*padding: 10px; */
+    font-size: 10px;
+    line-height: 1.1;
 }
 
 .leaflet-popup-content-wrapper {
-    font-size: 10 px;
-    line-height: 0.8; /*padding: 10px; */
-    max-width: 400px;  
-    width: auto;  
+    font-size: 10px;
+    line-height: 1.1;
+    max-width: 400px;
+    width: auto;
+}
+
+.leaflet-popup-content table {
+    border-collapse: collapse;
+    font-size: 10px;
+}
+
+.leaflet-popup-content th,
+.leaflet-popup-content td {
+    font-size: 10px;
+    color: #000000  
+    line-height: 1.1;
+    padding: 2px 4px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.leaflet-popup-content th {
+    font-weight: 600;
 }
 
 .leaflet-control.legend {
-  transform: scale(0.8);
-  transform-origin: top right;
+    transform: scale(0.8);
+    transform-origin: top right;
     font-size: 11px;
 }
 /* gifs (experimental) -------------------------------------------------------*/

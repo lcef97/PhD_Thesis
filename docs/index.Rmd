@@ -1,12 +1,12 @@
 ---
 title: "Stochastic Spatial Areal Models for Mapping Territorial Vulnerability"
 subtitle: Doctoral programme in Economics and finance of Public Administrations
-author: "Leonardo Cefalo, Department of Economics and Finance, <br>
-University of Bari Aldo Moro<br><br>
-Supervisor&#58; Prof. Alessio Pollice <br>
-Subject&#58; STAT/01-A -- Statistics<br>
+author: "Leonardo Cefalo, <br>
+Department of Economics and Finance <br> 
+University of Bari Aldo Moro<br> 
+Supervisor&#58; Prof. Alessio Pollice <br> 
+Subject&#58; STAT/01-A -- Statistics<br> 
 PhD cycle&#58; XXXVIII-bis"
-date: "2026 May 13th"
 output:
   ioslides_presentation:
     css: style.css
@@ -23,19 +23,6 @@ library(INLA)
 
 for (file in list.files("Data", full.names = T)) load(file)
 ```
-
-```{r codes for loaded data, eval = FALSE, echo = FALSE}
-#Prov24_shp <- Get_Shapefile(2024, level = "NUTS-3")
-#Mun24_shp <- Get_Shapefile(2024, level = "LAU")
-
-#input_DB25_MIUR<-Get_DB_MIUR(Year=2025 )
-
-#DB25_MIUR_mun <- Group_DB_MIUR(input_DB25_MIUR, level = "LAU")
-#DB25_MIUR_prov <- Group_DB_MIUR(input_DB25_MIUR, level = "NUTS-3")
-
-```
-
-
 
 
 ## Motivation: territorial disparities and policy relevance
@@ -68,7 +55,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 
 
 
-## Chapter 2: the SchoolDataIT `R` package
+## Chapter 2: The SchoolDataIT `R` package
 
   - Policy and research need: **harmonised**, **georeferenced open data** regarding **school infrastructure** and **student outcomes**
   
@@ -116,7 +103,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 <img src="Watermark_logo.png" class="watermark-logo">
     
 
-## Chapter 2: package workflow
+## Chapter 2: Package workflow
 ```{r flowchart, echo = F}
 package.scheme <- function(width = 920) {
   return(DiagrammeR::grViz("digraph {
@@ -248,15 +235,22 @@ Scores in Mathematics (2nd grade of high school, 2022/23)
 ```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4.1}
 pal <- viridisLite::viridis(12, option = "G", begin = 0.15, end = 1)
 
+toplot_MAT <- Invalsi_A_MAT %>% 
+  dplyr::select(.data$COD_PROV, .data$PRO_COM, .data$Municipality_description,
+                .data$M_Mathematics, .data$nbuildings,
+                .data$Urban_public_transport, .data$BB_Activation_status,
+                .data$A_mun, .data$B_mun, .data$C_mun, .data$D_mun, 
+                .data$E_mun, .data$F_mun)
+
+#mapview::mapview(
+#  Invalsi_NA_MAT, col.regions = "white",
+#  map.types = "CartoDB.Positron",
+#  legend = FALSE, layer.name = "No data") +
 mapview::mapview(
-  Invalsi_NA_MAT, col.regions = "white",
-  map.types = "CartoDB.Positron",
-  legend = FALSE, layer.name = "No data") +
-  mapview::mapview(
-    Invalsi_A_MAT, zcol = "M_Mathematics",
+    toplot_MAT, zcol = "M_Mathematics",
     col.regions = pal,
     popup = paste0(SchoolDataIT:::set_popup_height(210) , 
-                   leafpop::popupTable(Invalsi_A_MAT)),
+                   leafpop::popupTable(toplot_MAT)),
     at = seq(125, 240, length.out = 12),
     map.types = "CartoDB.Positron",
     layer.name = "Mathematics score")
@@ -275,16 +269,21 @@ Scores in Italian (2nd grade of high school, year 2022/23)
 
 ```{r Invalsi ITA, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4.1}
 pal <- viridisLite::viridis(12, option = "G", begin = 0.15, end = 1)
-
+toplot_ITA <- Invalsi_A_ITA %>% 
+  dplyr::select(.data$COD_PROV, .data$PRO_COM, .data$Municipality_description,
+                .data$M_Italian, .data$nbuildings,
+                .data$Urban_public_transport, .data$BB_Activation_status,
+                .data$A_mun, .data$B_mun, .data$C_mun, .data$D_mun, 
+                .data$E_mun, .data$F_mun)
+#mapview::mapview(
+#  Invalsi_NA_ITA, col.regions = "white",
+#  map.types = "CartoDB.Positron",
+#  legend = FALSE, layer.name = "No data") +
 mapview::mapview(
-  Invalsi_NA_ITA, col.regions = "white",
-  map.types = "CartoDB.Positron",
-  legend = FALSE, layer.name = "No data") +
-  mapview::mapview(
-    Invalsi_A_ITA, zcol = "M_Italian",
+    toplot_ITA, zcol = "M_Italian",
     col.regions = pal,
     popup = paste0(SchoolDataIT:::set_popup_height(210) , 
-                   leafpop::popupTable(Invalsi_A_MAT)),   
+                   leafpop::popupTable(toplot_ITA)),   
     at = seq(125, 240, length.out = 12),
     map.types = "CartoDB.Positron",
     layer.name = "Italian score")
@@ -294,7 +293,7 @@ mapview::mapview(
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: bivariate regression model
+## Chapter 3: Bivariate regression model
 
 
 $$
@@ -364,7 +363,7 @@ Defined at the **municipal** level
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 3: spatial confounding
+## Chapter 3: Spatial confounding
 
   - **Dependence** between $\boldsymbol{X}$ and $\boldsymbol{z}$ $\Rightarrow$ **potential bias** in estimating $\beta$
   
@@ -415,7 +414,7 @@ DT::datatable(Invalsi_post_hyper,
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: the Skew-Normal assumption{.pic-slide-small}
+## Chapter 3: The Skew-Normal assumption{.pic-slide-small}
 
   - **Skew-symmetric distributions** are not very popular in INVALSI analysis literature, yet for aggregate scores there is **solid evidence** for skewness $\Rightarrow$ skewness cannot be explained by existing information nor can it be ignored
   
@@ -432,7 +431,7 @@ DT::datatable(Invalsi_post_hyper,
 
 ## Chapter 3: Discussion
 
-  - Both the **infrastructural** datum and **territorial structure** are necessary to explain disparities in Invalsi scores
+  - Both the **infrastructural** datum and the **territorial structure** are necessary to explain disparities in Invalsi scores
 
   - **Infrastrucural poles** have a general advantage in education quality 
 
@@ -477,14 +476,18 @@ dd_2022 <- dplyr::filter(dd_VAW, .data$Year == "2022")
 
 m2021 <- mapview::mapview(dd_2021,zcol = "Log_accesses",
   na.color = "white", layer.name = "Log accesses 2021",
-  width = "100%", height = 260 ) +
+      popup = paste0(SchoolDataIT:::set_popup_height(210) , 
+                   leafpop::popupTable(dd_2021)),   
+  width = "100%", height = 270 ) +
   mapview::mapview(
     Centroids_21,  color = "#00ffff",
     col.regions = "#ff00ff",  cex = 2, legend = FALSE )
 
 m2022 <- mapview::mapview( dd_2022, zcol = "Log_accesses",
   na.color = "white", layer.name = "Log accesses 2022",
-  width = "100%",  height = 260) +
+      popup = paste0(SchoolDataIT:::set_popup_height(210) , 
+                   leafpop::popupTable(dd_2022)),   
+  width = "100%",  height = 270) +
   mapview::mapview(
     Centroids_22,   color = "#00ffff",
     col.regions = "#ff00ff", cex = 2,  legend = FALSE)
@@ -500,7 +503,7 @@ htmltools::browsable(
       tags$p(
       "Frequency of access on the logarithmic scale.
       Dots correspond to municipalities hosting at least one AVC.",
-      style = "font-size:14px; text-align:center; margin-top:4px; color:#4A4A4A;"))))
+      style = "font-size:16px; text-align:center; margin-top:4px; color:#4A4A4A;"))))
 ```
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -515,14 +518,18 @@ dd_2024 <- dplyr::filter(dd_VAW, .data$Year == "2024")
 
 m2023 <- mapview::mapview(dd_2023,zcol = "Log_accesses",
   na.color = "white", layer.name = "Log accesses 2023",
-  width = "100%", height = 260 ) +
+      popup = paste0(SchoolDataIT:::set_popup_height(210) , 
+                   leafpop::popupTable(dd_2023)),   
+  width = "100%", height = 270 ) +
   mapview::mapview(
     Centroids_21,  color = "#00ffff",
     col.regions = "#ff00ff",  cex = 2, legend = FALSE )
 
 m2024 <- mapview::mapview(dd_2024, zcol = "Log_accesses",
   na.color = "white", layer.name = "Log accesses 2024",
-  width = "100%",  height = 260) +
+      popup = paste0(SchoolDataIT:::set_popup_height(210) , 
+                   leafpop::popupTable(dd_2024)),   
+  width = "100%",  height = 270) +
   mapview::mapview(
     Centroids_24,   color = "#00ffff",
     col.regions = "#ff00ff", cex = 2,  legend = FALSE)
@@ -536,7 +543,7 @@ htmltools::browsable(
                tags$div(style = "width:50%;", htmltools::as.tags(m2024@map)) ),
       tags$p("Frequency of access on the logarithmic scale.
              Dots correspond to municipalities hosting at least one AVC.",
-             style = "font-size:14px; text-align:center; margin-top:4px; color:#4A4A4A;"))))
+             style = "font-size:16px; text-align:center; margin-top:4px; color:#4A4A4A;"))))
 ```
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -612,7 +619,7 @@ $$\eta_{it} := \boldsymbol{x_{it}}^\top \beta + z_{it}$$
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 4: the latent effect
+## Chapter 4: The latent effect
 
 $$
 \boldsymbol{z} \sim \mathcal{N}_{T\times n} \left(0, \frac{\sigma^2}{1-r^2}\boldsymbol{R} \otimes \boldsymbol{\Omega }\right)
@@ -621,9 +628,10 @@ $$
   - $r$: **temporal** autocorrelation ($R_{st}=r^{\lvert s-t \rvert}$); $\sigma^2$: **scale** parameter;
   $\boldsymbol{\Omega}$: model-specific **spatial covariance** matrix
   
-    - ICAR [@ICAR]: $\boldsymbol{\Omega} = \boldsymbol{L^+}$; $\boldsymbol{L}$=graph Laplacian
+    - ICAR [@ICAR]: $\boldsymbol{\Omega} = \boldsymbol{L^+}$;  
     - Proper CAR [@PCAR_Gelfand]: $\boldsymbol{\Omega} = (\boldsymbol{D}-\rho \boldsymbol{W})^{-1}$
     - Leroux proper CAR [@Leroux]: $\boldsymbol{\Omega} = (\lambda \boldsymbol{L} + (1-\lambda)\boldsymbol{I})^{-1}$
+      $\Rightarrow$ model selected due to **lowest WAIC**
     
     <!--  BYM2[@BYM2]: $\boldsymbol{\Omega} = \phi \boldsymbol{L} + (1-\phi) \boldsymbol{I}$ -->
 
@@ -679,10 +687,9 @@ $$
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 4 Covariate effect posterior
+## Chapter 4; Regression model estimates
 
-  - **20** smoothest Laplacian eigenvectors removed from covariates **ELL** and **ER**; selection criterion: **WAIC**
-
+  - **20** smoothest Laplacian eigenvectors removed from covariates **ELL** and **ER**
 
 ```{r VAW betas posterior, echo=FALSE, message=FALSE, warning=FALSE}
 betas.LCAR.inla   <- round(cav_LMCAR_inla.AR1.PC.strict_s20$summary.fixed, 3) %>% 
@@ -700,7 +707,7 @@ DT::datatable(betas.LCAR.inla,
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 4: covariate Effects Interpretation
+## Chapter 4: Covariate effects interpretation
 
 $y =$ <span style="color: #C00005 ;">VAW **occurrence** </span> $\times$ <span style="color: #093C92 ;"> incidents **reporting** rate </span>
 
