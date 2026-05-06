@@ -4,7 +4,7 @@ subtitle: Doctoral programme in Economics and finance of Public Administrations
 author: "Leonardo Cefalo, Department of Economics and Finance, <br>
 University of Bari Aldo Moro<br><br>
 Supervisor&#58; Prof. Alessio Pollice <br>
-Subject&#58; STAT/01-A, former SECS-S/01 - Statistics<br>
+Subject&#58; STAT/01-A - Statistics<br>
 PhD cycle&#58; XXXVIII-bis"
 date: "2026 May 13th"
 output:
@@ -60,7 +60,9 @@ for (file in list.files("Data", full.names = T)) load(file)
   
   - Computation: **Integrated Nested Laplace Approximation** [@INLA], [@VBINLA2024] 
   
-  - Recurring issues: **hyperprior interpretability** $\Rightarrow$ **Penalised complexity priors** [@PC];  **Spatial confounding** $\Rightarrow$ *Spatial+2.0* filtering [@Urdangarin24]
+  - Recurring issues:
+    - **hyperprior interpretability** $\Rightarrow$ **Penalised complexity priors** [@PC]
+    - **Spatial confounding** $\Rightarrow$ *Spatial+2.0* filtering [@Urdangarin24]
     
 <img src="Watermark_logo.png" class="watermark-logo">
 
@@ -117,7 +119,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 
 ## Chapter 2: package workflow
 ```{r flowchart, echo = F}
-package.scheme <- function(width = 900) {
+package.scheme <- function(width = 920) {
   return(DiagrammeR::grViz("digraph {
     graph [layout = dot, splines = ortho, rankdir = TB, nodesep = 1.5, overlap = false ]
 
@@ -182,7 +184,7 @@ package.scheme()
 ## Chapter 2: School buildings DB (ex.)
 
 Example of infrastructural variable: availability of public transport in 2024/25 at the province level 
-```{r transport map prov, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3 }
+```{r transport map prov, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3.2 }
 library(SchoolDataIT)
 Map_School_Buildings(data=DB25_MIUR_prov,
                      field="Urban_public_transport",
@@ -197,7 +199,7 @@ Map_School_Buildings(data=DB25_MIUR_prov,
 
 Same variable, but at the finer level of municipalities (in the Apulia region in this case)
 
-```{r transport map mun, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3 }
+```{r transport map mun, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3.2 }
 library(SchoolDataIT)
 Map_School_Buildings(data=DB25_MIUR_mun,
                      field="Urban_public_transport",
@@ -241,7 +243,7 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 
 ## Chapter 3: INVALSI scores (Maths)
 
-Scores in Mathematics (2nd grade of high school, year 2022/23)
+Scores in Mathematics (2nd grade of high school, 2022/23)
 
 
 ```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4}
@@ -542,7 +544,7 @@ htmltools::browsable(
 
 ## Chapter 4: explanatory variables
 
- - **Distance** (`TEP`) from the **closest municipality** hosting an AVC 
+ - **Distance** from the **closest municipality** hosting either an AVC (`AVC_dist`) or a help-desk (`Desk_dist`)
 
  - Components of the **Municipality Frailty Index** (MFI), 2021; source: [ISTAT](https://www.istat.it/comunicato-stampa/indice-di-fragilita-comunale-ifc/)
  
@@ -558,7 +560,8 @@ htmltools::browsable(
     </tr>
   </thead>
   <tbody>
-    <tr><td>TEP</td><td>Minutes</td><td>Road **travel time** to the **closest** municipality hosting an AVC</td></tr>
+    <tr><td>AVC_dist</td><td>Minutes</td><td>Road **travel time** to the **closest** municipality hosting an AVC</td></tr>
+    <tr><td>Desk_dist</td><td>Minutes</td><td>Road **travel time** to the **closest** municipality hosting a help-desk</td></tr>
     <tr><td>ELI</td><td>Ventile</td><td>Share of employees in **low productivity** units</td></tr>
     <tr><td>PGR</td><td>Rate</td><td>**Population growth** rate 2011–2021</td></tr>
     <tr><td>UIS</td><td>Ventile</td><td>**Density** of **economic** production units</td></tr>
@@ -577,7 +580,7 @@ htmltools::browsable(
 
   - **256** municipalities, **4** years
   
-  - Standard **Poisson** linear regression: for $i \in [1,256]$, and $t \in [2021, 2024]$ we have
+  - Standard **Poisson** linear regression: for $i \in \lbrace 1, 2, \dots, 256 \rbrace$, and $t \in \lbrace 2021, 2022, 2023, 2024 \rbrace$ we have
   
 $$
 y_{it}\mid \eta_{it}, \theta \sim \mathrm{Poisson} \left(
@@ -599,11 +602,11 @@ $$
 
   - Inclusion of latent **spatio-temporal** effect in $\eta$ to account for **territorial variability** and **overdispersion**
   
-$$\eta_{it} := X_{it}^\top \beta + Z_{it}$$
+$$\eta_{it} := \boldsymbol{x_{it}}^\top \beta + z_{it}$$
  
-  - $X$: Covariates; $\beta$: covariate effects
+  - $\boldsymbol{X}$: Covariates; $\beta$: covariate effects
   
-  - $Z_{it}$: spatio-temporal latent effect of size $n \times k$, where $n=256$ and $k=4$;
+  - $\boldsymbol{Z}$: spatio-temporal latent effect of size $n \times k$, where $n=256$ and $k=4$;
     - Temporal structure: **AR(1)** model  
     - Spatial structure: alternative **CAR** models
 
@@ -631,14 +634,14 @@ $$
 
 ## Chapter 4: Penalised Complexity priors
  
-  - **Principle**: penalise *a priori* the departure of a ''proposed'' model from a 
+  - **Principle**: penalise *a priori* the **departure** of a ''proposed'' model from a 
   base one
   
-  - **Interpretation**: the parameter $\theta$ exceeds a **threshold value** $U$ with a **tail probability** $1-\alpha$ *a priori*
+  - **Interpretation**: fix a **threshold value** $U$ and a **left-tail probability** $\alpha$ such that for a parameter $\theta$ $\mathrm{Prob} \lbrace \theta \leq U \rbrace = \alpha$
   
   - $r$ and $\sigma$: PC-prior already developed [@Sorbye2017], [@PC] 
 
-  - **Gap we fill**: PC-prior for **spatial association parameters** in the general, multivariate case [@Mmodels], including the Besag-York-Mollié [@BYM2] $\Rightarrow$ by deduction, univariate PC-prior on $\rho$ (PCAR) and $\lambda$ (LCAR)
+  - **Gap we fill**: PC-prior for **spatial association parameters** in the general, **multivariate** case [@Mmodels], including the **Besag-York-Mollié** [@BYM2] $\Rightarrow$ univariate prior on $\rho$ (PCAR) and $\lambda$ (LCAR) follows **by deduction**
  
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -690,6 +693,7 @@ betas.LCAR.inla   <- round(cav_LMCAR_inla.AR1.PC.strict_s20$summary.fixed, 3) %>
   dplyr::relocate(.data$Effect, .before = 1) %>%  
   dplyr::rename(Mean = .data$mean, Sd = .data$sd,
                 Q_0.025 = .data$`0.025quant`, Q_0.975 = .data$`0.975quant`)
+rownames(betas.LCAR.inla) <- c(1:nrow(betas.LCAR.inla))
 
 DT::datatable(betas.LCAR.inla, 
               options = list(pageLength = 6, lengthChange = F))
@@ -728,7 +732,7 @@ Joint PC-prior:
 theta.post <- cav_LCAR_hyper_post[-3,]
 theta.post$param <- c("Spat. dependence", "Std dev", "Temporal autocorr.")
 
-DT::datatable(cav_LCAR_hyper_post, 
+DT::datatable(theta.post, 
               options = list(pageLength = 3, lengthChange = F))
 
 ```
@@ -757,9 +761,9 @@ DT::datatable(cav_LCAR_hyper_post,
   
   - Relevance of **Bayesian spatial statistics**, providing **uncertainty-informed** and **interpretable** inference and allowing to **borrow strength** across neighbouring areas 
 
-  - General empirical finding: **accessibility** to services matters and **peripheries** cannot be left behind
+  - General empirical finding: **accessibility** to fundamental services and infrastructure is crucial and **peripheries** cannot be left behind
 
-  - Future directions: **data integration** (incidence vs reporting), **multilevel/causal** extensions, and more work on multivariate PC-priors
+  - Future directions: **data integration** (incidence vs reporting), **causal** extensions, and more work on multivariate PC-priors
   
 <img src="Watermark_logo.png" class="watermark-logo">
 
