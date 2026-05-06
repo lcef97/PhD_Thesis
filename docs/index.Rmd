@@ -4,7 +4,7 @@ subtitle: Doctoral programme in Economics and finance of Public Administrations
 author: "Leonardo Cefalo, Department of Economics and Finance, <br>
 University of Bari Aldo Moro<br><br>
 Supervisor&#58; Prof. Alessio Pollice <br>
-Subject&#58; STAT/01-A - Statistics<br>
+Subject&#58; STAT/01-A -- Statistics<br>
 PhD cycle&#58; XXXVIII-bis"
 date: "2026 May 13th"
 output:
@@ -54,11 +54,10 @@ for (file in list.files("Data", full.names = T)) load(file)
 
 ## Methodological framework
 
-  - **Areal modelling**: spatial domain described through adjacency graphs $\Rightarrow$ **CAR-like** [@CAR] latent models
+  - **Areal modelling**: spatial domain described by adjacency graphs $\Rightarrow$ **Conditional autoregressive (CAR)** [@CAR] models
   
   - **Bayesian** inference for interpretable uncertainty, flexible prior setup and model comparison
-  
-  - Computation: **Integrated Nested Laplace Approximation** [@INLA], [@VBINLA2024] 
+  $\Rightarrow$ Computation: **Integrated Nested Laplace Approximation** [@INLA], [@VBINLA2024] 
   
   - Recurring issues:
     - **hyperprior interpretability** $\Rightarrow$ **Penalised complexity priors** [@PC]
@@ -73,7 +72,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 
   - Policy and research need: **harmonised**, **georeferenced open data** regarding **school infrastructure** and **student outcomes**
   
-  - Available data come from **multiple providers** in heterogeneous formats $\Rightarrow$ missing **harmonisation**
+  - Available data come from **multiple providers** in heterogeneous formats $\Rightarrow$ need for **harmonisation**
   
   - **Contribution**: an R package that retrieves, cleans, harmonises, and maps data at LAU / NUTS-3 level
   
@@ -104,7 +103,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 
 ## Chapter 2: Scraping data from the web
 
-  - **Static scraping**: find provider links $\rightarrow$ download $\rightarrow$ parse into `R`
+  - **Static scraping**: find provider links $\Rightarrow$ download $\Rightarrow$ parse into `R`
 
   - **Real-time** data retrieval and **no storage space** consumed on the **user local** machine
   
@@ -129,8 +128,8 @@ package.scheme <- function(width = 920) {
     end2[label = 'Maps']
 
     node [shape = rectangle, style = filled, fillcolor = \"#D0DFF4\", fontcolor = black, color = \"#253A6B\", fontsize = 22, width = 3.4]
-    F1[label = 'Get_ functions']
-    F2[label = 'Util_ functions']
+    F1[label = '`Get_` functions']
+    F2[label = '`Util_` functions']
     F3[label = 'Group_ functions']
     F4[label = 'Set_DB']
     F5[label = 'Map_ functions']
@@ -184,7 +183,7 @@ package.scheme()
 ## Chapter 2: School buildings DB (ex.)
 
 Example of infrastructural variable: availability of public transport in 2024/25 at the province level 
-```{r transport map prov, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3.2 }
+```{r transport map prov, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3.6 }
 library(SchoolDataIT)
 Map_School_Buildings(data=DB25_MIUR_prov,
                      field="Urban_public_transport",
@@ -199,7 +198,7 @@ Map_School_Buildings(data=DB25_MIUR_prov,
 
 Same variable, but at the finer level of municipalities (in the Apulia region in this case)
 
-```{r transport map mun, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3.2 }
+```{r transport map mun, echo = FALSE, message = FALSE, warning = FALSE, output = FALSE, fig.height = 3.6 }
 library(SchoolDataIT)
 Map_School_Buildings(data=DB25_MIUR_mun,
                      field="Urban_public_transport",
@@ -246,7 +245,7 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 Scores in Mathematics (2nd grade of high school, 2022/23)
 
 
-```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4}
+```{r Invalsi MAT, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4.1}
 pal <- viridisLite::viridis(12, option = "G", begin = 0.15, end = 1)
 
 mapview::mapview(
@@ -274,7 +273,7 @@ mapview::mapview(
 
 Scores in Italian (2nd grade of high school, year 2022/23)
 
-```{r Invalsi ITA, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4}
+```{r Invalsi ITA, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 4.1}
 pal <- viridisLite::viridis(12, option = "G", begin = 0.15, end = 1)
 
 mapview::mapview(
@@ -405,7 +404,7 @@ DT::datatable(Invalsi_post_beta,
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 3: hyperparameter estimation
+## Chapter 3: Hyperparameter estimation
 
   - Prior choice: $\boldsymbol{\Sigma}$: **inv. Wishart**; $\mathrm{Prec}[\varepsilon]$: vague **Gamma**; **skewness** in **Italian** scores: **PC-prior** [@SNprior]
   
@@ -431,7 +430,7 @@ DT::datatable(Invalsi_post_hyper,
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 3: conclusion
+## Chapter 3: Discussion
 
   - Both the **infrastructural** datum and **territorial structure** are necessary to explain disparities in Invalsi scores
 
@@ -456,7 +455,7 @@ DT::datatable(Invalsi_post_hyper,
     - Systematic **records** of reported cases 
   
 
-  - Research quest: **territorial distribution** of accesses to local Anti-violence by **residence municipality**
+  - Research quest: **territorial distribution** of accesses to local AVCs by **residence municipality**
   of women seeking help
   
   - Study region: **Apulia region**;  observation period: **2021 -- 2024**; observation units: **municipalities**.
@@ -542,7 +541,7 @@ htmltools::browsable(
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
-## Chapter 4: explanatory variables
+## Chapter 4: Potential drivers of AVC accesses
 
  - **Distance** from the **closest municipality** hosting either an AVC (`AVC_dist`) or a help-desk (`Desk_dist`)
 
@@ -576,11 +575,10 @@ htmltools::browsable(
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 4: The regression model
+## Chapter 4: Space-time regression model
 
-  - **256** municipalities, **4** years
   
-  - Standard **Poisson** linear regression: for $i \in \lbrace 1, 2, \dots, 256 \rbrace$, and $t \in \lbrace 2021, 2022, 2023, 2024 \rbrace$ we have
+  - Standard **Poisson** linear regression: for $i \in \lbrace 1, 2, \dots, 256 \rbrace$ (Apulian municipalities), and $t \in \lbrace 2021, 2022, 2023, 2024 \rbrace$ we have
   
 $$
 y_{it}\mid \eta_{it}, \theta \sim \mathrm{Poisson} \left(
@@ -598,7 +596,7 @@ $$
 <img src="Watermark_logo.png" class="watermark-logo">
   
   
-## Chapter 4: The linear predictor
+## Chapter 4: Space-time linear predictor
 
   - Inclusion of latent **spatio-temporal** effect in $\eta$ to account for **territorial variability** and **overdispersion**
   
@@ -606,8 +604,8 @@ $$\eta_{it} := \boldsymbol{x_{it}}^\top \beta + z_{it}$$
  
   - $\boldsymbol{X}$: Covariates; $\beta$: covariate effects
   
-  - $\boldsymbol{Z}$: spatio-temporal latent effect of size $n \times k$, where $n=256$ and $k=4$;
-    - Temporal structure: **AR(1)** model  
+  - $z_{it}$: spatio-temporal latent effect 
+    - Temporal structure: **AR(1)** model (simpler than a generic multivariate spatial model) 
     - Spatial structure: alternative **CAR** models
 
 
@@ -623,9 +621,9 @@ $$
   - $r$: **temporal** autocorrelation ($R_{st}=r^{\lvert s-t \rvert}$); $\sigma^2$: **scale** parameter;
   $\boldsymbol{\Omega}$: model-specific **spatial covariance** matrix
   
-    - ICAR[@ICAR]: $\boldsymbol{\Omega} = \boldsymbol{L^+}$; $\boldsymbol{L}$=graph Laplacian
-    - PCAR[@PCAR_Gelfand]: $\boldsymbol{\Omega} = (\boldsymbol{D}-\rho \boldsymbol{W})^{-1}$
-    - LCAR[@Leroux]: $\boldsymbol{\Omega} = (\lambda \boldsymbol{L} + (1-\lambda)\boldsymbol{I})^{-1}$
+    - ICAR [@ICAR]: $\boldsymbol{\Omega} = \boldsymbol{L^+}$; $\boldsymbol{L}$=graph Laplacian
+    - Proper CAR [@PCAR_Gelfand]: $\boldsymbol{\Omega} = (\boldsymbol{D}-\rho \boldsymbol{W})^{-1}$
+    - Leroux proper CAR [@Leroux]: $\boldsymbol{\Omega} = (\lambda \boldsymbol{L} + (1-\lambda)\boldsymbol{I})^{-1}$
     
     <!--  BYM2[@BYM2]: $\boldsymbol{\Omega} = \phi \boldsymbol{L} + (1-\phi) \boldsymbol{I}$ -->
 
