@@ -1,10 +1,10 @@
 ---
 title: "Stochastic Spatial Areal Models for Mapping Territorial Vulnerability"
 subtitle: Doctoral programme in Economics and finance of Public Administrations
-author: "Leonardo Cefalo, <br>
+author: "Author&#58 Leonardo Cefalo <br>
+Supervisor&#58; Prof. Alessio Pollice <br> 
 Department of Economics and Finance <br> 
 University of Bari Aldo Moro<br> 
-Supervisor&#58; Prof. Alessio Pollice <br> 
 Subject&#58; STAT/01-A -- Statistics<br> 
 PhD cycle&#58; XXXVIII-bis"
 output:

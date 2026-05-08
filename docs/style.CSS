@@ -22,7 +22,6 @@
   line-height: 1.1;
   word-wrap: break-word; 
   color: #fff; 
-  text-align: center;
 }
 
 .title-slide hgroup h2 {
@@ -33,7 +32,6 @@
   line-height: 1.1;
   word-wrap: break-word;  
   white-space: normal;
-  text-align: center;
 }
 
 .title-slide hgroup p {
@@ -44,7 +42,7 @@
   /*left: 120px;*/
   right: 0px; 
   line-height: 1.6;
-  /*text-align: right;*/
+  text-align: right;
 }
 
 /*  DOCUMENT BODY ------------------------------------------------------------*/
