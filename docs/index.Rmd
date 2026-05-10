@@ -1,7 +1,7 @@
 ---
 title: "Stochastic Spatial Areal Models for Mapping Territorial Vulnerability"
 subtitle: Doctoral programme in Economics and finance of Public Administrations
-author: "Author&#58 Leonardo Cefalo <br>
+author: "Author&#58; Leonardo Cefalo <br>
 Supervisor&#58; Prof. Alessio Pollice <br> 
 Department of Economics and Finance <br> 
 University of Bari Aldo Moro<br> 
@@ -58,7 +58,7 @@ for (file in list.files("Data", full.names = T)) load(file)
 
 ## Chapter 2: The SchoolDataIT `R` package
 
-  - Policy and research need: **harmonised**, **georeferenced open data** regarding **school infrastructure** and **student outcomes**
+  - Policy and research need: **georeferenced open data** regarding **school infrastructure** and **student outcomes**
   
   - Available data come from **multiple providers** in heterogeneous formats $\Rightarrow$ need for **harmonisation**
   
@@ -68,6 +68,7 @@ for (file in list.files("Data", full.names = T)) load(file)
     - on **CRAN**, under version [0.2.12](https://CRAN.R-project.org/package=SchoolDataIT)
     - on **GitHub** under **experimental** version [0.2.13](https://github.com/lcef97/SchoolDataIT)
 
+  - **Open**-source [research paper](https://link.springer.com/article/10.1007/s10260-025-00805-0)
 
 <img src="Watermark_logo.png" class="watermark-logo">
 
@@ -213,16 +214,15 @@ Map_School_Buildings(data=DB25_MIUR_mun,
 
 ## Chapter 3: Spatial modelling of INVALSI data
 
-  - Spatial modelling **municipality**-averaged **INVALSI** scores in **Italian and Mathematics** at the second year of high school in **2022/23**
-  
-  - Assessment of the association with candidate **indicators** of the infrastructural state of municipalities 
+  - Modelling **municipality**-averaged **INVALSI** scores in **Italian and Mathematics** at the second year of high school in **2022/23** and assessing the association with candidate infrastructural **indicators** 
+
+<!-- of the infrastructural state of municipalities -->
   
   - **Spatial autocorrelation** in observed scores $\Rightarrow$ **Intrinsic CAR** [@ICAR] latent model
   
-  - **Sparse spatial structure** of INVALSI scores (most municipalities do not host a high school) $\Rightarrow$ spatial effects defined at the **province** level
+  - **Sparse spatial structure** of INVALSI scores (most municipalities do not host a high school) $\Rightarrow$ spatial effects at the **province** level (finer level $\Rightarrow$ overparametrised)
   
-  - Model estimation with [INLAMSM](https://github.com/becarioprecario/INLAMSM) [@INLAMSM]
-  
+  - **Open**-source [research paper](https://link.springer.com/article/10.1007/s10479-025-06842-y)
   
 <img src="Watermark_logo.png" class="watermark-logo">
 
@@ -339,10 +339,13 @@ $$
   
   - $\Sigma$: Global **covariance** matrix $\Rightarrow$ inverse **Wishart** *a priori*
   
-  - $\mathbf{L}:= \mathbf{D}-\mathbf{W}$: graph **Laplacian**,where $\mathbf{W}$ is the binary **neighbourhood** matrix ($w_{ij}=1$ if areas $i$ and $j$ are neighbours, $0$ otherwise) and $\mathbf{D}$ is the diagonal **degree** matrix ($d_i=\sum_j w_{ij}$, number of neighbours of node $i$)
+  - $\mathbf{L}:= \mathbf{D}-\mathbf{W}$: graph **Laplacian**; $\mathbf{W}$ = **neighbourhood** matrix ($w_{ij}=1$ if areas $i$ and $j$ are neighbours, $0$ otherwise); $\mathbf{D}$ = **degree** matrix ($d_i=\sum_j w_{ij}$, no. of neighbours of node $i$)
  
   - The **Laplacian** is singular, with **rank deficiency** given by the number of graph **connected components**
   $\Rightarrow$ model identifiable **if** a **linear constraint** (e.g. sum to zero) is imposed within **each connected component**
+  
+  - Model estimation with [INLAMSM](https://github.com/becarioprecario/INLAMSM) [@INLAMSM]
+
 
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -460,7 +463,7 @@ DT::datatable(Invalsi_post_hyper,
   
   - Study region: **Apulia region**;  observation period: **2021 -- 2024**; observation units: **municipalities**.
   
-
+  - Paper draft [on arXiv](https://arxiv.org/abs/2511.20481)
   
 
 <img src="Watermark_logo.png" class="watermark-logo">
@@ -469,7 +472,7 @@ DT::datatable(Invalsi_post_hyper,
 ## Chapter 4: Accesses to AVCs in 2022--23
 
 
-```{r AVC access 2021, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.4}
+```{r AVC access 2021, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
 dd_VAW$Log_accesses[which(dd_VAW$Log_accesses == -Inf)] <- NA
 
 dd_2021 <- dplyr::filter(dd_VAW, .data$Year == "2021")
@@ -511,7 +514,7 @@ htmltools::browsable(
 
 ## Chapter 4: Accesses to AVCs in 2023--24
 
-```{r AVC access 2023, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.4}
+```{r AVC access 2023, echo = FALSE, message = FALSE, warning = FALSE, fig.height = 3.6}
 #dd_VAW$Log_accesses[which(dd_VAW$Log_accesses == -Inf)] <- NA
 
 dd_2023 <- dplyr::filter(dd_VAW, .data$Year == "2023")
@@ -714,7 +717,7 @@ $y =$ <span style="color: #C00005 ;">VAW **occurrence** </span> $\times$ <span s
 
   - **Twofold interpretation** of covariate **effects** on AVC **accesses**
 
-  - **TEP**: either relative <span style="color: #093C92 ;"> ease in reporting violence </span> in **proximity** of AVCs, or <span style="color: #C00005 ;"> **appropriateness** of AVC **placement** </span>
+  - **AVC_dist**: either relative <span style="color: #093C92 ;"> ease in reporting violence </span> in **proximity** of AVCs, or <span style="color: #C00005 ;"> **appropriateness** of AVC **placement** </span>
 
   - **ELL**: <span style="color: #093C92 ;"> lower **reliance** on AVCs </span> in **poor education** contexts
 
