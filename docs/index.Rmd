@@ -391,7 +391,9 @@ Defined at the **municipal** level
   
   <figure class="pic-box pic-small pic-right">
     <img src="Media/Laplace_Eigenvectors.gif" alt="Laplacian eigenvectors animation">
-    <figcaption>Smoothest Laplacian eigenvectors in a 30x30 regular lattice</figcaption>
+    <figcaption>Smoothest Laplacian eigenvectors in a 30x30 regular lattice; 
+    <span><a href="https://github.com/lcef97/PhD_Thesis/blob/main/docs/Media/Eigenvectors_2500.gif" target="_blank">larger matrix here </a></span>
+     </figcaption>
   </figure>
   
 <img src="Watermark_logo.png" class="watermark-logo">
