@@ -620,6 +620,8 @@ $$\eta_{it} := \boldsymbol{x_{it}}^\top \beta + z_{it}$$
   - $z_{it}$: spatio-temporal latent effect 
     - Temporal structure: **AR(1)** model (simpler than a generic multivariate spatial model) 
     - Spatial structure: alternative **CAR** models
+    - `R-INLA` codes [here](https://github.com/lcef97/CAV_Puglia/blob/main/CAV_output.R); 
+    multivariate models [here](https://github.com/lcef97/CAV_Puglia/blob/main/Auxiliary/Functions.R)
 
 
 <img src="Watermark_logo.png" class="watermark-logo">
