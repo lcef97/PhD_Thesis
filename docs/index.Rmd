@@ -761,7 +761,7 @@ DT::datatable(theta.post,
   
     - Separate the interpretation of accesses into **incidence** and **reporting** [@Polettini] $\Rightarrow$ need for **data integration** with additional sources
     
-    - Extend the **PC-prior** derivation in **multivariate** spatial models for **general** correlation matrices
+    - Extend the **PC-prior** derivation in **multivariate** spatial models to **general** correlation or standard deviation matrices
     
 <img src="Watermark_logo.png" class="watermark-logo">
 
