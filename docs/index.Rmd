@@ -330,7 +330,7 @@ $$
 <img src="Watermark_logo.png" class="watermark-logo">
 
 
-## Chapter 3: The ICAR model
+## Chapter 3: The multivariate ICAR model
 
 $$
 \mathbf{z}  \sim \mathcal{N}\!\left(\mathbf{0},\ \boldsymbol{\Sigma} \otimes
@@ -341,8 +341,8 @@ $$
   
   - $\mathbf{L}:= \mathbf{D}-\mathbf{W}$: graph **Laplacian**; $\mathbf{W}$ = **neighbourhood** matrix ($w_{ij}=1$ if areas $i$ and $j$ are neighbours, $0$ otherwise); $\mathbf{D}$ = **degree** matrix ($d_i=\sum_j w_{ij}$, no. of neighbours of node $i$)
  
-  - The **Laplacian** is singular, with **rank deficiency** given by the number of graph **connected components**
-  $\Rightarrow$ model identifiable **if** a **linear constraint** (e.g. sum to zero) is imposed within **each connected component**
+  - **Rank deficiency** of the **Laplacian** given by the number of graph **connected components**
+  $\Rightarrow$ one **linear constraint** for each **connected component** for model identifiability
   
   - Model estimation with [INLAMSM](https://github.com/becarioprecario/INLAMSM) [@INLAMSM]
 
@@ -637,8 +637,8 @@ $$
     - ICAR [@ICAR]: $\boldsymbol{\Omega} = \boldsymbol{L^+}$;  
     - Proper CAR [@PCAR_Gelfand]: $\boldsymbol{\Omega} = (\boldsymbol{D}-\rho \boldsymbol{W})^{-1}$
     - Leroux proper CAR [@Leroux]: $\boldsymbol{\Omega} = (\lambda \boldsymbol{L} + (1-\lambda)\boldsymbol{I})^{-1}$
-      $\Rightarrow$ model selected due to **lowest WAIC**
-    
+      $\Rightarrow$ **lowest WAIC**
+
     <!--  BYM2[@BYM2]: $\boldsymbol{\Omega} = \phi \boldsymbol{L} + (1-\phi) \boldsymbol{I}$ -->
 
 <img src="Watermark_logo.png" class="watermark-logo">
